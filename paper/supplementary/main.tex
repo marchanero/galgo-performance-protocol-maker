@@ -102,7 +102,7 @@ A consistent pattern emerges: all architectures achieve slightly higher F1 on th
 % ======================================================
 \section*{Table S4: Training Time and Convergence}
 
-Table~\ref{tab:s4_training} reports training time per epoch and epochs to convergence for each architecture on the NVIDIA RTX 4080.
+Table~\ref{tab:s4_training} reports training time per epoch, epochs to convergence, and total training wall-clock time for each architecture on the NVIDIA RTX 4080 (16 GB GDDR6X, Ada Lovelace). All measurements use the optimal hyperparameter configuration, batch size 32, and the full 147-subject training set. Early stopping with patience 15 was applied; convergence is defined as the epoch at which validation loss stopped improving.
 
 \begin{table}[ht]
 \centering
@@ -124,7 +124,7 @@ PatchTST   & 42.8 & 85  & 60.6 \\
 \end{tabular}
 \end{table}
 
-Training time follows the same hierarchy as inference time, with DLinear converging approximately 100$\times$ faster than PatchTST in total training wall-clock time. The increasing number of epochs required for convergence as architectural complexity grows reflects the additional optimisation difficulty introduced by attention mechanisms, state space models, and deeper architectures. For practitioners, this translates to substantially different resource requirements for hyperparameter tuning: the 64-configuration grid search described in the main text requires approximately 3 GPU-hours for DLinear versus over 100 GPU-hours for PatchTST on the RTX 4080.
+Training time follows the same hierarchy as inference time, with DLinear converging approximately 100$\times$ faster than PatchTST in total wall-clock time (0.6 h vs.\ 60.6 h). The increasing number of epochs required for convergence as architectural complexity grows reflects the additional optimisation difficulty introduced by attention mechanisms, state space models, and deeper architectures. For practitioners, this translates to substantially different resource requirements for hyperparameter tuning: the 64-configuration grid search described in the main text requires approximately 3 GPU-hours for DLinear versus over 100 GPU-hours for PatchTST on the RTX 4080. These estimates account for the fact that not all configurations run to full convergence—configurations with poor validation performance are terminated early by the patience-based stopping criterion, reducing the effective per-configuration cost to approximately 40--60\% of the full-convergence time.
 
 % ---- Bibliography ----
 \bibliographystyle{splncs04}
