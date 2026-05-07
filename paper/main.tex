@@ -444,7 +444,7 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
 \begin{tikzpicture}
 \begin{axis}[
     width=16cm, height=5.5cm,
-    ybar, bar width=7pt,
+    ybar=0pt, bar width=8pt,
     ymin=0.74, ymax=0.88,
     ytick={0.74,0.76,0.78,0.80,0.82,0.84,0.86,0.88},
     ylabel={F1-score},
@@ -455,7 +455,7 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
     ylabel style={font=\footnotesize},
     grid=major,
     grid style={dashed, gray!30},
-    enlarge x limits=0.12,
+    enlarge x limits={abs=0.8cm},
     nodes near coords,
     every node near coord/.append style={font=\tiny, rotate=90, anchor=west, /pgf/number format/precision=3},
 ]
