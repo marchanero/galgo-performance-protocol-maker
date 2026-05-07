@@ -1,96 +1,111 @@
-# The Clo-Author: AI Research Architecture for Economics
+# Clo-Author: AI Research Architecture for CS/AI & Engineering
 
-[![Version](https://img.shields.io/github/v/release/hugosantanna/clo-author?style=flat-square&color=b44dff&label=version)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0--csai-b44dff?style=flat-square)](CHANGELOG.md)
+[![Field](https://img.shields.io/badge/field-CS%2FAI%20%7C%20Engineering-3182BD?style=flat-square)]()
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-> **Work in progress.** This repo is evolving as I learn, and I share it in case others find it useful and would like to build upon it. Expect rough edges.
+> **Fork of [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author)** — adapted for Computer Science, Artificial Intelligence, Biomedical Engineering, and ICT research. Adds ML/DL experiment design, efficient architectures, SSM paradigms, and TikZ diagramming agents.
 
-An open-source [Claude Code](https://docs.anthropic.com/en/docs/claude-code) scaffold for empirical economics research. Provides structured workflows from literature review to journal submission. Can be adapted to other fields (finance, accounting, marketing, management) by customizing the domain profile and journal profiles.
+An open-source [Claude Code](https://docs.anthropic.com/en/docs/claude-code) scaffold for ML/AI and engineering research. Provides structured workflows from literature review to venue submission with specialized agents for experimental design, code review, paper writing, diagram creation, and peer review simulation.
 
-**Live guide:** [hugosantanna.github.io/clo-author](https://hugosantanna.github.io/clo-author/)
-<br>**Built on:** [Pedro Sant'Anna's claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow)
+---
+
+## What Makes This Fork Different
+
+The original `clo-author` targets empirical economics (causal inference, DiD/IV/RDD, AEA journals). This fork adapts every agent, rule, and reference for CS/AI and engineering research:
+
+| Aspect | Original (Economics) | This Fork (CS/AI & Engineering) |
+|--------|---------------------|----------------------------------|
+| **Paper types** | Reduced-form, Structural, Theory+empirics, Descriptive | Novel architecture, Benchmark, Ablation study, Application/deployment |
+| **Methodology** | Causal inference (DiD, IV, RDD, SC) | ML experiment design, training pipelines, ablation, efficiency metrics |
+| **Code stack** | R (primary), Stata | Python (PyTorch/TensorFlow), GPU discipline |
+| **Target venues** | AER, Econometrica, JPE, QJE... | NeurIPS, ICML, ICLR, TPAMI, TAC, TBME, JBHI... |
+| **Evaluation** | Standard errors, clustering, significance stars | F1/AUC/Accuracy ± std, parameter count, FLOPs, inference time |
+| **Literature** | EconLit, NBER, RePEc | arXiv, Semantic Scholar, DBLP, IEEE Xplore |
+| **Datasets** | CPS, SIPP, administrative | WESAD, PhysioNet, CASE, DEAP, Papers With Code |
+| **Figures** | Regression tables, event study plots | Confusion matrices, ROC curves, architecture diagrams, Pareto frontiers |
+| **New agents** | — | **Diagrammer** + diagrammer-critic (TikZ figures) |
+| **Color palette** | — | ColorBrewer colorblind-safe (built into preamble) |
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Fork and clone
-gh repo fork hugosantanna/clo-author --clone
+# 1. Clone
+git clone https://github.com/marchanero/clo-author.git
 cd clo-author
 
 # 2. Open Claude Code
 claude
 ```
 
-Then paste this prompt:
-
-> I am starting a new empirical research project in **[YOUR FIELD]** on **[YOUR TOPIC]**.
-> Read CLAUDE.md and help me set up the project structure.
-> Start with a literature review on [YOUR TOPIC].
-
-Claude reads the configuration, fills in your project details, and plans the approach — you approve the plan, it implements and runs review agents, and you review the results.
-
-**Using VS Code?** Open the Claude Code panel instead. Everything works the same.
+Then:
+> I am starting a new ML/AI research project on **[TOPIC]**. Read AGENTS.md and help me set up.
 
 ---
 
-## What It Does
-
-### How It Works
-
-You describe a task. Claude plans the approach (you approve), implements it, runs specialized review agents, fixes issues, re-verifies, and scores against quality gates. You review the output at each stage.
-
-### Specialized Agents in Worker-Critic Pairs
+## 11 Agent Pairs
 
 Every creator has a paired critic. Critics can't edit files; creators can't score themselves.
 
 | Phase | Worker (Creates) | Critic (Reviews) |
 |-------|-----------------|-----------------|
-| Discovery | Librarian | librarian-critic |
-| Discovery | Explorer | explorer-critic |
-| Strategy | Strategist | strategist-critic |
-| Execution | Coder | coder-critic |
+| Discovery | Librarian (CS/AI venues) | librarian-critic |
+| Discovery | Explorer (ML datasets) | explorer-critic |
+| Strategy | Strategist (experiment design) | strategist-critic |
+| Execution | Coder (PyTorch pipelines) | coder-critic |
 | Execution | Data-engineer | coder-critic |
-| Paper | Writer | writer-critic |
+| Paper | Writer (CS/AI sections) | writer-critic |
+| Figures | **Diagrammer** (TikZ) | **diagrammer-critic** |
 | Peer Review | Editor → domain-referee + methods-referee | — |
 | Presentation | Storyteller | storyteller-critic |
+| Theory | Theorist | theorist-critic |
 | Infrastructure | Orchestrator, Verifier | — |
 
-### Simulated Peer Review
+---
 
-`/review --peer [journal]` simulates a full journal submission:
+## 10 Slash Commands
 
-1. **Editor desk review** — reads your paper, verifies novelty claims via web search, decides: desk reject or send to referees
-2. **Referee assignment** — editor selects two referees with intellectual dispositions (Structuralist, Credibility, Measurement, Policy, Theory, Skeptic) weighted by journal culture
-3. **Independent blind reports** — each referee scores on 5 dimensions with pet peeves (1 critical, 1 constructive), and every major comment includes "what would change my mind"
-4. **Editorial decision** — editor classifies each concern as FATAL / ADDRESSABLE / TASTE, sides with one referee when they disagree, produces MUST / SHOULD / MAY action items
+| Command | What It Does |
+|---------|-------------|
+| `/new-project [topic]` | Full pipeline: idea → paper (orchestrated) |
+| `/discover [interview\|lit\|data]` | Research spec, literature review, data discovery |
+| `/strategize [question]` | ML/DL experimental strategy + methods review |
+| `/analyze [dataset]` | End-to-end experiments: training, evaluation, code review |
+| `/write [section]` | Draft paper sections + humanizer pass |
+| `/review [file/--flag]` | Quality reviews (paper, code, peer, methods) |
+| `/revise [report]` | R&R cycle: route referee comments, draft response |
+| `/talk [conference\|seminar\|short\|lightning]` | Beamer or Quarto presentation |
+| `/submit [venue]` | Final gate: score ≥ 95, all components ≥ 80 |
+| `/tools [subcommand]` | commit, compile, validate-bib, lint, deploy |
 
-Additional modes:
-- `--stress [journal]` — adversarial referees for pre-submission battle testing
-- `--peer --r2 [journal]` — R&R second round with referee memory (checks whether prior concerns were addressed)
-- Max 3 rounds, then the editor's patience runs out — just like real life
+---
 
-**30 journal profiles** across economics and adjacent fields (all top-tier, A* in the Australian Business Deans Council ranking), each with configured referee pools based on published style guides and common review culture.
+## Simulated Peer Review
 
-### 10 Slash Commands
+`/review --peer [venue]` simulates a full CS/AI venue submission:
 
-| Category | Commands |
-|----------|----------|
-| **Research** | `/new-project`, `/discover`, `/strategize`, `/analyze`, `/write` |
-| **Review** | `/review`, `/revise` |
-| **Output** | `/talk`, `/submit` |
-| **Tools** | `/tools` (commit, compile, validate-bib, journal, learn, deploy, context) |
+1. **Editor desk review** — novelty check, scope check, baseline adequacy, ablation completeness
+2. **Referee assignment** — two referees with dispositions (ARCHITECTURE, CREDIBILITY, REPRODUCIBILITY, BASELINE, THEORY, SKEPTIC)
+3. **Independent blind reports** — each scores on weighted dimensions. Every major comment includes "what would change my mind"
+4. **Editorial decision** — FATAL / ADDRESSABLE / TASTE concerns, MUST / SHOULD / MAY actions
 
-### Quality Gates
+**15 venue profiles** across CS/AI and biomedical engineering: NeurIPS, ICML, ICLR, TPAMI, JMLR, IEEE TAC, TBME, JBHI, BSPC, Sensors Journal, SPL, and more.
+
+---
+
+## Quality Gates
 
 Weighted aggregate scoring with per-component minimums:
 
 | Score | Gate | Applies To |
 |-------|------|------------|
-| 80 | Commit | Weighted aggregate (blocking) |
-| 90 | PR | Weighted aggregate (blocking) |
-| 95 | Submission | Aggregate + all components >= 80 |
-| -- | Advisory | Talks (reported, non-blocking) |
+| ≥ 95 | Submission | Aggregate + all components ≥ 80 |
+| ≥ 90 | PR | Weighted aggregate (blocking) |
+| ≥ 80 | Commit | Weighted aggregate (blocking) |
+| < 80 | **Blocked** | Must fix critical/major issues |
+| — | Advisory | Talks, figures (reported, non-blocking) |
 
 ---
 
@@ -98,24 +113,23 @@ Weighted aggregate scoring with per-component minimums:
 
 ```
 your-project/
-├── CLAUDE.md                    # Project configuration (fill in placeholders)
-├── .claude/                     # Agents, skills, rules, references, hooks
-├── Bibliography_base.bib        # Centralized bibliography
-├── paper/                       # Main LaTeX manuscript (source of truth)
+├── AGENTS.md                     # Project configuration
+├── .claude/                      # Agents, skills, rules, references
+│   ├── agents/                   # 20 agent definition files
+│   ├── skills/                   # 11 skill workflow files
+│   ├── rules/                    # Quality, invariants, standards
+│   └── references/               # Domain, journals, coding standards
+├── paper/                        # LaTeX manuscript (source of truth)
 │   ├── main.tex
-│   ├── sections/
-│   ├── figures/
-│   ├── tables/
-│   ├── talks/                   # Beamer presentations
-│   ├── quarto/                  # Quarto RevealJS presentations
-│   ├── preambles/               # Shared LaTeX headers
-│   ├── supplementary/           # Online appendix
-│   └── replication/             # Replication package for deposit
-├── data/                        # Raw and cleaned datasets
-├── scripts/                     # Analysis code (R, Python, Julia)
-├── quality_reports/             # Plans, session logs, reviews, scores
-├── explorations/                # Research sandbox
-└── master_supporting_docs/      # Reference papers and data docs
+│   ├── bibliography.bib
+│   ├── sections/ figures/ tables/
+│   ├── talks/ quarto/
+│   └── replication/
+├── data/                         # raw/ and cleaned/
+├── scripts/                      # Python (primary), R, Julia
+├── quality_reports/              # Plans, reviews, scores
+├── explorations/                 # Research sandbox
+└── master_supporting_docs/       # Reference papers, data docs
 ```
 
 ---
@@ -126,58 +140,42 @@ your-project/
 |------|-------------|---------|
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Everything | `npm install -g @anthropic-ai/claude-code` |
 | XeLaTeX | Paper compilation | [TeX Live](https://tug.org/texlive/) or [MacTeX](https://tug.org/mactex/) |
-| R | Analysis & figures | [r-project.org](https://www.r-project.org/) |
-| [gh CLI](https://cli.github.com/) | GitHub integration | `brew install gh` (macOS) |
+| Python ≥ 3.11 | Experiments | [python.org](https://www.python.org/) |
+| PyTorch | Deep learning | `pip install torch` |
+| [gh CLI](https://cli.github.com/) | GitHub integration | `brew install gh` |
 
-Optional: Python, Julia (for multi-language analysis), [Quarto](https://quarto.org) (web slides).
+Optional: R, Julia, Quarto (web slides).
 
 ---
 
-## Setup
+## Key Architecture Decisions
 
-1. **Fill in `CLAUDE.md`** — replace `[BRACKETED PLACEHOLDERS]` with your project details
-2. **Fill in the domain profile** (`.claude/references/domain-profile.md`) — your journals, data sources, identification strategies, conventions, and seminal references. Use `/discover interview` to populate it interactively.
-3. **Add journal profiles** — 30 profiles are included (economics and adjacent fields). Add your own to `.claude/references/journal-profiles.md` using the template at the bottom of the file.
-4. **Configure your language** — R is the default; Python and Julia are also supported. Set your preference in CLAUDE.md.
+### Section Organization (CS/AI Convention)
+Two styles supported, chosen per venue:
+- **Integrated** (NeurIPS/ICML): Related Work at end, Results+Discussion combined
+- **Traditional** (IEEE/TPAMI): Related Work after Introduction, Results+Discussion combined
 
-**Adapting to other fields:** The pipeline assumes economics by default (causal inference methods, working paper format, AEA-style conventions). To adapt for finance, accounting, marketing, or management, customize the domain profile and journal profiles. The agents, rules, and section templates will follow the domain profile's field specification.
+### Figure Design
+- ColorBrewer colorblind-safe palette (blue1, green1, orange1, purple1, red1)
+- Minimum `\scriptsize` font size, `\resizebox{\linewidth}` for page fit
+- TikZ with consistent `arr`, `block`, `group` styles
+- Diagrammer agent enforces these rules automatically
+
+### Experiment Design (4 paper types)
+| Type | Strategy produces |
+|------|------------------|
+| Novel architecture | Architecture spec + training methodology + ablation plan |
+| Comparative benchmark | Fair comparison protocol + baseline selection + evaluation dimensions |
+| Ablation study | Controlled component isolation + interaction analysis |
+| Application/deployment | Domain adaptation + deployment constraint validation |
 
 ---
 
 ## Origin
 
-This project builds on [Pedro Sant'Anna's claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow), which was built for Econ 730 at Emory University. The Clo-Author reorients that infrastructure from lecture production to empirical economics research.
+Built on [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author) (v4.x), which itself builds on [Pedro Sant'Anna's claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow). Adapted for CS/AI & Engineering by Roberto Sánchez-Reolid at Universidad de Castilla-La Mancha (UCLM) — I3A / TSI.
 
-Maintained by [Hugo Sant'Anna](https://hsantanna.org) at UAB.
-
----
-
-## Upgrading from 2.x
-
-Your files are safe. The upgrade only touches `.claude/` (infrastructure). Your paper, scripts, data, and bibliography are never modified.
-
-1. **Download** the [latest release](https://github.com/hugosantanna/clo-author/releases) or clone clo-author into a temp folder
-2. **Delete** your old `.claude/` directory
-3. **Copy** the new `.claude/` into your project
-4. **Done** — your CLAUDE.md, paper, scripts, and data are untouched
-
-No git merge, no upstream remote, no conflicts. Once on 4.0, future upgrades can use `/tools upgrade`.
-
----
-
-## Context Efficiency
-
-The architecture loads fewer tokens per session by demand-loading reference files (journal profiles, domain profiles, coding standards) only when agents need them. Rules are path-scoped where possible.
-
----
-
-## Limitations
-
-- **Scaffold, not autopilot.** Every output — drafts, analysis, reviews — needs human review. Claude plans and executes; you decide what ships.
-- **Simulated peer review** catches structural issues (missing robustness, identification gaps, notation errors) but does not replicate actual referee expertise or field-specific judgment.
-- **Journal profiles** are based on published style guides and common review culture, not empirical calibration against actual editorial decisions.
-- **Quality scores** are heuristic deduction rubrics. They flag problems reliably but do not measure publishability.
-- **The writer produces drafts.** It does not replace your writing process — it gives you structured first drafts to revise.
+Active research project: *Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification* — see [paper repo](https://github.com/marchanero/eda-efficient-transformers).
 
 ---
 

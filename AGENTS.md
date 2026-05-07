@@ -1,11 +1,15 @@
-# AGENTS.MD -- CS/AI & Engineering Research with Claude Code
+# AGENTS.MD -- CS/AI & Engineering Research Template
 
-<!-- HOW TO USE: Replace [BRACKETED PLACEHOLDERS] with your project info.
-     Customize Beamer environments for your talk preamble.
-     Keep this file under ~150 lines — Claude loads it every session.
-     See the guide at https://hugosantanna.github.io/clo-author/ for full documentation. -->
+<!-- 
+  TEMPLATE: Replace bracketed placeholders with your project info.
+  Agents load this file every session — keep it under ~150 lines.
+  
+  ADAPTING: Change the "Field" line to calibrate all agents.
+  See .claude/references/domain-profile.md for field-specific defaults.
+  See .claude/references/journal-profiles.md for venue profiles.
+-->
 
-**Project:** Lightweight Transformers for Electrodermal Activity-based Arousal Classification
+**Project:** Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification
 **Institution:** Universidad de Castilla-La Mancha (UCLM) — I3A / TSI
 **Field:** Affective Computing / Biomedical Engineering / Time-Series Deep Learning
 **Branch:** main
@@ -14,18 +18,18 @@
 
 ## Core Principles
 
-- **Plan first** -- enter plan mode before non-trivial tasks; save plans to `quality_reports/plans/`
-- **Verify after** -- compile and confirm output at the end of every task
-- **Single source of truth** -- Paper `main.tex` is authoritative; talks and supplements derive from it
-- **Quality gates** -- weighted aggregate score; nothing ships below 80/100; see `quality.md`
-- **Worker-critic pairs** -- every creator has a paired critic; critics never edit files
-- **Auto-memory** -- corrections and preferences are saved automatically via Claude Code's built-in memory system
+- **Plan first** — enter plan mode before non-trivial tasks; save plans to `quality_reports/plans/`
+- **Verify after** — compile and confirm output at the end of every task
+- **Single source of truth** — Paper `main.tex` is authoritative; talks and supplements derive from it
+- **Quality gates** — weighted aggregate score; nothing ships below 80/100; see `quality.md`
+- **Worker-critic pairs** — every creator has a paired critic; critics never edit files
+- **Auto-memory** — corrections and preferences saved via Claude Code's built-in memory system
 
 ---
 
 ## Getting Started
 
-1. Fill in the `[BRACKETED PLACEHOLDERS]` in this file
+1. Fill in the bracketed placeholders at the top of this file
 2. Run `/discover interview [topic]` to build your research specification
 3. Or run `/new-project [topic]` for the full orchestrated pipeline
 
@@ -35,26 +39,22 @@
 
 ```
 [YOUR-PROJECT]/
-├── CLAUDE.MD                    # This file
-├── .claude/                     # Rules, skills, agents, hooks
-├── Bibliography_base.bib        # Centralized bibliography
-├── paper/                       # Main LaTeX manuscript (source of truth)
+├── AGENTS.MD                    # This file
+├── .claude/                     # Agents, skills, rules, references
+│   ├── agents/                  # 20 agent definitions
+│   ├── skills/                  # 11 workflow orchestrators
+│   ├── rules/                   # Quality, invariants, standards
+│   └── references/              # Domain, journals, coding standards
+├── paper/                       # LaTeX manuscript (source of truth)
 │   ├── main.tex                 # Primary paper file
-│   ├── sections/                # Section-level .tex files
-│   ├── figures/                 # Generated figures (.pdf, .png)
-│   ├── tables/                  # Generated tables (.tex)
-│   ├── talks/                   # Beamer presentations
-│   ├── quarto/                  # Quarto RevealJS presentations
-│   ├── preambles/               # LaTeX headers / shared preamble
-│   ├── supplementary/           # Online appendix and supplements
-│   └── replication/             # Replication package for deposit
-├── data/                        # Project data
-│   ├── raw/                     # Original untouched data (often gitignored)
-│   └── cleaned/                 # Processed datasets ready for analysis
-├── scripts/                     # Analysis code (R, Python, Julia)
-├── quality_reports/             # Plans, session logs, reviews, scores
-├── explorations/                # Research sandbox (see rules)
-├── templates/                   # Session log, quality report templates
+│   ├── bibliography.bib         # Project bibliography
+│   ├── sections/ figures/ tables/
+│   ├── talks/ quarto/ preambles/
+│   └── replication/ supplementary/
+├── data/                        # raw/ and cleaned/
+├── scripts/                     # Python (primary), R, Julia
+├── quality_reports/             # Plans, logs, reviews, scores
+├── explorations/                # Research sandbox
 └── master_supporting_docs/      # Reference papers and data docs
 ```
 
@@ -63,7 +63,7 @@
 ## Commands
 
 ```bash
-# Paper compilation (latexmk handles multi-pass + biber automatically)
+# Paper compilation (latexmk with XeLaTeX)
 cd paper && latexmk main.tex
 
 # Talk compilation
@@ -73,8 +73,8 @@ cd paper/talks && latexmk talk.tex
 cd paper && latexmk -c
 ```
 
-> **Note:** `paper/latexmkrc` configures XeLaTeX, TEXINPUTS, and BIBINPUTS.
-> On Overleaf, set compiler to XeLaTeX via Menu > Compiler — Overleaf reads `latexmkrc` automatically.
+> `paper/latexmkrc` configures XeLaTeX, TEXINPUTS, and BIBINPUTS.
+> On Overleaf, set compiler to XeLaTeX via Menu → Compiler.
 
 ---
 
@@ -85,9 +85,7 @@ cd paper && latexmk -c
 | 80 | Commit | Weighted aggregate (blocking) |
 | 90 | PR | Weighted aggregate (blocking) |
 | 95 | Submission | Aggregate + all components >= 80 |
-| -- | Advisory | Talks (reported, non-blocking) |
-
-See `quality.md` for weighted aggregation formula.
+| -- | Advisory | Talks, figures (reported, non-blocking) |
 
 ---
 
@@ -97,36 +95,21 @@ See `quality.md` for weighted aggregation formula.
 |---------|-------------|
 | `/new-project [topic]` | Full pipeline: idea → paper (orchestrated) |
 | `/discover [mode] [topic]` | Discovery: interview, literature, data, ideation |
-| `/strategize [mode] [question]` | Identification strategy, pre-analysis plan, or formal theory section (`theory` mode) |
-| `/analyze [dataset]` | End-to-end data analysis |
-| `/write [section]` | Draft paper sections + humanizer pass (`style-guide` mode extracts voice from prior papers) |
-| `/review [file/--flag]` | Quality reviews (routes by target: paper, code, peer) |
+| `/strategize [mode] [question]` | ML experiment design, pre-reg plan, theory analysis |
+| `/analyze [dataset]` | End-to-end experiments: training, evaluation, review |
+| `/write [section]` | Draft paper sections + humanizer pass |
+| `/review [file/--flag]` | Quality reviews (paper, code, peer, methods) |
 | `/revise [report]` | R&R cycle: classify + route referee comments |
-| `/talk [mode] [format]` | Create, audit, or compile Beamer presentations |
-| `/submit [mode]` | Journal targeting → package → audit → final gate |
-| `/tools [subcommand]` | Utilities: commit, compile, validate-bib, journal, etc. |
-| `/checkpoint [--flag]` | Session handoff: memory + SESSION_REPORT + research journal (+ Obsidian if configured) |
-
----
-
-<!-- CUSTOMIZE: Replace the example entries below with your own
-     Beamer environments for talks. -->
-
-## Beamer Custom Environments (Talks)
-
-| Environment       | Effect        | Use Case       |
-|-------------------|---------------|----------------|
-| `[your-env]`      | [Description] | [When to use]  |
+| `/talk [mode] [format]` | Create/audit/compile Beamer or Quarto talks |
+| `/submit [mode]` | Venue targeting → package → audit → final gate |
+| `/tools [subcommand]` | commit, compile, validate-bib, lint, deploy, learn |
+| `/checkpoint [--flag]` | Session handoff: memory + report + research journal |
 
 ---
 
 ## Output Organization
 
-<!-- Options: by-script (default) or by-purpose -->
 Output organization: by-script
-
-<!-- by-script:  paper/figures/experiments/figure1.pdf, paper/tables/experiments/table1.tex -->
-<!-- by-purpose: paper/figures/results/accuracy_comparison.pdf, paper/tables/ablation/component_contribution.tex -->
 
 ---
 
@@ -134,10 +117,11 @@ Output organization: by-script
 
 | Component | File | Status | Description |
 |-----------|------|--------|-------------|
-| Paper | `paper/main.tex` | draft — structure created | Lightweight Transformers for EDA-based Arousal Classification |
-| Reference | `paper/reference_paper.tex` | in review | Prior work: comparative evaluation of 5 deep architectures for EDA |
-| Bibliography | `paper/bibliography.bib` | populated | 40+ real references (EDA, transformers, biomedical signals) |
-| Spec | `quality_reports/specs/2026-05-07_lightweight-transformers-eda.md` | complete | Requirements and candidate architectures |
-| Data | `data/` | not started | EDA signals from 147 participants (to be added) |
-| Scripts | `scripts/` | not started | Training/evaluation pipeline (to be implemented) |
-| Replication | `paper/replication/` | not started | Replication package |
+| Paper | `paper/main.tex` | draft | 8 architectures, Results & Discussion drafted |
+| Reference | `master_supporting_docs/supporting_papers/reference_paper.tex` | complete | Prior work: 5 architectures for EDA |
+| Bibliography | `paper/bibliography.bib` | populated | 46 references (EDA, transformers, SSM) |
+| Overleaf sync | `github.com/marchanero/eda-efficient-transformers` | active | Paper-only repo synced with Overleaf |
+| Data | `data/` | pending | EDA signals from 147 participants |
+| Scripts | `scripts/` | pending | Training/evaluation pipeline |
+| Figures | `paper/main.tex` (TikZ) | 2 figures | Pipeline + architecture overview |
+| Agents | `.claude/agents/` | 22 agents | All adapted for CS/AI & Engineering |
