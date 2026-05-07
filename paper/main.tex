@@ -217,102 +217,50 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
-    node distance=0.2cm and 0.25cm,
-    block/.style={draw=gray1, fill=gray2, rounded corners=2pt, minimum width=1.8cm, minimum height=0.45cm, align=center, font=\scriptsize, inner sep=2pt},
-    group/.style={draw=gray3, dashed, rounded corners=3pt, inner xsep=6pt, inner ysep=5pt, font=\footnotesize\bfseries},
-    arr/.style={-{Stealth[scale=0.5]}, draw=gray1, thick},
+    node distance=0.3cm,
+    box/.style={draw=gray1, rounded corners=3pt, minimum width=5.0cm, minimum height=1.05cm, align=left, font=\footnotesize, inner sep=5pt},
+    group/.style={draw=gray3, dashed, rounded corners=4pt, inner xsep=7pt, inner ysep=5pt},
+    tag/.style={font=\footnotesize\bfseries, anchor=north west},
 ]
-% --- Row 1: O(N²) + O(L log L) ---
-% PatchTST
-\node[block, fill=blue2, draw=blue1] (p1) {Patch Tokenisation};
-\node[block, fill=blue2, draw=blue1, below=of p1] (p2) {Self-Attention};
-\node[block, fill=blue2, draw=blue1, below=of p2] (p3) {Global Pooling};
-\draw[arr] (p1) -- (p2);
-\draw[arr] (p2) -- (p3);
+% ===== LEFT COLUMN: Attention / Frequency (x=0) =====
+% --- PatchTST ---
+\node[box, fill=blue2, draw=blue1] at (0,0) (p) {\textbf{PatchTST} \hfill \textit{ICLR 2023}\\[2pt] {\footnotesize Patch tokenisation $\to$ Self-attention $\to$ Global pooling \hfill $O(N^2)$}};
+% --- Informer ---
+\node[box, fill=green2, draw=green1, below=0.25cm of p] (i) {\textbf{Informer} \hfill \textit{AAAI 2021}\\[2pt] {\footnotesize ProbSparse attn $\to$ Self-attn distilling $\to$ Global pooling \hfill $O(L \log L)$}};
+% --- Autoformer ---
+\node[box, fill=green2, draw=green1, below=0.25cm of i] (a) {\textbf{Autoformer} \hfill \textit{NeurIPS 2021}\\[2pt] {\footnotesize Auto-Correlation $\to$ Trend-season decomp $\to$ Global pooling \hfill $O(L \log L)$}};
+% --- TimesNet ---
+\node[box, fill=green2, draw=green1, below=0.25cm of a] (t) {\textbf{TimesNet} \hfill \textit{ICLR 2023}\\[2pt] {\footnotesize FFT period discovery $\to$ 1D$\to$2D reshape $\to$ Inception 2D conv \hfill $O(L \log L)$}};
+
+% ===== RIGHT COLUMN: Linear / SSM / Conv (x=5.5cm) =====
+% --- FEDformer ---
+\node[box, fill=orange2, draw=orange1] at (5.5,0) (f) {\textbf{FEDformer} \hfill \textit{ICML 2022}\\[2pt] {\footnotesize Fourier-enhanced attn ($M$ modes) $\to$ Trend-season decomp $\to$ Pooling \hfill $O(L)$}};
+% --- Mamba ---
+\node[box, fill=purple2, draw=purple1, below=0.25cm of f] (m) {\textbf{Mamba (Bi-Mamba)} \hfill \textit{arXiv 2023}\\[2pt] {\footnotesize Selective SSM $\to$ Bidirectional scan $\to$ LayerNorm $+$ projection \hfill $O(L)$}};
+% --- ModernTCN ---
+\node[box, fill=orange2, draw=orange1, below=0.25cm of m] (c) {\textbf{ModernTCN} \hfill \textit{ICLR 2024}\\[2pt] {\footnotesize DWConv (large $k$) $\to$ Inverted bottleneck $\to$ Adjacent fusion \hfill $O(L)$}};
+% --- DLinear ---
+\node[box, fill=red2, draw=red1, below=0.25cm of c] (d) {\textbf{DLinear} \hfill \textit{AAAI 2023}\\[2pt] {\footnotesize Trend-season split $\to$ Linear layer (each) $\to$ Sum $+$ Softmax \hfill $O(L)$}};
+
+% ===== Group boxes =====
 \begin{scope}[on background layer]
-\node[group, fit=(p1)(p3), label={[font=\footnotesize\bfseries]north:{\footnotesize PatchTST $O(N^2)$}}] {};
+\node[group, draw=blue1, fit=(p), label={[tag, text=blue1]north west:{Patch attention}}] {};
+\node[group, draw=green1, fit=(i)(a)(t), label={[tag, text=green1]north west:{Frequency / Periodicity}}] {};
+\node[group, draw=orange1, fit=(f)(c), label={[tag, text=orange1]north west:{Fourier / Modern convolution}}] {};
+\node[group, draw=purple1, fit=(m), label={[tag, text=purple1]north west:{State space model}}] {};
+\node[group, draw=red1, fit=(d), label={[tag, text=red1]north west:{Linear baseline}}] {};
 \end{scope}
 
-% Informer
-\node[block, fill=green2, draw=green1, right=0.6cm of p1] (i1) {ProbSparse Attn};
-\node[block, fill=green2, draw=green1, below=of i1] (i2) {Attn Distilling};
-\node[block, fill=green2, draw=green1, below=of i2] (i3) {Global Pooling};
-\draw[arr] (i1) -- (i2);
-\draw[arr] (i2) -- (i3);
-\begin{scope}[on background layer]
-\node[group, fit=(i1)(i3), label={[font=\footnotesize\bfseries]north:{\footnotesize Informer}}] {};
-\end{scope}
-
-% Autoformer
-\node[block, fill=green2, draw=green1, right=0.6cm of i1] (a1) {Auto-Correlation};
-\node[block, fill=green2, draw=green1, below=of a1] (a2) {Trend-Season Decomp};
-\node[block, fill=green2, draw=green1, below=of a2] (a3) {Global Pooling};
-\draw[arr] (a1) -- (a2);
-\draw[arr] (a2) -- (a3);
-\begin{scope}[on background layer]
-\node[group, fit=(a1)(a3), label={[font=\footnotesize\bfseries]north:{\footnotesize Autoformer}}] {};
-\end{scope}
-
-% TimesNet
-\node[block, fill=green2, draw=green1, right=0.6cm of a1] (t1) {FFT Period Disc.};
-\node[block, fill=green2, draw=green1, below=of t1] (t2) {$1$D$\to 2$D Reshape};
-\node[block, fill=green2, draw=green1, below=of t2] (t3) {Inception 2D Conv};
-\draw[arr] (t1) -- (t2);
-\draw[arr] (t2) -- (t3);
-\begin{scope}[on background layer]
-\node[group, fit=(t1)(t3), label={[font=\footnotesize\bfseries]north:{\footnotesize TimesNet}}] {};
-\end{scope}
-
-% --- Row 2: O(L) ---
-% FEDformer
-\node[block, fill=orange2, draw=orange1, below=1.0cm of p1] (f1) {Fourier Attn ($M$ modes)};
-\node[block, fill=orange2, draw=orange1, below=of f1] (f2) {Trend-Season Decomp};
-\node[block, fill=orange2, draw=orange1, below=of f2] (f3) {Global Pooling};
-\draw[arr] (f1) -- (f2);
-\draw[arr] (f2) -- (f3);
-\begin{scope}[on background layer]
-\node[group, fit=(f1)(f3), label={[font=\footnotesize\bfseries]north:{\footnotesize FEDformer $O(L)$}}] {};
-\end{scope}
-
-% Mamba
-\node[block, fill=purple2, draw=purple1, right=0.6cm of f1] (m1) {Selective SSM};
-\node[block, fill=purple2, draw=purple1, below=of m1] (m2) {Bidirectional Scan};
-\node[block, fill=purple2, draw=purple1, below=of m2] (m3) {LayerNorm $+$ Proj};
-\draw[arr] (m1) -- (m2);
-\draw[arr] (m2) -- (m3);
-\begin{scope}[on background layer]
-\node[group, fit=(m1)(m3), label={[font=\footnotesize\bfseries]north:{\footnotesize Mamba $O(L)$}}] {};
-\end{scope}
-
-% ModernTCN
-\node[block, fill=orange2, draw=orange1, right=0.6cm of m1] (c1) {DWConv (large $k$)};
-\node[block, fill=orange2, draw=orange1, below=of c1] (c2) {Inverted Bottleneck};
-\node[block, fill=orange2, draw=orange1, below=of c2] (c3) {Adjacent Fusion};
-\draw[arr] (c1) -- (c2);
-\draw[arr] (c2) -- (c3);
-\begin{scope}[on background layer]
-\node[group, fit=(c1)(c3), label={[font=\footnotesize\bfseries]north:{\footnotesize ModernTCN $O(L)$}}] {};
-\end{scope}
-
-% DLinear
-\node[block, fill=red2, draw=red1, right=0.6cm of c1] (d1) {Trend-Season Split};
-\node[block, fill=red2, draw=red1, below=of d1] (d2) {Linear Layer (each)};
-\node[block, fill=red2, draw=red1, below=of d2] (d3) {Sum $+$ Softmax};
-\draw[arr] (d1) -- (d2);
-\draw[arr] (d2) -- (d3);
-\begin{scope}[on background layer]
-\node[group, fit=(d1)(d3), label={[font=\footnotesize\bfseries]north:{\footnotesize DLinear $O(L)$}}] {};
-\end{scope}
-
-% Complexity labels between rows
-\node[font=\footnotesize\bfseries, text=blue1, above=0.35cm of p1, xshift=1.5cm] (cl1) {Attention / Frequency $O(L \log L)$};
-\node[font=\footnotesize\bfseries, text=orange1, above=0.35cm of f1, xshift=1.9cm] (cl2) {Linear $O(L)$ / SSM / Convolution};
-
-% Common input
-\node[font=\footnotesize, text=gray1, above=0.2cm of p1, xshift=0.9cm] {$\mathbf{X} \in \mathbb{R}^{T \times 3}$};
+% ===== Paradigm tree connectors (left margin) =====
+\node[font=\footnotesize\bfseries, text=gray1, anchor=east] at (-0.5, 0.5) {Attention};
+\node[font=\footnotesize\bfseries, text=gray1, anchor=east] at (-0.5,-1.6) {Frequency};
+\node[font=\footnotesize\bfseries, text=gray1, anchor=east] at (5.0, 0.5) {Fourier};
+\node[font=\footnotesize\bfseries, text=gray1, anchor=east] at (5.0,-1.0) {SSM};
+\node[font=\footnotesize\bfseries, text=gray1, anchor=east] at (5.0,-2.3) {Conv};
+\node[font=\footnotesize\bfseries, text=gray1, anchor=east] at (5.0,-3.6) {Linear};
 \end{tikzpicture}%
 }
-\caption{Comparative overview of the eight architectures grouped by efficiency paradigm. Each column shows the three core processing stages, from input transformation through temporal modelling to representation aggregation. Architecture names and complexity classes are indicated above each group. Color coding: blue = patch-based attention, green = frequency/periodicity methods, orange = Fourier/convolution $O(L)$, purple = state space model, red = linear baseline.}
+\caption{Comparative overview of the eight architectures. Each entry lists the architecture name, venue, and its processing pipeline ($\to$ denotes sequential stages) with complexity class. Architectures are organised into two columns and grouped by paradigm family (dashed boxes). Color coding follows the complexity class: blue = patch attention $O(N^2)$, green = frequency/periodicity $O(L \log L)$, orange = Fourier/convolution $O(L)$, purple = state space model $O(L)$, red = linear baseline $O(L)$.}
 \label{fig:arch_overview}
 \end{figure}
 
