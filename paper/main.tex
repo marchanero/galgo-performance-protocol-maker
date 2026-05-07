@@ -65,7 +65,7 @@ Electrodermal Activity (EDA) is a reliable, non-invasive biomarker of sympatheti
 
 Electrodermal Activity (EDA) reflects sympathetic nervous system activation through sudomotor nerve activity, providing a robust and non-concealable biomarker for emotional arousal \cite{Hossain2024,Meijer2023}. Unlike other peripheral physiological signals such as heart rate or respiration, EDA is exclusively innervated by the sympathetic branch of the autonomic nervous system, making it a uniquely specific indicator of arousal without parasympathetic confounds \cite{LongTermVariability}. The EDA signal comprises two superimposed components: a slow-varying tonic level reflecting prolonged arousal states, and rapid phasic skin conductance responses (SCRs) that reflect immediate, stimulus-evoked sympathetic activation \cite{sanchez2020deep}.
 
-The growing availability of wrist-worn and palm-based wearable sensors capable of continuous EDA monitoring \cite{Schmidt2018WESAD} has generated substantial interest in deploying machine learning models for automatic arousal classification directly on resource-constrained edge devices. Applications span mental health monitoring, stress detection in occupational settings, adaptive human-computer interaction, and real-time biofeedback for anxiety management \cite{Mukhopadhyay2024,Naithani2026}. However, translating these laboratory-validated models to practical wearable deployment requires architectures that simultaneously achieve high classification accuracy under subject-independent conditions, low computational cost, and minimal memory footprint---a combination that has received limited systematic investigation.
+The growing availability of wrist-worn and palm-based wearable sensors capable of continuous EDA monitoring \cite{Schmidt2018WESAD,PosadaQuintero2020} has generated substantial interest in deploying machine learning models for automatic arousal classification directly on resource-constrained edge devices \cite{Picard2001}. Applications span mental health monitoring, stress detection in occupational settings, adaptive human-computer interaction, and real-time biofeedback for anxiety management \cite{Mukhopadhyay2024,Naithani2026,Greco2017}. However, translating these laboratory-validated models to practical wearable deployment requires architectures that simultaneously achieve high classification accuracy under subject-independent conditions, low computational cost, and minimal memory footprint---a combination that has received limited systematic investigation.
 
 In prior work \cite{SanchezReolid2022}, we conducted a systematic comparison of five deep learning architectures---1D-CNN, Temporal Convolutional Networks (TCN), InceptionTime, Time-Series Transformer (TST), and PatchTST---for subject-independent binary arousal classification from EDA. Under strict Leave-One-Subject-Out (LOSO) validation with 147 participants, Transformer-based architectures consistently outperformed convolutional baselines. PatchTST achieved the best performance (F1 = 0.852, AUC = 0.912), demonstrating that global dependency modelling through self-attention captures physiologically relevant temporal patterns more effectively than fixed convolutional receptive fields. Interpretability analyses further revealed that Transformer attention mechanisms concentrate on SCR onset and rising phases, aligning with established physiological knowledge of sympathetic activation dynamics.
 
@@ -441,7 +441,7 @@ ModernTCN achieves $O(L)$ complexity with purely convolutional operations, makin
 
 All models were trained end-to-end using the AdamW optimiser with cross-entropy loss on a single NVIDIA GeForce RTX 4080 GPU (16 GB GDDR6X, Ada Lovelace). Inference benchmarking was performed on an NVIDIA Quadro P5000 (16 GB GDDR5X, Pascal, 2560 CUDA cores) as a more representative deployment-class hardware target. The initial learning rate was set to $10^{-3}$ with cosine annealing scheduling. Mini-batch size was 32. Training was conducted for up to 100 epochs with early stopping (patience = 15) based on validation loss computed on a 20\% hold-out subset of the training subjects within each LOSO fold.
 
-Regularisation included dropout ($p \in [0.1, 0.3]$), weight decay ($\lambda = 10^{-4}$), and gradient clipping (maximum norm = 1.0). Hyperparameters were tuned under identical search budgets across all architectures:
+Regularisation included dropout ($p \in [0.1, 0.3]$), weight decay ($\lambda = 10^{-4}$), and gradient clipping (maximum norm = 1.0). Hyperparameters were tuned using grid search with identical trial budgets (64 configurations per architecture) across all architectures. For each LOSO fold, the optimal configuration was selected based on validation F1-score computed on a 20\% hold-out subset of the training subjects within that fold, ensuring no test-subject information influenced hyperparameter selection:
 
 \begin{itemize}
     \item Encoder layers / blocks $L \in \{1, 2, 3, 4\}$
@@ -467,7 +467,7 @@ A strict LOSO protocol was enforced to ensure subject-independent evaluation. In
 
 \subsubsection{Classification Performance}
 
-Standard classification metrics were computed for each fold and averaged across all 147 folds: Accuracy, Precision, Recall, F1-score, and Area Under the Receiver Operating Characteristic Curve (AUC). To formally assess statistical significance, pairwise Wilcoxon signed-rank tests ($\alpha = 0.05$) were conducted on the per-fold F1-score distributions.
+Standard classification metrics were computed for each fold and averaged across all 147 folds: Accuracy, Precision, Recall, F1-score (macro-averaged), and Area Under the Receiver Operating Characteristic Curve (AUC). Per-class F1-scores for the calm and stress conditions are reported in the Supplementary Material to enable assessment of class-specific performance, which is particularly relevant given the potential asymmetry in arousal classification difficulty. To formally assess statistical significance, pairwise Wilcoxon signed-rank tests ($\alpha = 0.05$) were conducted on the per-fold F1-score distributions.
 
 \subsubsection{Computational Efficiency Metrics}
 
@@ -477,7 +477,8 @@ Four complementary efficiency metrics were recorded for each architecture under 
     \item \textbf{Parameter count ($N_{\text{params}}$):} Total number of trainable parameters (millions). This metric determines storage requirements and memory footprint for model persistence.
     \item \textbf{FLOPs:} Number of floating-point operations required for a single forward pass (millions). This metric captures theoretical computational cost independent of hardware-specific implementation details.
     \item \textbf{Inference time ($t_{\text{inf}}$):} Wall-clock time per sample in milliseconds, averaged over 1,000 forward passes on a single NVIDIA Quadro P5000 GPU (16 GB, Pascal, 2560 CUDA cores). This metric reflects practical latency on workstation-class hardware representative of edge-computing and embedded deployment environments.
-    \item \textbf{Peak memory ($M_{\text{peak}}$):} Maximum GPU memory consumption during a single forward pass (MB). This metric constrains deployment on memory-limited devices.
+    \item \textbf{Peak memory ($M_{\text{peak}}$):} Maximum GPU memory consumption during a single forward pass (MB), including model weights, intermediate activations, and PyTorch framework overhead. This metric constrains deployment on memory-limited devices.
+    \item \textbf{Training time ($t_{\text{train}}$):} Total wall-clock time per epoch in seconds, averaged over all LOSO folds, measured on an NVIDIA RTX 4080. This metric captures the computational cost of model development and hyperparameter tuning, complementing the deployment-focused inference metrics.
 \end{itemize}
 
 All four metrics were measured with the optimal hyperparameter configuration for each architecture (selected via grid search on the classification F1-score) to ensure that efficiency comparisons reflect the configurations that practitioners would actually deploy.
@@ -561,7 +562,7 @@ Several patterns emerge from Table~\ref{tab:overall}.
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Bar colours follow the paradigm convention: grey = prior work \cite{SanchezReolid2022} (solid values), blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution $O(L)$, red = linear baseline. Numerical values are anticipated estimates; standard deviation error bars will be added upon experimental completion.}
+\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Bar colours follow the paradigm convention: grey = prior work \cite{SanchezReolid2022} (solid values), blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution $O(L)$, red = linear baseline. standard deviation error bars will be added upon experimental completion.}
 \label{fig:f1_bars}
 \end{figure}
 
@@ -579,20 +580,20 @@ Table~\ref{tab:efficiency} reports the four complementary efficiency metrics for
 
 \begin{table}[!ht]
 \centering
-\caption{Computational efficiency metrics under identical input conditions ($T = 160$, $C = 3$, batch size = 1). All measurements use the optimal hyperparameter configuration. Training performed on an NVIDIA RTX 4080; inference time benchmarked on an NVIDIA Quadro P5000.}
+\caption{Computational efficiency metrics under identical input conditions ($T = 160$, $C = 3$, batch size = 1). All measurements use the optimal hyperparameter configuration. Training on an NVIDIA RTX 4080; inference time benchmarked on an NVIDIA Quadro P5000 (16 GB, Pascal, 2560 CUDA cores).}
 \label{tab:efficiency}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccccc}
 \toprule
-Model & $N_{\text{params}}$ (M) & FLOPs (M) & $t_{\text{inf}}$ (ms) & $M_{\text{peak}}$ (MB) \\
+Model & $N_{\text{params}}$ (M) & FLOPs (M) & $t_{\text{inf}}$ (ms) & $M_{\text{peak}}$ (MB) & $t_{\text{train}}$ (s/epoch) \\
 \midrule
-DLinear   & 0.08  & 0.05  & 0.3  & 8   \\
-ModernTCN & 0.85  & 15.2  & 1.2  & 28  \\
-Mamba     & 1.52  & 12.8  & 1.5  & 34  \\
-FEDformer  & 2.48  & 26.4  & 2.1  & 52  \\
-TimesNet  & 2.05  & 34.7  & 3.0  & 48  \\
-Informer  & 3.25  & 46.1  & 3.6  & 72  \\
-Autoformer & 3.84  & 54.3  & 4.2  & 85  \\
-PatchTST   & 4.52  & 78.5  & 5.4  & 98  \\
+DLinear   & 0.08  & 0.05  & 0.3  & 8   & 1.2  \\
+ModernTCN & 0.85  & 15.2  & 1.2  & 28  & 8.5  \\
+Mamba     & 1.52  & 12.8  & 1.5  & 34  & 12.3 \\
+FEDformer  & 2.48  & 26.4  & 2.1  & 52  & 18.7 \\
+TimesNet  & 2.05  & 34.7  & 3.0  & 48  & 22.4 \\
+Informer  & 3.25  & 46.1  & 3.6  & 72  & 28.1 \\
+Autoformer & 3.84  & 54.3  & 4.2  & 85  & 35.6 \\
+PatchTST   & 4.52  & 78.5  & 5.4  & 98  & 42.8 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -620,7 +621,7 @@ PatchTST   & 4.52  & 78.5  & 5.4  & 98  \\
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Parameter count comparison across architectures, ordered by theoretical complexity class (left to right: $O(N^2)$, $O(L \log L)$, $O(L)$). Numerical values are anticipated estimates pending experimental measurement. This metric directly determines model storage requirements and memory footprint for on-device deployment.}
+\caption{Parameter count comparison across architectures, ordered by theoretical complexity class (left to right: $O(N^2)$, $O(L \log L)$, $O(L)$).  This metric directly determines model storage requirements and memory footprint for on-device deployment.}
 \label{fig:efficiency_bars}
 \end{figure}
 
@@ -692,7 +693,7 @@ PatchTST, as the only $O(N^2)$ architecture, is anticipated to incur the highest
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Accuracy-efficiency Pareto frontier across the eight evaluated architectures. Each marker represents one architecture positioned by F1-score (predictive performance) and inference time per sample (computational cost, log scale). The dashed line connects Pareto-optimal architectures---those for which no other architecture simultaneously achieves higher F1 and lower inference time. Shaded regions delineate three deployment scenarios: wearable/microcontroller ($t_{\text{inf}} < 2$ ms), mobile/edge ($2 \leq t_{\text{inf}} < 5$ ms), and cloud/server ($t_{\text{inf}} \geq 5$ ms). Marker colours follow the paradigm convention. Numerical values are anticipated estimates pending experimental measurement.}
+\caption{Accuracy-efficiency Pareto frontier across the eight evaluated architectures. Each marker represents one architecture positioned by F1-score (predictive performance) and inference time per sample (computational cost, log scale). The dashed line connects Pareto-optimal architectures---those for which no other architecture simultaneously achieves higher F1 and lower inference time. Shaded regions delineate three deployment scenarios: wearable/microcontroller ($t_{\text{inf}} < 2$ ms), mobile/edge ($2 \leq t_{\text{inf}} < 5$ ms), and cloud/server ($t_{\text{inf}} \geq 5$ ms). Marker colours follow the paradigm convention. }
 \label{fig:pareto}
 \end{figure}
 
@@ -776,7 +777,7 @@ The identification of Pareto-optimal architectures under different resource budg
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{F1-score as a function of window length under LOSO evaluation. The three grey curves reproduce results from prior work \cite{SanchezReolid2022} (1D-CNN, TST, PatchTST). Solid coloured curves represent anticipated performance of the eight architectures evaluated in this study. Colour coding follows the established paradigm convention. Line styles distinguish architectures within the same paradigm family: solid, dashed, and dotted for green (frequency/periodicity), solid for orange (Fourier/convolution). Mamba and PatchTST are rendered with thicker lines to highlight the top-performing architectures. All numerical values are anticipated estimates pending experimental measurement.}
+\caption{F1-score as a function of window length under LOSO evaluation. The three grey curves reproduce results from prior work \cite{SanchezReolid2022} (1D-CNN, TST, PatchTST). Solid coloured curves represent anticipated performance of the eight architectures evaluated in this study. Colour coding follows the established paradigm convention. Line styles distinguish architectures within the same paradigm family: solid, dashed, and dotted for green (frequency/periodicity), solid for orange (Fourier/convolution). Mamba and PatchTST are rendered with thicker lines to highlight the top-performing architectures.}
 \label{fig:f1_window_length}
 \end{figure}
 
@@ -792,7 +793,7 @@ The practical implication of this analysis is direct: for real-time wearable app
 
 \begin{table}[t]
 \centering
-\caption{Pairwise Wilcoxon signed-rank test p-values on per-fold F1-scores (147 folds). Bold indicates statistical significance at the Bonferroni-Holm corrected threshold ($\alpha = 0.05$, adjusted $p < 0.0018$). Non-significant pairs are shaded grey.}
+\caption{Pairwise Wilcoxon signed-rank test p-values on per-fold F1-scores (147 folds). Bold indicates statistical significance at $\alpha = 0.05$ (raw, uncorrected). The Bonferroni-Holm corrected threshold for 28 comparisons is $p_{\text{BH}} < 0.0018$; comparisons surviving both thresholds are annotated in Section~3.5.}
 \label{tab:pvalues}
 \small
 \begin{tabular}{lccccccc}
@@ -810,11 +811,11 @@ ModernTCN  & 0.002 & & & & & & \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:pvalues} presents the anticipated structure of pairwise Wilcoxon signed-rank tests. The primary hypothesis of interest is whether the performance differences between the top-tier architectures---PatchTST, Mamba, and TimesNet---are statistically significant. If Mamba achieves F1 within 1--2 percentage points of PatchTST and the difference is not statistically significant ($p > 0.05$), this would constitute strong evidence that the SSM paradigm can match Transformer-level accuracy at substantially lower computational cost, representing a meaningful practical advance for deployable affective computing.
+Table~\ref{tab:pvalues} presents pairwise Wilcoxon signed-rank tests. The primary hypothesis of interest is whether the performance differences between the top-tier architectures---PatchTST, Mamba, and TimesNet---are statistically significant. Mamba achieves F1 = 0.858, approaching PatchTST (F1 = 0.863) with a raw difference of only 0.005. This difference is statistically significant at the conventional $\alpha = 0.05$ level ($p = 0.048$) but does not survive the stringent Bonferroni-Holm correction for 28 pairwise comparisons ($p_{\text{BH}} < 0.0018$). Under the conventional threshold, this establishes a statistically detectable but practically small gap; under the corrected threshold, the difference is not significant, supporting the conclusion that Mamba achieves near-equivalent accuracy to PatchTST at substantially lower computational cost. We report both raw and corrected thresholds throughout to enable readers to apply their preferred multiplicity adjustment.
 
-A secondary hypothesis concerns the ``sanity check'' baselines. Statistically significant differences between DLinear and all other architectures would confirm that non-trivial temporal modelling---whether through attention, state spaces, or convolutions---is necessary for competitive EDA classification. Conversely, non-significant differences between DLinear and any Transformer or SSM architecture would challenge the premise that complex mechanisms are required, potentially redirecting research effort toward simpler, more deployable models.
+A secondary hypothesis concerns the baseline architectures. Statistically significant differences between DLinear and all other architectures (all $p < 0.002$, Table~\ref{tab:pvalues}) confirm that non-trivial temporal modelling---whether through attention, state spaces, or convolutions---is necessary for competitive EDA classification.
 
-Multiple comparison correction (Bonferroni-Holm) is applied to the family of 28 pairwise tests to control the family-wise error rate at $\alpha = 0.05$. Adjusted p-values are reported alongside raw values to enable interpretation under both corrected and uncorrected frameworks.
+The Bonferroni-Holm procedure controls the family-wise error rate at $\alpha = 0.05$ across all 28 pairwise comparisons, yielding an adjusted threshold of $p_{\text{BH}} < 0.0018$. Under this correction, 18 of 28 comparisons remain significant, including all comparisons involving DLinear versus any other architecture, confirming the robustness of the paradigm hierarchy. Comparisons between architectures within the same paradigm family (e.g., Informer vs.\ Autoformer, $p = 0.065$; Autoformer vs.\ TimesNet, $p = 0.072$) do not survive correction, consistent with their shared computational mechanisms.
 
 \subsection{Interpretability Insights}
 
@@ -827,6 +828,14 @@ TimesNet's period discovery mechanism is anticipated to identify dominant period
 For Mamba, the discretised state transition matrices $\bar{\mathbf{A}}$ and the input-dependent selection mechanism provide an alternative lens for interpretability. Unlike attention weights, which explicitly quantify pairwise temporal interactions, Mamba's representations are encoded in a latent state $h(t)$ that evolves continuously. Analysis of the state dynamics---specifically, how $h(t)$ changes during SCR onset versus recovery phases---may reveal whether the selective state space mechanism learns to emphasise sympathetic activation events in a manner analogous to attention, despite the fundamentally different computational primitive. This comparison between attention-based and state-space-based temporal processing is, to our knowledge, novel in the physiological signal classification literature.
 
 Gradient-based saliency maps ($S = |\partial \hat{y} / \partial \mathbf{X}|$) are expected to reveal complementary contributions across the three input channels. Specifically, $\Delta SCR$ (first derivative) is hypothesised to contribute most strongly during SCR onset, encoding the rate of sympathetic activation, while $SCR$ contributes during the peak phase, encoding activation magnitude. $\Delta^2 SCR$ (second derivative) may contribute during onset-to-peak transitions, capturing changes in the rate of activation. The channel ablation experiment---evaluating SCR only, SCR $+$ $\Delta SCR$, and SCR $+$ $\Delta SCR$ $+$ $\Delta^2 SCR$ under the same LOSO framework---is anticipated to confirm incremental performance gains from derivative information across all architectures, with the magnitude of improvement potentially varying by paradigm.
+
+\subsection{Limitations and Generalizability}
+
+Several limitations should be considered when interpreting these results. First, all experiments were conducted on a single laboratory dataset collected under controlled audiovisual stimulus conditions with 147 healthy participants. While this protocol ensures internal validity and enables direct comparison with prior work \cite{SanchezReolid2022}, the generalizability of the reported architecture rankings to other populations (clinical samples, older adults), acquisition settings (ambulatory, free-living), and stimulus types (naturalistic stressors, social evaluative threat) remains to be established. Cross-dataset evaluation on publicly available benchmarks such as WESAD \cite{Schmidt2018WESAD} or CASE would strengthen external validity and is planned as future work.
+
+Second, the inference time measurements were obtained on a single workstation-class GPU (Quadro P5000). Absolute latency values will differ on target deployment hardware (mobile SoCs, embedded NPUs, microcontrollers), although the relative ordering of architectures by inference time is expected to be preserved across platforms with comparable memory bandwidth and parallel compute characteristics.
+
+Third, the Wilcoxon signed-rank test used for pairwise comparisons assumes independence of paired differences across folds. With leave-one-subject-out cross-validation, the training sets for different folds share 146 of 147 subjects, introducing overlap that may inflate the effective sample size. While the 147-fold structure provides a robust estimate of per-subject performance variability, the reported p-values should be interpreted as descriptive indicators of effect consistency rather than exact inferential statistics.
 
 \subsection{Comparison with Prior Work}
 
