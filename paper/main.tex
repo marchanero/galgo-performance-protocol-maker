@@ -709,8 +709,75 @@ The identification of Pareto-optimal architectures under different resource budg
 
 \begin{figure}[t]
 \centering
-\textit{[Figure 2: Line plot of F1-score (y-axis) vs.\ window length from 1 to 40 seconds (x-axis). Eight curves, one per architecture, with distinct line styles. The 1D-CNN, TST, and PatchTST curves from \cite{SanchezReolid2022} are included as faded reference lines.]}
-\caption{F1-score as a function of window length under LOSO evaluation. Transformer-based and SSM-based architectures are expected to degrade more gracefully at short window lengths.}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}
+\begin{axis}[
+    width=14cm, height=6cm,
+    xlabel={Window length (s)},
+    ylabel={F1-score},
+    xmin=1, xmax=40,
+    ymin=0.68, ymax=0.88,
+    xtick={1,5,10,15,20,25,30,35,40},
+    ytick={0.68,0.72,0.76,0.80,0.84,0.88},
+    xlabel style={font=\footnotesize},
+    ylabel style={font=\footnotesize},
+    xticklabel style={font=\footnotesize},
+    yticklabel style={font=\footnotesize},
+    grid=major,
+    grid style={dashed, gray!30},
+    legend style={font=\footnotesize, at={(0.98,0.02)}, anchor=south east, legend columns=2, draw=none, fill=white, fill opacity=0.85},
+    cycle list name=color list,
+]
+% === Reference lines (prior work, faded) ===
+\addplot[thick, draw=gray3, dotted]  coordinates {
+    (1,0.69) (2,0.71) (3,0.73) (4,0.75) (5,0.76) (6,0.77) (7,0.78) (8,0.79) (9,0.79) (10,0.80) (12,0.80) (15,0.80) (20,0.80) (25,0.80) (30,0.80) (35,0.79) (40,0.79)};
+\addlegendentry{1D-CNN [13]}
+
+\addplot[thick, draw=gray3, dashed] coordinates {
+    (1,0.72) (2,0.74) (3,0.76) (4,0.78) (5,0.79) (6,0.80) (7,0.81) (8,0.82) (9,0.83) (10,0.83) (12,0.84) (15,0.84) (20,0.84) (25,0.84) (30,0.84) (35,0.84) (40,0.84)};
+\addlegendentry{TST [13]}
+
+\addplot[thick, draw=gray3, dashdotted] coordinates {
+    (1,0.73) (2,0.75) (3,0.77) (4,0.79) (5,0.80) (6,0.81) (7,0.82) (8,0.83) (9,0.84) (10,0.84) (12,0.85) (15,0.85) (20,0.85) (25,0.85) (30,0.85) (35,0.85) (40,0.85)};
+\addlegendentry{PatchTST [13]}
+
+% === New architectures ===
+\addplot[thick, draw=red1, solid] coordinates {
+    (1,0.700) (2,0.720) (3,0.740) (4,0.760) (5,0.770) (6,0.780) (7,0.790) (8,0.790) (10,0.800) (15,0.800) (20,0.800) (30,0.800) (40,0.800)};
+\addlegendentry{DLinear}
+
+\addplot[thick, draw=orange1, solid] coordinates {
+    (1,0.710) (2,0.730) (3,0.750) (4,0.770) (5,0.780) (6,0.790) (7,0.800) (8,0.810) (10,0.820) (15,0.830) (20,0.830) (30,0.830) (40,0.830)};
+\addlegendentry{ModernTCN}
+
+\addplot[thick, draw=orange1, dashed] coordinates {
+    (1,0.710) (2,0.730) (3,0.750) (4,0.770) (5,0.790) (6,0.800) (7,0.810) (8,0.820) (10,0.830) (15,0.835) (20,0.840) (30,0.840) (40,0.840)};
+\addlegendentry{FEDformer}
+
+\addplot[thick, draw=green1, solid] coordinates {
+    (1,0.720) (2,0.740) (3,0.760) (4,0.780) (5,0.800) (6,0.810) (7,0.820) (8,0.830) (10,0.840) (15,0.850) (20,0.850) (30,0.850) (40,0.850)};
+\addlegendentry{Informer}
+
+\addplot[thick, draw=green1, dashed] coordinates {
+    (1,0.720) (2,0.740) (3,0.760) (4,0.780) (5,0.800) (6,0.810) (7,0.820) (8,0.830) (10,0.840) (15,0.850) (20,0.852) (30,0.852) (40,0.852)};
+\addlegendentry{Autoformer}
+
+\addplot[thick, draw=green1, dotted] coordinates {
+    (1,0.720) (2,0.740) (3,0.760) (4,0.780) (5,0.800) (6,0.810) (7,0.820) (8,0.830) (10,0.840) (15,0.850) (20,0.855) (30,0.856) (40,0.856)};
+\addlegendentry{TimesNet}
+
+\addplot[very thick, draw=purple1, solid] coordinates {
+    (1,0.730) (2,0.750) (3,0.770) (4,0.790) (5,0.810) (6,0.820) (7,0.830) (8,0.840) (10,0.850) (15,0.860) (20,0.862) (30,0.862) (40,0.862)};
+\addlegendentry{Mamba}
+
+\addplot[very thick, draw=blue1, solid] coordinates {
+    (1,0.730) (2,0.750) (3,0.770) (4,0.790) (5,0.800) (6,0.810) (7,0.820) (8,0.830) (9,0.840) (10,0.840) (12,0.850) (15,0.850) (20,0.855) (25,0.858) (30,0.860) (35,0.862) (40,0.865)};
+\addlegendentry{PatchTST}
+
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{F1-score as a function of window length under LOSO evaluation. The three grey curves reproduce results from prior work \cite{SanchezReolid2022} (1D-CNN, TST, PatchTST). Solid coloured curves represent anticipated performance of the eight architectures evaluated in this study. Colour coding follows the established paradigm convention. Line styles distinguish architectures within the same paradigm family: solid, dashed, and dotted for green (frequency/periodicity), solid for orange (Fourier/convolution). Mamba and PatchTST are rendered with thicker lines to highlight the top-performing architectures. All numerical values are anticipated estimates pending experimental measurement.}
 \label{fig:f1_window_length}
 \end{figure}
 
