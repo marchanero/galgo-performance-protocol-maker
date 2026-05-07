@@ -229,7 +229,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (p1.south) -- (p2.north);
 \draw[arr] (p2.south) -- (p3.north);
 \begin{scope}[on background layer]
-\node[group, draw=blue1, fit=(p1)(p2)(p3), label={[font=\footnotesize\bfseries, text=blue1]north west:{PatchTST \hfill $O(N^2)$ \hfill \textit{ICLR 2023}}}] {};
+\node[group, draw=blue1, fit=(p1)(p2)(p3), label={[font=\footnotesize\bfseries, text=blue1]north:{PatchTST \hfill $O(N^2)$ \hfill \textit{ICLR 2023}}}] {};
 \end{scope}
 
 % --- Informer (green) ---
@@ -239,7 +239,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (i1.south) -- (i2.north);
 \draw[arr] (i2.south) -- (i3.north);
 \begin{scope}[on background layer]
-\node[group, draw=green1, fit=(i1)(i2)(i3), label={[font=\footnotesize\bfseries, text=green1]north west:{Informer \hfill $O(L \log L)$ \hfill \textit{AAAI 2021}}}] {};
+\node[group, draw=green1, fit=(i1)(i2)(i3), label={[font=\footnotesize\bfseries, text=green1]north:{Informer \hfill $O(L \log L)$ \hfill \textit{AAAI 2021}}}] {};
 \end{scope}
 
 % --- Autoformer (green) ---
@@ -249,7 +249,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (a1.south) -- (a2.north);
 \draw[arr] (a2.south) -- (a3.north);
 \begin{scope}[on background layer]
-\node[group, draw=green1, fit=(a1)(a2)(a3), label={[font=\footnotesize\bfseries, text=green1]north west:{Autoformer \hfill $O(L \log L)$ \hfill \textit{NeurIPS 2021}}}] {};
+\node[group, draw=green1, fit=(a1)(a2)(a3), label={[font=\footnotesize\bfseries, text=green1]north:{Autoformer \hfill $O(L \log L)$ \hfill \textit{NeurIPS 2021}}}] {};
 \end{scope}
 
 % --- TimesNet (green) ---
@@ -259,7 +259,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (t1.south) -- (t2.north);
 \draw[arr] (t2.south) -- (t3.north);
 \begin{scope}[on background layer]
-\node[group, draw=green1, fit=(t1)(t2)(t3), label={[font=\footnotesize\bfseries, text=green1]north west:{TimesNet \hfill $O(L \log L)$ \hfill \textit{ICLR 2023}}}] {};
+\node[group, draw=green1, fit=(t1)(t2)(t3), label={[font=\footnotesize\bfseries, text=green1]north:{TimesNet \hfill $O(L \log L)$ \hfill \textit{ICLR 2023}}}] {};
 \end{scope}
 
 % ===== RIGHT COLUMN =====
@@ -270,7 +270,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (f1.south) -- (f2.north);
 \draw[arr] (f2.south) -- (f3.north);
 \begin{scope}[on background layer]
-\node[group, draw=orange1, fit=(f1)(f2)(f3), label={[font=\footnotesize\bfseries, text=orange1]north west:{FEDformer \hfill $O(L)$ \hfill \textit{ICML 2022}}}] {};
+\node[group, draw=orange1, fit=(f1)(f2)(f3), label={[font=\footnotesize\bfseries, text=orange1]north:{FEDformer \hfill $O(L)$ \hfill \textit{ICML 2022}}}] {};
 \end{scope}
 
 % --- Mamba (purple) ---
@@ -280,7 +280,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (m1.south) -- (m2.north);
 \draw[arr] (m2.south) -- (m3.north);
 \begin{scope}[on background layer]
-\node[group, draw=purple1, fit=(m1)(m2)(m3), label={[font=\footnotesize\bfseries, text=purple1]north west:{Mamba (Bi-Mamba) \hfill $O(L)$ \hfill \textit{arXiv 2023}}}] {};
+\node[group, draw=purple1, fit=(m1)(m2)(m3), label={[font=\footnotesize\bfseries, text=purple1]north:{Mamba (Bi-Mamba) \hfill $O(L)$ \hfill \textit{arXiv 2023}}}] {};
 \end{scope}
 
 % --- ModernTCN (orange) ---
@@ -290,7 +290,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (c1.south) -- (c2.north);
 \draw[arr] (c2.south) -- (c3.north);
 \begin{scope}[on background layer]
-\node[group, draw=orange1, fit=(c1)(c2)(c3), label={[font=\footnotesize\bfseries, text=orange1]north west:{ModernTCN \hfill $O(L)$ \hfill \textit{ICLR 2024}}}] {};
+\node[group, draw=orange1, fit=(c1)(c2)(c3), label={[font=\footnotesize\bfseries, text=orange1]north:{ModernTCN \hfill $O(L)$ \hfill \textit{ICLR 2024}}}] {};
 \end{scope}
 
 % --- DLinear (red) ---
@@ -300,7 +300,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (d1.south) -- (d2.north);
 \draw[arr] (d2.south) -- (d3.north);
 \begin{scope}[on background layer]
-\node[group, draw=red1, fit=(d1)(d2)(d3), label={[font=\footnotesize\bfseries, text=red1]north west:{DLinear \hfill $O(L)$ \hfill \textit{AAAI 2023}}}] {};
+\node[group, draw=red1, fit=(d1)(d2)(d3), label={[font=\footnotesize\bfseries, text=red1]north:{DLinear \hfill $O(L)$ \hfill \textit{AAAI 2023}}}] {};
 \end{scope}
 
 \end{tikzpicture}%
