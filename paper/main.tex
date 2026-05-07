@@ -525,7 +525,43 @@ PatchTST   & \textit{[F1 est.}] $\pm$ \textit{[std]} & \textit{[--]} & \textit{[
 \end{tablenotes}
 \end{table}
 
-Several patterns emerge from Table~\ref{tab:overall}. First, a clear paradigm hierarchy is anticipated: state space models (Mamba) and patch-based attention (PatchTST) are expected to occupy the top tier, followed by frequency-domain Transformers (TimesNet, Autoformer) and sparse attention (Informer), with linear decomposition (DLinear) providing the lower bound. This ordering reflects the increasing capacity of each paradigm to capture the multi-scale temporal dynamics characteristic of phasic EDA responses---from no temporal modelling (DLinear), through fixed convolutional receptive fields (ModernTCN), to content-dependent global processing (attention and selective state spaces).
+Several patterns emerge from Table~\ref{tab:overall}.
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}
+\begin{axis}[
+    width=14cm, height=5.5cm,
+    ybar, bar width=7pt,
+    ymin=0.74, ymax=0.88,
+    ytick={0.74,0.76,0.78,0.80,0.82,0.84,0.86,0.88},
+    ylabel={F1-score (mean $\pm$ std across LOSO folds)},
+    symbolic x coords={CNN,TCN,IncT,TST,DLinear,ModTCN,FEDf,Inf,AutoF,TNet,Mamba,PTST},
+    xtick=data,
+    xticklabel style={font=\footnotesize, rotate=35, anchor=east},
+    yticklabel style={font=\footnotesize},
+    ylabel style={font=\footnotesize},
+    grid=major,
+    grid style={dashed, gray!30},
+    enlarge x limits=0.06,
+]
+% Prior work (grey, solid values from reference paper)
+\addplot[fill=gray3, draw=gray1] coordinates {(CNN,0.796) (TCN,0.812) (IncT,0.822) (TST,0.840)};
+% Evaluated architectures (colored by paradigm — anticipated values)
+\addplot[fill=red2, draw=red1]       coordinates {(DLinear,0.800)};
+\addplot[fill=orange2, draw=orange1]  coordinates {(ModTCN,0.825) (FEDf,0.835)};
+\addplot[fill=green2, draw=green1]    coordinates {(Inf,0.845) (AutoF,0.848) (TNet,0.852)};
+\addplot[fill=purple2, draw=purple1]  coordinates {(Mamba,0.858)};
+\addplot[fill=blue2, draw=blue1]      coordinates {(PTST,0.865)};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Bar colours follow the paradigm convention: blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution $O(L)$, red = linear baseline. Grey bars reproduce results from prior work \cite{SanchezReolid2022} for context. Numerical values are anticipated estimates; error bars (standard deviation across LOSO folds) will be added upon experimental completion.}
+\label{fig:f1_bars}
+\end{figure}
+
+Several patterns emerge from Table~\ref{tab:overall} and Figure~\ref{fig:f1_bars}. First, a clear paradigm hierarchy is anticipated: state space models (Mamba) and patch-based attention (PatchTST) are expected to occupy the top tier, followed by frequency-domain Transformers (TimesNet, Autoformer) and sparse attention (Informer), with linear decomposition (DLinear) providing the lower bound. This ordering reflects the increasing capacity of each paradigm to capture the multi-scale temporal dynamics characteristic of phasic EDA responses---from no temporal modelling (DLinear), through fixed convolutional receptive fields (ModernTCN), to content-dependent global processing (attention and selective state spaces).
 
 Second, the efficiency-oriented architectures are expected to narrow the performance gap relative to PatchTST compared to the convolutional baselines from prior work. Specifically, Mamba's selective state space mechanism---which adaptively propagates or filters information based on input content---is hypothesised to approach PatchTST accuracy while maintaining $O(L)$ complexity. Should this hypothesis be confirmed, it would represent a significant practical advance: Mamba offers 5$\times$ inference throughput compared to equivalently-sized Transformers \cite{Mamba2023}, directly addressing the deployment constraints that motivate this work.
 
@@ -556,6 +592,33 @@ PatchTST   & \textit{[est.} $\approx$ 2.0--6.0] & \textit{[O(N\textsuperscript{2
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}
+\begin{axis}[
+    width=14cm, height=4.8cm,
+    ybar,
+    bar width=8pt,
+    ymin=0,
+    ylabel={Parameters (M)},
+    symbolic x coords={PTST,Inf,AutoF,TNet,FEDf,Mamba,ModTCN,DLinear},
+    xtick=data,
+    xticklabel style={font=\footnotesize, rotate=35, anchor=east},
+    yticklabel style={font=\footnotesize},
+    ylabel style={font=\footnotesize, text=blue1},
+    grid=major,
+    grid style={dashed, gray!30},
+    enlarge x limits=0.08,
+]
+\addplot[fill=blue2, draw=blue1] coordinates {(PTST,6.0) (Inf,4.0) (AutoF,5.0) (TNet,3.0) (FEDf,3.0) (Mamba,2.0) (ModTCN,1.0) (DLinear,0.2)};
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Parameter count comparison across architectures, ordered by theoretical complexity class (left to right: $O(N^2)$, $O(L \log L)$, $O(L)$). Numerical values are anticipated estimates pending experimental measurement. This metric directly determines model storage requirements and memory footprint for on-device deployment.}
+\label{fig:efficiency_bars}
+\end{figure}
 
 The efficiency hierarchy is anticipated to stratify by theoretical complexity class. The four $O(L)$ architectures---DLinear, ModernTCN, FEDformer, and Mamba---form the efficiency-optimal tier, with DLinear expected to achieve the absolute minimum in all four metrics due to its extreme simplicity. Among the $O(L)$ candidates, Mamba warrants particular attention: its hardware-aware parallel scan algorithm \cite{Mamba2023} is specifically designed for efficient GPU execution, potentially yielding inference times competitive with or better than FEDformer despite the latter's Fourier-domain operation. This hardware-algorithm co-design is a distinctive advantage of the SSM paradigm that may translate to meaningful deployment benefits.
 
