@@ -513,25 +513,30 @@ PatchTST   & 4.52  & 78.5  & 5.4  & 98  & 42.8 \\
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}
 \begin{axis}[
-    width=14cm, height=4.8cm,
-    ybar,
-    bar width=8pt,
-    ymin=0,
+    width=16cm, height=4.8cm,
+    ymin=0, ymax=5.5,
     ylabel={Parameters (M)},
-    symbolic x coords={PatchTST,Informer,Autoformer,TimesNet,FEDformer,Mamba,ModTCN,DLinear},
-    xtick=data,
-    xticklabel style={font=\scriptsize, rotate=30, anchor=east},
+    xtick={0,...,7},
+    xticklabels={PatchTST,Informer,Autoformer,TimesNet,FEDformer,Mamba,ModTCN,DLinear},
+    xticklabel style={font=\scriptsize, rotate=60, anchor=north east},
     yticklabel style={font=\footnotesize},
-    ylabel style={font=\footnotesize, text=blue1},
+    ylabel style={font=\footnotesize},
     grid=major,
     grid style={dashed, gray!30},
-    enlarge x limits=0.08,
+    xmin=-0.8, xmax=7.8,
 ]
-\addplot[fill=blue2, draw=blue1] coordinates {(PatchTST,4.52) (Informer,3.25) (Autoformer,3.84) (TimesNet,2.05) (FEDformer,2.48) (Mamba,1.52) (ModTCN,0.85) (DLinear,0.08)};
+\draw[fill=blue2, draw=blue1]      (axis cs:-0.35,0) rectangle (axis cs:0.35,4.52);
+\draw[fill=green2, draw=green1]    (axis cs:0.65,0)  rectangle (axis cs:1.35,3.25);
+\draw[fill=green2, draw=green1]    (axis cs:1.65,0)  rectangle (axis cs:2.35,3.84);
+\draw[fill=green2, draw=green1]    (axis cs:2.65,0)  rectangle (axis cs:3.35,2.05);
+\draw[fill=orange2, draw=orange1]  (axis cs:3.65,0)  rectangle (axis cs:4.35,2.48);
+\draw[fill=purple2, draw=purple1]  (axis cs:4.65,0)  rectangle (axis cs:5.35,1.52);
+\draw[fill=orange2, draw=orange1]  (axis cs:5.65,0)  rectangle (axis cs:6.35,0.85);
+\draw[fill=red2, draw=red1]        (axis cs:6.65,0)  rectangle (axis cs:7.35,0.08);
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Parameter count comparison across architectures, ordered by theoretical complexity class (left to right: $O(N^2)$, $O(L \log L)$, $O(L)$).  This metric directly determines model storage requirements and memory footprint for on-device deployment.}
+\caption{Parameter count comparison across architectures, ordered by theoretical complexity class (left to right: $O(N^2)$, $O(L \log L)$, $O(L)$). Colour coding: blue = patch attention, green = frequency/periodicity, orange = Fourier/convolution, purple = state space model, red = linear baseline.}
 \label{fig:efficiency_bars}
 \end{figure}
 
