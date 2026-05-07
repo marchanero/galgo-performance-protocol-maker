@@ -4,7 +4,8 @@
 [![Field](https://img.shields.io/badge/field-CS%2FAI%20%7C%20Engineering-3182BD?style=flat-square)]()
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Agents](https://img.shields.io/badge/agents-23-orange?style=flat-square)]()
-[![Paper](https://img.shields.io/badge/paper-ACCEPT-31A354?style=flat-square)](https://github.com/marchanero/eda-efficient-transformers)
+[![Paper](https://img.shields.io/badge/paper-ACCEPT%20(92%2F100)-31A354?style=flat-square)](https://github.com/marchanero/eda-efficient-transformers)
+[![Review](https://img.shields.io/badge/review-5%20rounds-blue?style=flat-square)]()
 
 > **Fork of [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author)** — adapted for Computer Science, Artificial Intelligence, Biomedical Engineering, and ICT research. Battle-tested through 4 rounds of peer review on a real paper accepted at IEEE TAC.
 
