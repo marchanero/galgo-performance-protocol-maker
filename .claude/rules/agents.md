@@ -13,11 +13,12 @@
 | librarian | librarian-critic | Literature coverage, gaps, recency |
 | explorer | explorer-critic | Data feasibility, quality, identification fit |
 | data-engineer | coder-critic | Data pipeline quality, reproducibility, transformation correctness |
-| strategist | strategist-critic | Identification validity, assumptions, robustness |
+| strategist | strategist-critic | Experimental validity, assumptions, design |
 | theorist | theorist-critic | Proof validity, assumption minimality, notation, citations |
 | coder | coder-critic | Code quality, reproducibility, code-strategy alignment |
 | writer | writer-critic | Manuscript polish, LaTeX quality, hedging |
 | storyteller | storyteller-critic | Talk structure, audience calibration, visual quality |
+| diagrammer | diagrammer-critic | Figure quality, TikZ correctness, color accessibility, printability |
 
 ### Peer Review (Special Case)
 
@@ -69,6 +70,7 @@ A creator cannot evaluate the quality of its own work. The score always comes fr
 | coder | R/Python/Julia scripts | coder-critic |
 | writer | Paper manuscript | writer-critic |
 | storyteller | Beamer talk | storyteller-critic |
+| diagrammer | TikZ figures and diagrams | diagrammer-critic |
 
 ### Enforcement
 
@@ -100,6 +102,7 @@ Round 3: Critic reviews → Worker fixes
 | coder + coder-critic | strategist-critic | Re-evaluates whether the strategy memo is implementable |
 | data-engineer + coder-critic | strategist-critic | Re-evaluates whether the data specification is tractable |
 | writer + writer-critic | Orchestrator | Structural rewrite, not just polish |
+| diagrammer + diagrammer-critic | writer | Figure doesn't convey intended message — writer clarifies what to show |
 | strategist + strategist-critic | User | Fundamental design question — needs human judgment |
 | theorist + theorist-critic | User | Proof-level disagreement — user adjudicates whether the result holds |
 | librarian + librarian-critic | User | Scope disagreement — user decides breadth vs depth |

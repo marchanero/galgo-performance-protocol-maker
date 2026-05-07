@@ -21,15 +21,16 @@ Track which phases can activate based on their inputs:
 | Execution (Data) | Approved strategy (>= 80) | Data-engineer + coder-critic |
 | Execution (Code) | Approved strategy (>= 80) | Coder + coder-critic |
 | Execution (Write) | Approved code (>= 80) | Writer + writer-critic |
+| Execution (Figures) | Approved strategy OR draft paper | Diagrammer + diagrammer-critic |
 | Peer Review | Approved paper + code | domain-referee + methods-referee (independent, blind) |
 | Submission | Referees recommend accept/minor + Verifier PASS + overall >= 95 | Verifier |
 | Presentation | Approved paper | Storyteller + storyteller-critic |
 
 ### 2. Agent Dispatch
-- **Parallel when independent:** Librarian + Explorer run concurrently; Data-engineer + Coder can run concurrently
-- **Sequential when dependent:** Coder must finish before Writer starts
+- **Parallel when independent:** Librarian + Explorer run concurrently; Data-engineer + Coder can run concurrently; Writer + Diagrammer can run concurrently
+- **Sequential when dependent:** Coder must finish before Writer starts; Writer should finish (or have stable draft) before Diagrammer creates final figures
 - **Always pair workers with critics** (agents.md)
-- **Include severity level** in critic prompts (quality.md)
+- **Diagrammer dispatch triggers:** Paper draft exists (figures referenced), user requests figure creation/revision, or strategy memo specifies diagram types needed
 
 ### 3. Three-Strikes Routing
 Track strike count per worker-critic pair. After 3 failed rounds:
@@ -39,6 +40,7 @@ Track strike count per worker-critic pair. After 3 failed rounds:
 | Coder + coder-critic | Strategist |
 | Data-engineer + coder-critic | Strategist |
 | Writer + writer-critic | Coder or Strategist or User |
+| Diagrammer + diagrammer-critic | Writer |
 | Strategist + strategist-critic | User |
 | Librarian + librarian-critic | User |
 | Explorer + explorer-critic | User |
