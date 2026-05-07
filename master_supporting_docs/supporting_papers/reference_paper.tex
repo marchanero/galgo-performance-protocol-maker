@@ -10,15 +10,15 @@
 % Other font encondings may result in incorrect characters.
 %
 \usepackage{graphicx}
-%\usepackage{amsmath,amsfonts}
+\usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{booktabs}
 \usepackage{multirow}
-\usepackage{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
+\usepackage{hyperref}
 
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
@@ -51,7 +51,7 @@ Instituto de Investigación en Informática de Albacete (I3A), \\Universidad de 
 Departamento de Tecnologías y Sistemas de Información, \\Universidad de Castilla-La Mancha, Talavera de la Reina, Spain\\
 \email{roberto.sanchez@uclm.es}
 \and
-Departamento of Sistemas Informáticos, Universidad de Castilla-La Mancha, Albacete, Spain
+Departamento de Sistemas Informáticos, Universidad de Castilla-La Mancha, Albacete, Spain
 \and
 Biomedical Research Networking Centre in Mental Health, Madrid, Spain
 }
@@ -81,7 +81,7 @@ Building upon prior feature-based investigations \cite{SanchezReolid2022}, this 
 
 % ======================================================
 % ======================================================
-\section{Materials and Methods}
+\section{Method}
 
 \subsection{Dataset and Experimental Protocol}
 
@@ -348,7 +348,7 @@ Although Transformer-based models introduce higher computational complexity comp
 
 
 % ======================================================
-\section{Conclusion and Future Work}
+\section{Conclusion}
 
 This study presented a systematic comparison of modern deep architectures for subject-independent arousal classification from Electrodermal Activity (EDA). Under a strictly controlled Leave-One-Subject-Out (LOSO) validation framework, Transformer-based architectures consistently outperformed convolutional baselines, with PatchTST achieving the best trade-off between predictive performance, stability across subjects, and computational feasibility.
 
