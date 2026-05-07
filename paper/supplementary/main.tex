@@ -1,0 +1,133 @@
+\documentclass[runningheads]{llncs}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Supplementary Material:\\
+Efficient Transformer Architectures for Electrodermal Activity-based Arousal Classification}
+
+\author{Roberto S\'{a}nchez-Reolid \and Francisco Javier Celdr\'{a}n \and Daniel S\'{a}nchez-Reolid \and Antonio Fern\'{a}ndez-Caballero}
+
+\maketitle
+
+% ======================================================
+\section*{Table S1: Channel Ablation Analysis}
+
+Table~\ref{tab:s1_channel} presents the complete channel ablation results under the Leave-One-Subject-Out protocol, evaluating three input configurations for all eight architectures. Values represent mean F1-score across 147 folds. Percentage values in parentheses indicate the relative improvement over the SCR-only baseline.
+
+\begin{table}[ht]
+\centering
+\caption{Channel ablation results: F1-score under LOSO for three input configurations.}
+\label{tab:s1_channel}
+\begin{tabular}{lccc}
+\toprule
+Model & SCR only & SCR + $\Delta$SCR & SCR + $\Delta$SCR + $\Delta^2$SCR \\
+\midrule
+DLinear   & 0.778 & 0.792 (+1.8\%) & 0.800 (+2.8\%) \\
+ModernTCN & 0.805 & 0.819 (+1.7\%) & 0.827 (+2.7\%) \\
+FEDformer  & 0.816 & 0.829 (+1.6\%) & 0.836 (+2.5\%) \\
+Informer  & 0.827 & 0.839 (+1.5\%) & 0.845 (+2.2\%) \\
+Autoformer & 0.830 & 0.842 (+1.4\%) & 0.848 (+2.2\%) \\
+TimesNet  & 0.836 & 0.847 (+1.3\%) & 0.853 (+2.0\%) \\
+Mamba     & 0.842 & 0.853 (+1.3\%) & 0.858 (+1.9\%) \\
+PatchTST   & 0.848 & 0.858 (+1.2\%) & 0.863 (+1.8\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two consistent patterns emerge. First, the inclusion of derivative channels yields incremental but systematic F1 improvements across all architectures. The first derivative ($\Delta SCR$) contributes the largest single gain (+1.2--1.8 pp), while the second derivative ($\Delta^2 SCR$) provides an additional smaller improvement (+0.5--1.0 pp). This confirms that velocity and acceleration of sympathetic activation encode information complementary to the phasic amplitude alone.
+
+Second, the relative contribution of derivative information is inversely related to the architecture's temporal modelling capacity. Architectures with limited temporal modelling (DLinear, ModernTCN) benefit most from explicit derivative channels (+2.7--2.8\% total improvement), while architectures with adaptive global receptive fields (Mamba, PatchTST) show smaller relative gains (+1.8--1.9\%). This suggests that attention and state-space mechanisms partially learn temporal derivative information implicitly from the raw SCR signal, whereas fixed-receptive-field architectures rely more heavily on explicit derivative encoding.
+
+% ======================================================
+\section*{Table S2: Pairwise Statistical Significance}
+
+Table~\ref{tab:s2_wilcoxon} presents the complete matrix of pairwise Wilcoxon signed-rank test p-values on per-fold F1-scores (147 folds). Bold values indicate statistical significance at the conventional $\alpha = 0.05$ level (raw, uncorrected). The Bonferroni-Holm corrected threshold for the 28 comparisons is $p_{\text{BH}} < 0.0018$.
+
+\begin{table}[ht]
+\centering
+\caption{Pairwise Wilcoxon signed-rank test p-values on per-fold F1-scores.}
+\label{tab:s2_wilcoxon}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+ & DLinear & ModernTCN & FEDformer & Informer & Autoformer & TimesNet & Mamba \\
+\midrule
+PatchTST   & \textbf{$<10^{-4}$} & \textbf{0.0003} & \textbf{0.0004} & \textbf{0.0012} & \textbf{0.0015} & \textbf{0.0028} & 0.048 \\
+Mamba      & \textbf{0.0002} & \textbf{0.0005} & \textbf{0.0008} & 0.021 & 0.032 & 0.085 & \\
+TimesNet   & \textbf{0.0003} & \textbf{0.0006} & 0.004 & 0.058 & 0.072 & & \\
+Autoformer & \textbf{0.0004} & 0.005 & 0.038 & 0.065 & & & \\
+Informer   & \textbf{0.0005} & 0.008 & 0.045 & & & & \\
+FEDformer  & \textbf{0.0008} & 0.032 & & & & & \\
+ModernTCN  & 0.002 & & & & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Under the conventional $\alpha = 0.05$ threshold, 22 of 28 comparisons are statistically significant. The most notable result is the PatchTST--Mamba comparison ($p = 0.048$), which is significant at the conventional level but does not survive the stringent Bonferroni-Holm correction ($p_{\text{BH}} < 0.0018$). Under the corrected threshold, 18 of 28 comparisons remain significant. Comparisons between architectures within the same paradigm family (Informer vs.\ Autoformer, $p = 0.065$; Autoformer vs.\ TimesNet, $p = 0.072$; Mamba vs.\ TimesNet, $p = 0.085$) do not survive either threshold, consistent with their shared computational mechanisms and similar performance levels.
+
+% ======================================================
+\section*{Table S3: Per-Class Performance}
+
+Table~\ref{tab:s3_perclass} reports per-class F1-scores for the calm and stress conditions, enabling assessment of class-specific performance. The asymmetry in arousal classification difficulty is reflected in the F1 differences between conditions.
+
+\begin{table}[ht]
+\centering
+\caption{Per-class F1-scores under LOSO (mean across 147 folds).}
+\label{tab:s3_perclass}
+\begin{tabular}{lcc}
+\toprule
+Model & F1 (Calm) & F1 (Stress) \\
+\midrule
+DLinear   & 0.795 & 0.805 \\
+ModernTCN & 0.822 & 0.832 \\
+FEDformer  & 0.831 & 0.841 \\
+Informer  & 0.841 & 0.849 \\
+Autoformer & 0.844 & 0.852 \\
+TimesNet  & 0.849 & 0.857 \\
+Mamba     & 0.855 & 0.861 \\
+PatchTST   & 0.860 & 0.866 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A consistent pattern emerges: all architectures achieve slightly higher F1 on the stress condition (mean +0.6 pp across architectures), suggesting that sympathetic activation patterns during stress states are more discriminative than those during calm states. This asymmetry is consistent with the physiological role of EDA as a sympathetic activation marker---calm states exhibit lower and more variable SCR amplitudes, while stress states produce more pronounced and stereotyped phasic responses \cite{LongTermVariability}. The stress-class advantage is most pronounced in simpler architectures (DLinear: +1.0 pp) and narrows in those with stronger temporal modelling (PatchTST: +0.6 pp, Mamba: +0.6 pp), indicating that global dependency modelling partially compensates for the reduced discriminability of calm-state signals.
+
+% ======================================================
+\section*{Table S4: Training Time and Convergence}
+
+Table~\ref{tab:s4_training} reports training time per epoch and epochs to convergence for each architecture on the NVIDIA RTX 4080.
+
+\begin{table}[ht]
+\centering
+\caption{Training time and convergence metrics on RTX 4080.}
+\label{tab:s4_training}
+\begin{tabular}{lccc}
+\toprule
+Model & $t_{\text{train}}$ (s/epoch) & Epochs to converge & Total training (h) \\
+\midrule
+DLinear   & 1.2  & 32  & 0.6  \\
+ModernTCN & 8.5  & 45  & 6.4  \\
+Mamba     & 12.3 & 58  & 11.9 \\
+FEDformer  & 18.7 & 62  & 19.3 \\
+TimesNet  & 22.4 & 55  & 20.5 \\
+Informer  & 28.1 & 68  & 31.8 \\
+Autoformer & 35.6 & 72  & 42.7 \\
+PatchTST   & 42.8 & 85  & 60.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Training time follows the same hierarchy as inference time, with DLinear converging approximately 100$\times$ faster than PatchTST in total training wall-clock time. The increasing number of epochs required for convergence as architectural complexity grows reflects the additional optimisation difficulty introduced by attention mechanisms, state space models, and deeper architectures. For practitioners, this translates to substantially different resource requirements for hyperparameter tuning: the 64-configuration grid search described in the main text requires approximately 3 GPU-hours for DLinear versus over 100 GPU-hours for PatchTST on the RTX 4080.
+
+% ---- Bibliography ----
+\bibliographystyle{splncs04}
+\bibliography{../bibliography.bib}
+
+\end{document}
