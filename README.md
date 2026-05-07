@@ -1,8 +1,14 @@
 # Clo-Author: AI Research Architecture for CS/AI & Engineering
 
-[![Version](https://img.shields.io/badge/version-4.0--csai-b44dff?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0--csai-b44dff?style=flat-square)]()
 [![Field](https://img.shields.io/badge/field-CS%2FAI%20%7C%20Engineering-3182BD?style=flat-square)]()
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+[![Agents](https://img.shields.io/badge/agents-23-orange?style=flat-square)]()
+[![Paper](https://img.shields.io/badge/paper-ACCEPT-31A354?style=flat-square)](https://github.com/marchanero/eda-efficient-transformers)
+
+> **Fork of [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author)** — adapted for Computer Science, Artificial Intelligence, Biomedical Engineering, and ICT research. Battle-tested through 4 rounds of peer review on a real paper accepted at IEEE TAC.
+
+An open-source [Claude Code](https://docs.anthropic.com/en/docs/claude-code) scaffold for ML/AI and engineering research. Provides structured workflows from literature review to venue submission with 23 specialized agents for experimental design, code review, paper writing, diagram creation, language editing, and multi-referee peer review simulation.
 
 > **Fork of [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author)** — adapted for Computer Science, Artificial Intelligence, Biomedical Engineering, and ICT research. Adds ML/DL experiment design, efficient architectures, SSM paradigms, and TikZ diagramming agents.
 
@@ -45,21 +51,22 @@ Then:
 
 ---
 
-## 11 Agent Pairs
+## 11 Agent Pairs + 1 Standalone Reviewer
 
-Every creator has a paired critic. Critics can't edit files; creators can't score themselves.
+Every creator has a paired critic. Critics can't edit files; creators can't score themselves. 23 agents total.
 
 | Phase | Worker (Creates) | Critic (Reviews) |
 |-------|-----------------|-----------------|
-| Discovery | Librarian (CS/AI venues) | librarian-critic |
-| Discovery | Explorer (ML datasets) | explorer-critic |
+| Discovery | Librarian (CS/AI venues + DOI verification) | librarian-critic |
+| Discovery | Explorer (ML/physiological datasets) | explorer-critic |
 | Strategy | Strategist (experiment design) | strategist-critic |
-| Execution | Coder (PyTorch pipelines) | coder-critic |
+| Execution | Coder (PyTorch training pipelines) | coder-critic |
 | Execution | Data-engineer | coder-critic |
 | Paper | Writer (CS/AI sections) | writer-critic |
-| Figures | **Diagrammer** (TikZ) | **diagrammer-critic** |
-| Peer Review | Editor → domain-referee + methods-referee | — |
-| Presentation | Storyteller | storyteller-critic |
+| Figures | Diagrammer (TikZ, ColorBrewer) | diagrammer-critic |
+| Language | Language-reviewer (learns author voice) | — (advisory) |
+| Peer Review | Editor → domain + methods + consistency referees | — |
+| Presentation | Storyteller (Beamer/Quarto) | storyteller-critic |
 | Theory | Theorist | theorist-critic |
 | Infrastructure | Orchestrator, Verifier | — |
 
@@ -82,16 +89,18 @@ Every creator has a paired critic. Critics can't edit files; creators can't scor
 
 ---
 
-## Simulated Peer Review
+## Simulated Peer Review — 3 Independent Referees
 
-`/review --peer [venue]` simulates a full CS/AI venue submission:
+`/review --peer [venue]` simulates a full CS/AI venue submission with **3 independent, blind referees** + optional language reviewer:
 
 1. **Editor desk review** — novelty check, scope check, baseline adequacy, ablation completeness
-2. **Referee assignment** — two referees with dispositions (ARCHITECTURE, CREDIBILITY, REPRODUCIBILITY, BASELINE, THEORY, SKEPTIC)
-3. **Independent blind reports** — each scores on weighted dimensions. Every major comment includes "what would change my mind"
+2. **Referee assignment** — three referees with different dispositions (ARCHITECTURE, CREDIBILITY, REPRODUCIBILITY, BASELINE, THEORY, SKEPTIC)
+3. **Independent blind reports** — domain-referee scores contribution/literature, methods-referee scores experiments/statistics, **consistency-referee** cross-references claims and detects overclaiming
 4. **Editorial decision** — FATAL / ADDRESSABLE / TASTE concerns, MUST / SHOULD / MAY actions
 
 **15 venue profiles** across CS/AI and biomedical engineering: NeurIPS, ICML, ICLR, TPAMI, JMLR, IEEE TAC, TBME, JBHI, BSPC, Sensors Journal, SPL, and more.
+
+**Battle-tested:** This framework successfully guided a paper through 4 rounds of peer review (Major → Minor → Accept), with referee scores improving from 68-72 to 90-92.
 
 ---
 
@@ -175,9 +184,7 @@ Two styles supported, chosen per venue:
 
 Built on [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author) (v4.x), which itself builds on [Pedro Sant'Anna's claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow). Adapted for CS/AI & Engineering by Roberto Sánchez-Reolid at Universidad de Castilla-La Mancha (UCLM) — I3A / TSI.
 
-Active research project: *Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification* — see [paper repo](https://github.com/marchanero/eda-efficient-transformers).
-
----
+**Active research project:** *Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification* — [paper repo](https://github.com/marchanero/eda-efficient-transformers) — accepted at IEEE Transactions on Affective Computing after 4 rounds of peer review. This template was developed and battle-tested on that paper.
 
 ## License
 
