@@ -343,21 +343,30 @@ ModernTCN \cite{ModernTCN2024} modernises the convolutional paradigm with three 
 
 All models were trained end-to-end using the AdamW optimiser \cite{Loschilov2019} with cross-entropy loss on a single NVIDIA GeForce RTX 4080 GPU (16 GB GDDR6X, Ada Lovelace). Inference benchmarking was performed on an NVIDIA Quadro P5000 (16 GB GDDR5X, Pascal, 2560 CUDA cores) as a more representative deployment-class hardware target. The initial learning rate was set to $10^{-3}$ with cosine annealing scheduling. Mini-batch size was 32. Training was conducted for up to 100 epochs with early stopping (patience = 15) based on validation loss computed on a 20\% hold-out subset of the training subjects within each LOSO fold.
 
-Regularisation included dropout ($p \in [0.1, 0.3]$), weight decay ($\lambda = 10^{-4}$), and gradient clipping (maximum norm = 1.0). Hyperparameters were tuned using grid search with identical trial budgets (64 configurations per architecture) across all architectures. For each LOSO fold, the optimal configuration was selected based on validation F1-score computed on a 20\% hold-out subset of the training subjects within that fold, ensuring no test-subject information influenced hyperparameter selection:
+Regularisation included dropout ($p \in [0.1, 0.3]$), weight decay ($\lambda = 10^{-4}$), and gradient clipping (maximum norm = 1.0). Hyperparameters were tuned using grid search with identical trial budgets (64 configurations per architecture) across all architectures. For each LOSO fold, the optimal configuration was selected based on validation F1-score computed on a 20\% hold-out subset of the training subjects within that fold, ensuring no test-subject information influenced hyperparameter selection. Table~\ref{tab:hyperparams} summarises the search space.
 
-\begin{itemize}
-    \item Encoder layers / blocks $L \in \{1, 2, 3, 4\}$
-    \item Attention heads $H \in \{1, 2, 4, 8\}$ (Transformer-based only)
-    \item Embedding dimension $D \in \{16, 32, 64, 128\}$
-    \item Feed-forward dimension $\in \{32, 64, 128, 256\}$
-    \item Patch size (PatchTST, ModernTCN) $P \in \{4, 8, 16\}$
-    \item Moving average kernel (Autoformer, FEDformer, DLinear) $k \in \{3, 5, 7, 9, 11\}$
-    \item Sampling factor (Informer only) $c \in \{3, 5, 7\}$ (controls $u = c \cdot \ln L_Q$)
-    \item Number of Fourier modes (FEDformer only) $M \in \{16, 32, 64\}$
-    \item Number of top-$k$ periods (TimesNet only) $k \in \{3, 5, 7\}$
-    \item State dimension (Mamba only) $d_{\text{state}} \in \{8, 16, 32\}$
-    \item Convolution kernel size (ModernTCN only) $K \in \{13, 25, 51\}$
-\end{itemize}
+\begin{table}[ht]
+\centering
+\caption{Hyperparameter search space. Architecture-specific parameters are indicated in the Applicability column.}
+\label{tab:hyperparams}
+\begin{tabular}{lcc}
+\toprule
+Parameter & Values & Applicability \\
+\midrule
+Encoder layers / blocks & $\{1, 2, 3, 4\}$ & All \\
+Attention heads & $\{1, 2, 4, 8\}$ & PatchTST, Informer, Autoformer, FEDformer \\
+Embedding dimension & $\{16, 32, 64, 128\}$ & All \\
+Feed-forward dimension & $\{32, 64, 128, 256\}$ & All \\
+Patch size & $\{4, 8, 16\}$ & PatchTST, ModernTCN \\
+Moving average kernel & $\{3, 5, 7, 9, 11\}$ & Autoformer, FEDformer, DLinear \\
+Sampling factor $c$ & $\{3, 5, 7\}$ & Informer \\
+Fourier modes $M$ & $\{16, 32, 64\}$ & FEDformer \\
+Top-$k$ periods & $\{3, 5, 7\}$ & TimesNet \\
+State dimension $d_{\text{state}}$ & $\{8, 16, 32\}$ & Mamba \\
+Convolution kernel size $K$ & $\{13, 25, 51\}$ & ModernTCN \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 Z-score normalisation was computed using training-fold statistics only (mean and standard deviation estimated from training subjects within each fold) and applied identically to validation and test subjects. This prevents statistical leakage of test-subject information into the normalisation parameters.
 
