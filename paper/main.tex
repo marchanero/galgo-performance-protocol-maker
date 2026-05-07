@@ -532,32 +532,36 @@ Several patterns emerge from Table~\ref{tab:overall}.
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}
 \begin{axis}[
-    width=14cm, height=5.5cm,
+    width=15cm, height=5.5cm,
     ybar, bar width=7pt,
     ymin=0.74, ymax=0.88,
     ytick={0.74,0.76,0.78,0.80,0.82,0.84,0.86,0.88},
     ylabel={F1-score (mean $\pm$ std across LOSO folds)},
-    symbolic x coords={CNN,TCN,IncT,TST,DLinear,ModTCN,FEDf,Inf,AutoF,TNet,Mamba,PTST},
+    symbolic x coords={1D-CNN,TCN,IncTime,TST,DLinear,ModTCN,FEDformer,Informer,Autoformer,TimesNet,Mamba,PatchTST},
     xtick=data,
-    xticklabel style={font=\footnotesize, rotate=35, anchor=east},
+    xticklabel style={font=\scriptsize, rotate=30, anchor=east},
     yticklabel style={font=\footnotesize},
     ylabel style={font=\footnotesize},
     grid=major,
     grid style={dashed, gray!30},
-    enlarge x limits=0.06,
+    enlarge x limits=0.10,
 ]
 % Prior work (grey, solid values from reference paper)
-\addplot[fill=gray3, draw=gray1] coordinates {(CNN,0.796) (TCN,0.812) (IncT,0.822) (TST,0.840)};
-% Evaluated architectures (colored by paradigm — anticipated values)
+\addplot[fill=gray3, draw=gray1] coordinates {(1D-CNN,0.796) (TCN,0.812) (IncTime,0.822) (TST,0.840)};
+% DLinear (red baseline)
 \addplot[fill=red2, draw=red1]       coordinates {(DLinear,0.800)};
-\addplot[fill=orange2, draw=orange1]  coordinates {(ModTCN,0.825) (FEDf,0.835)};
-\addplot[fill=green2, draw=green1]    coordinates {(Inf,0.845) (AutoF,0.848) (TNet,0.852)};
+% ModernTCN + FEDformer (orange — O(L) conv/Fourier)
+\addplot[fill=orange2, draw=orange1]  coordinates {(ModTCN,0.825) (FEDformer,0.835)};
+% Informer + Autoformer + TimesNet (green — frequency)
+\addplot[fill=green2, draw=green1]    coordinates {(Informer,0.845) (Autoformer,0.848) (TimesNet,0.852)};
+% Mamba (purple — SSM)
 \addplot[fill=purple2, draw=purple1]  coordinates {(Mamba,0.858)};
-\addplot[fill=blue2, draw=blue1]      coordinates {(PTST,0.865)};
+% PatchTST (blue — patch attention)
+\addplot[fill=blue2, draw=blue1]      coordinates {(PatchTST,0.865)};
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Bar colours follow the paradigm convention: blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution $O(L)$, red = linear baseline. Grey bars reproduce results from prior work \cite{SanchezReolid2022} for context. Numerical values are anticipated estimates; error bars (standard deviation across LOSO folds) will be added upon experimental completion.}
+\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Bar colours follow the paradigm convention: grey = prior work \cite{SanchezReolid2022} (solid values), blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution $O(L)$, red = linear baseline. Numerical values are anticipated estimates; standard deviation error bars will be added upon experimental completion.}
 \label{fig:f1_bars}
 \end{figure}
 
@@ -603,16 +607,16 @@ PatchTST   & \textit{[est.} $\approx$ 2.0--6.0] & \textit{[O(N\textsuperscript{2
     bar width=8pt,
     ymin=0,
     ylabel={Parameters (M)},
-    symbolic x coords={PTST,Inf,AutoF,TNet,FEDf,Mamba,ModTCN,DLinear},
+    symbolic x coords={PatchTST,Informer,Autoformer,TimesNet,FEDformer,Mamba,ModTCN,DLinear},
     xtick=data,
-    xticklabel style={font=\footnotesize, rotate=35, anchor=east},
+    xticklabel style={font=\scriptsize, rotate=30, anchor=east},
     yticklabel style={font=\footnotesize},
     ylabel style={font=\footnotesize, text=blue1},
     grid=major,
     grid style={dashed, gray!30},
     enlarge x limits=0.08,
 ]
-\addplot[fill=blue2, draw=blue1] coordinates {(PTST,6.0) (Inf,4.0) (AutoF,5.0) (TNet,3.0) (FEDf,3.0) (Mamba,2.0) (ModTCN,1.0) (DLinear,0.2)};
+\addplot[fill=blue2, draw=blue1] coordinates {(PatchTST,6.0) (Informer,4.0) (Autoformer,5.0) (TimesNet,3.0) (FEDformer,3.0) (Mamba,2.0) (ModTCN,1.0) (DLinear,0.2)};
 \end{axis}
 \end{tikzpicture}%
 }
