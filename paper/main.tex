@@ -171,7 +171,7 @@ To analyse the minimal temporal interval required for reliable arousal classific
 \end{scope}
 
 % === Row 2: Classification + Metrics ===
-\node[proc_purple, below=0.8cm of a1, minimum width=3.5cm] (class) {Binary Classification\\Calm / Stress};
+\node[proc_purple, below=1.2cm of a1, minimum width=3.5cm] (class) {Binary Classification\\Calm / Stress};
 \node[proc_purple, right=1.2cm of class, minimum width=3.5cm] (perf) {Performance Metrics\\Acc, Prec, Rec, F1, AUC};
 \draw[arr] (class) -- (perf);
 
@@ -217,9 +217,10 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
-    block/.style={draw=gray1, rounded corners=3pt, minimum width=5.2cm, minimum height=0.55cm, align=center, font=\footnotesize, inner sep=3pt},
+    block/.style={draw=gray1, rounded corners=3pt, minimum width=5.2cm, minimum height=0.5cm, align=center, font=\footnotesize, inner sep=3pt},
     arr/.style={-{Stealth[scale=0.5]}, draw=gray3, thick},
-    group/.style={draw=gray3, dashed, rounded corners=5pt, inner xsep=10pt, inner ysep=10pt},
+    group/.style={draw=gray3, dashed, rounded corners=5pt, inner xsep=10pt, inner ysep=12pt},
+    glabel/.style={font=\footnotesize\bfseries, inner sep=2pt, yshift=2pt},
 ]
 % ===== LEFT COLUMN =====
 % --- PatchTST (blue) ---
@@ -229,37 +230,37 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (p1.south) -- (p2.north);
 \draw[arr] (p2.south) -- (p3.north);
 \begin{scope}[on background layer]
-\node[group, draw=blue1, fit=(p1)(p2)(p3), label={[font=\footnotesize\bfseries, text=blue1]north:{PatchTST \hfill $O(N^2)$ \hfill \textit{ICLR 2023}}}] {};
+\node[group, draw=blue1, fit=(p1)(p2)(p3), label={[glabel, text=blue1]north:{PatchTST \hfill $O(N^2)$ \hfill \textit{ICLR 2023}}}] {};
 \end{scope}
 
 % --- Informer (green) ---
-\node[block, fill=green2, draw=green1, below=0.8cm of p3] (i1) {ProbSparse self-attention};
+\node[block, fill=green2, draw=green1, below=1.2cm of p3] (i1) {ProbSparse self-attention};
 \node[block, fill=green2, draw=green1, below=0.35cm of i1] (i2) {Self-attention distilling};
 \node[block, fill=green2, draw=green1, below=0.35cm of i2] (i3) {Global pooling $\to$ Linear classifier};
 \draw[arr] (i1.south) -- (i2.north);
 \draw[arr] (i2.south) -- (i3.north);
 \begin{scope}[on background layer]
-\node[group, draw=green1, fit=(i1)(i2)(i3), label={[font=\footnotesize\bfseries, text=green1]north:{Informer \hfill $O(L \log L)$ \hfill \textit{AAAI 2021}}}] {};
+\node[group, draw=green1, fit=(i1)(i2)(i3), label={[glabel, text=green1]north:{Informer \hfill $O(L \log L)$ \hfill \textit{AAAI 2021}}}] {};
 \end{scope}
 
 % --- Autoformer (green) ---
-\node[block, fill=green2, draw=green1, below=0.8cm of i3] (a1) {Auto-Correlation (FFT-based)};
+\node[block, fill=green2, draw=green1, below=1.2cm of i3] (a1) {Auto-Correlation (FFT-based)};
 \node[block, fill=green2, draw=green1, below=0.35cm of a1] (a2) {Progressive trend-season decomp.};
 \node[block, fill=green2, draw=green1, below=0.35cm of a2] (a3) {Global pooling $\to$ Linear classifier};
 \draw[arr] (a1.south) -- (a2.north);
 \draw[arr] (a2.south) -- (a3.north);
 \begin{scope}[on background layer]
-\node[group, draw=green1, fit=(a1)(a2)(a3), label={[font=\footnotesize\bfseries, text=green1]north:{Autoformer \hfill $O(L \log L)$ \hfill \textit{NeurIPS 2021}}}] {};
+\node[group, draw=green1, fit=(a1)(a2)(a3), label={[glabel, text=green1]north:{Autoformer \hfill $O(L \log L)$ \hfill \textit{NeurIPS 2021}}}] {};
 \end{scope}
 
 % --- TimesNet (green) ---
-\node[block, fill=green2, draw=green1, below=0.8cm of a3] (t1) {FFT-based period discovery};
+\node[block, fill=green2, draw=green1, below=1.2cm of a3] (t1) {FFT-based period discovery};
 \node[block, fill=green2, draw=green1, below=0.35cm of t1] (t2) {1D $\to$ 2D reshaping};
 \node[block, fill=green2, draw=green1, below=0.35cm of t2] (t3) {Inception 2D conv $\to$ Linear classifier};
 \draw[arr] (t1.south) -- (t2.north);
 \draw[arr] (t2.south) -- (t3.north);
 \begin{scope}[on background layer]
-\node[group, draw=green1, fit=(t1)(t2)(t3), label={[font=\footnotesize\bfseries, text=green1]north:{TimesNet \hfill $O(L \log L)$ \hfill \textit{ICLR 2023}}}] {};
+\node[group, draw=green1, fit=(t1)(t2)(t3), label={[glabel, text=green1]north:{TimesNet \hfill $O(L \log L)$ \hfill \textit{ICLR 2023}}}] {};
 \end{scope}
 
 % ===== RIGHT COLUMN =====
@@ -270,37 +271,37 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \draw[arr] (f1.south) -- (f2.north);
 \draw[arr] (f2.south) -- (f3.north);
 \begin{scope}[on background layer]
-\node[group, draw=orange1, fit=(f1)(f2)(f3), label={[font=\footnotesize\bfseries, text=orange1]north:{FEDformer \hfill $O(L)$ \hfill \textit{ICML 2022}}}] {};
+\node[group, draw=orange1, fit=(f1)(f2)(f3), label={[glabel, text=orange1]north:{FEDformer \hfill $O(L)$ \hfill \textit{ICML 2022}}}] {};
 \end{scope}
 
 % --- Mamba (purple) ---
-\node[block, fill=purple2, draw=purple1, below=0.8cm of f3] (m1) {Selective state space model};
+\node[block, fill=purple2, draw=purple1, below=1.2cm of f3] (m1) {Selective state space model};
 \node[block, fill=purple2, draw=purple1, below=0.35cm of m1] (m2) {Bidirectional scan};
 \node[block, fill=purple2, draw=purple1, below=0.35cm of m2] (m3) {LayerNorm $+$ projection $\to$ Classifier};
 \draw[arr] (m1.south) -- (m2.north);
 \draw[arr] (m2.south) -- (m3.north);
 \begin{scope}[on background layer]
-\node[group, draw=purple1, fit=(m1)(m2)(m3), label={[font=\footnotesize\bfseries, text=purple1]north:{Mamba (Bi-Mamba) \hfill $O(L)$ \hfill \textit{arXiv 2023}}}] {};
+\node[group, draw=purple1, fit=(m1)(m2)(m3), label={[glabel, text=purple1]north:{Mamba (Bi-Mamba) \hfill $O(L)$ \hfill \textit{arXiv 2023}}}] {};
 \end{scope}
 
 % --- ModernTCN (orange) ---
-\node[block, fill=orange2, draw=orange1, below=0.8cm of m3] (c1) {DWConv (large kernel $k \leq 51$)};
+\node[block, fill=orange2, draw=orange1, below=1.2cm of m3] (c1) {DWConv (large kernel $k \leq 51$)};
 \node[block, fill=orange2, draw=orange1, below=0.35cm of c1] (c2) {Inverted bottleneck $+$ SE};
 \node[block, fill=orange2, draw=orange1, below=0.35cm of c2] (c3) {Adjacent fusion $\to$ Linear classifier};
 \draw[arr] (c1.south) -- (c2.north);
 \draw[arr] (c2.south) -- (c3.north);
 \begin{scope}[on background layer]
-\node[group, draw=orange1, fit=(c1)(c2)(c3), label={[font=\footnotesize\bfseries, text=orange1]north:{ModernTCN \hfill $O(L)$ \hfill \textit{ICLR 2024}}}] {};
+\node[group, draw=orange1, fit=(c1)(c2)(c3), label={[glabel, text=orange1]north:{ModernTCN \hfill $O(L)$ \hfill \textit{ICLR 2024}}}] {};
 \end{scope}
 
 % --- DLinear (red) ---
-\node[block, fill=red2, draw=red1, below=0.8cm of c3] (d1) {Trend-season decomposition};
+\node[block, fill=red2, draw=red1, below=1.2cm of c3] (d1) {Trend-season decomposition};
 \node[block, fill=red2, draw=red1, below=0.35cm of d1] (d2) {Independent linear layers};
 \node[block, fill=red2, draw=red1, below=0.35cm of d2] (d3) {Sum $+$ Softmax classifier};
 \draw[arr] (d1.south) -- (d2.north);
 \draw[arr] (d2.south) -- (d3.north);
 \begin{scope}[on background layer]
-\node[group, draw=red1, fit=(d1)(d2)(d3), label={[font=\footnotesize\bfseries, text=red1]north:{DLinear \hfill $O(L)$ \hfill \textit{AAAI 2023}}}] {};
+\node[group, draw=red1, fit=(d1)(d2)(d3), label={[glabel, text=red1]north:{DLinear \hfill $O(L)$ \hfill \textit{AAAI 2023}}}] {};
 \end{scope}
 
 \end{tikzpicture}%
