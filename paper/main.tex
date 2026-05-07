@@ -7,7 +7,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.multipart, fit, backgrounds, calc, chains}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepackage{hyperref}
@@ -92,6 +92,67 @@ Each temporal window of length $n$ seconds was thus represented as:
 
 To analyse the minimal temporal interval required for reliable arousal classification, window lengths were systematically varied from $n = 1$ to $n = 40$ seconds. Two segmentation strategies were evaluated: (i) non-overlapping windows and (ii) sliding windows with 1-second stride (4 samples). As noted above, all windows belonging to the same subject were preserved within the same LOSO fold.
 
+\begin{figure}[t]
+\centering
+\small
+\begin{tikzpicture}[
+    node distance=0.6cm and 0.5cm,
+    box/.style={draw, rounded corners=3pt, minimum width=1.8cm, minimum height=0.8cm, align=center, font=\footnotesize},
+    arr/.style={-{Stealth[scale=0.8]}, thick},
+]
+% Row 1: Preprocessing pipeline
+\node[box, fill=blue!8] (raw) {Raw EDA\\$SC(t)$};
+\node[box, fill=blue!8, right=of raw] (filt) {Low-pass FIR\\(4 Hz)};
+\node[box, fill=blue!8, right=of filt] (cda) {CDA\\Decomposition};
+\node[box, fill=blue!8, right=of cda] (deriv) {Derivative\\Channels};
+\node[box, fill=blue!8, right=of deriv] (window) {Window\\Segmentation};
+\node[box, fill=blue!8, right=of window] (norm) {Z-score\\(per fold)};
+
+\draw[arr] (raw) -- (filt);
+\draw[arr] (filt) -- (cda);
+\draw[arr] (cda) -- (deriv);
+\draw[arr] (deriv) -- (window);
+\draw[arr] (window) -- (norm);
+
+% Output annotation
+\node[above=0.15cm of norm, font=\footnotesize, text=blue!60!black] (out) {$\mathbf{X} \in \mathbb{R}^{T \times 3}$};
+
+% Row 2: Model paradigms
+\node[box, fill=green!8, below=1.2cm of raw] (patch) {PatchTST\\($O(N^2)$)};
+\node[box, fill=green!8, right=of patch] (inf) {Informer\\($O(L \log L)$)};
+\node[box, fill=green!8, right=of inf] (autof) {Autoformer\\($O(L \log L)$)};
+\node[box, fill=green!8, right=of autof] (tn) {TimesNet\\($O(L \log L)$)};
+\node[box, fill=orange!10, right=of tn] (fed) {FEDformer\\($O(L)$)};
+\node[box, fill=orange!10, right=of fed] (mamba) {Mamba\\($O(L)$)};
+\node[box, fill=orange!10, right=of mamba] (mtcn) {ModernTCN\\($O(L)$)};
+\node[box, fill=red!8, right=of mtcn] (dlin) {DLinear\\($O(L)$)};
+
+% Arrow from input to all models
+\draw[arr, dashed, gray] (norm.south) -- ++(0,-0.3) -| (patch.north);
+\draw[arr, dashed, gray] (norm.south) -- ++(0,-0.3) -| (dlin.north);
+
+% Row 3: Classification
+\node[box, fill=purple!8, below=0.9cm of autof, minimum width=3cm] (class) {Binary Classification\\Calm / Stress};
+\node[box, fill=purple!8, right=2.8cm of class, minimum width=3cm] (metrics) {Performance\\Acc, F1, AUC};
+
+\draw[arr] (class) -- (metrics);
+
+% Arrows from models to classification
+\foreach \m in {patch,inf,autof,tn,fed,mamba,mtcn,dlin} {
+    \draw[arr, dashed, gray] (\m.south) -- ++(0,-0.2) -| (class.north);
+}
+
+% Row 4: Efficiency
+\node[box, fill=cyan!8, below=0.9cm of class, minimum width=7cm] (eff) {Efficiency Metrics: $N_{\text{params}}$, FLOPs, $t_{\text{inf}}$, $M_{\text{peak}}$};
+\draw[arr, dashed, gray] (metrics.south) -- ++(0,-0.3) -| (eff.north);
+
+% Paradigm labels (right side)
+\node[right=0.3cm of dlin, font=\footnotesize\itshape, text=gray] (paradigm) {};
+\end{tikzpicture}
+\caption{Overall experimental pipeline. Top row: EDA signal preprocessing and input construction. Middle row: eight architectures grouped by computational complexity class. Bottom: classification output and joint evaluation of predictive performance and computational efficiency.}
+\label{fig:pipeline}
+\end{figure}
+
 \subsection{Efficient and Modern Architectures}
 
 Eight architectures were selected to represent five distinct efficiency paradigms in time-series modelling (Table~\ref{tab:architectures}). For all Transformer-based architectures, the original forecasting head was replaced with a global average pooling operation over the encoded sequence followed by a linear classification layer. DLinear, which does not employ an encoder-decoder structure, was adapted by feeding the decomposed representations into a linear classification head.
@@ -115,6 +176,117 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\footnotesize
+\begin{tikzpicture}[
+    node distance=0.35cm and 0.4cm,
+    block/.style={draw, rounded corners=2pt, minimum width=2.1cm, minimum height=0.55cm, align=center, font=\scriptsize},
+    group/.style={draw, dashed, rounded corners=4pt, inner sep=0.3cm, font=\scriptsize\bfseries},
+]
+% --- Group 1: Attention-based O(N²) ---
+\node[group, fill=blue!3, label={[font=\footnotesize\bfseries]north:{\small Attention $O(N^2)$}}] (g1) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=blue!10] (p1) {Patch Tokenisation};
+\node[block, fill=blue!10, below=of p1] (p2) {Self-Attention};
+\node[block, fill=blue!10, below=of p2] (p3) {Global Pooling};
+\draw[-{Stealth[scale=0.6]}] (p1) -- (p2);
+\draw[-{Stealth[scale=0.6]}] (p2) -- (p3);
+\node[right=0.1cm of p1, font=\scriptsize\bfseries] {PatchTST};
+\end{tikzpicture}
+};
+
+% --- Group 2: Attention O(L log L) ---
+\node[group, fill=green!3, right=of g1, label={[font=\footnotesize\bfseries]north:{\small $O(L \log L)$}}] (g2) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=green!10] (i1) {ProbSparse Attn};
+\node[block, fill=green!10, below=of i1] (i2) {Self-Attn Distilling};
+\node[block, fill=green!10, below=of i2] (i3) {Global Pooling};
+\draw[-{Stealth[scale=0.6]}] (i1) -- (i2);
+\draw[-{Stealth[scale=0.6]}] (i2) -- (i3);
+\node[right=0.1cm of i1, font=\scriptsize\bfseries] {Informer};
+\end{tikzpicture}
+};
+
+% --- Group 3: Frequency/Decomposition O(L log L) ---
+\node[group, fill=teal!3, right=of g2, label={[font=\footnotesize\bfseries]north:{\small $O(L \log L)$}}] (g3) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=teal!10] (a1) {Auto-Correlation};
+\node[block, fill=teal!10, below=of a1] (a2) {Trend-Season Decomp};
+\node[block, fill=teal!10, below=of a2] (a3) {Global Pooling};
+\draw[-{Stealth[scale=0.6]}] (a1) -- (a2);
+\draw[-{Stealth[scale=0.6]}] (a2) -- (a3);
+\node[right=0.1cm of a1, font=\scriptsize\bfseries] {Autoformer};
+\end{tikzpicture}
+};
+
+% --- Group 4: Frequency/2D O(L log L) ---
+\node[group, fill=teal!3, right=of g3, label={[font=\footnotesize\bfseries]north:{\small $O(L \log L)$}}] (g4) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=teal!10] (t1) {FFT Period Disc.};
+\node[block, fill=teal!10, below=of t1] (t2) {1D$\to$2D Reshape};
+\node[block, fill=teal!10, below=of t2] (t3) {Inception 2D Conv};
+\draw[-{Stealth[scale=0.6]}] (t1) -- (t2);
+\draw[-{Stealth[scale=0.6]}] (t2) -- (t3);
+\node[right=0.1cm of t1, font=\scriptsize\bfseries] {TimesNet};
+\end{tikzpicture}
+};
+
+% --- Group 5: Linear complexity O(L) ---
+\node[group, fill=orange!3, below=0.7cm of g1, label={[font=\footnotesize\bfseries]north:{\small $O(L)$}}] (g5) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=orange!10] (f1) {Fourier Attn ($M$ modes)};
+\node[block, fill=orange!10, below=of f1] (f2) {Trend-Season Decomp};
+\node[block, fill=orange!10, below=of f2] (f3) {Global Pooling};
+\draw[-{Stealth[scale=0.6]}] (f1) -- (f2);
+\draw[-{Stealth[scale=0.6]}] (f2) -- (f3);
+\node[right=0.1cm of f1, font=\scriptsize\bfseries] {FEDformer};
+\end{tikzpicture}
+};
+
+% --- Group 6: SSM O(L) ---
+\node[group, fill=violet!3, right=of g5, label={[font=\footnotesize\bfseries]north:{\small $O(L)$}}] (g6) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=violet!10] (m1) {Selective SSM};
+\node[block, fill=violet!10, below=of m1] (m2) {Bidirectional Scan};
+\node[block, fill=violet!10, below=of m2] (m3) {LayerNorm + Proj};
+\draw[-{Stealth[scale=0.6]}] (m1) -- (m2);
+\draw[-{Stealth[scale=0.6]}] (m2) -- (m3);
+\node[right=0.1cm of m1, font=\scriptsize\bfseries] {Mamba};
+\end{tikzpicture}
+};
+
+% --- Group 7: Conv O(L) ---
+\node[group, fill=red!3, right=of g6, label={[font=\footnotesize\bfseries]north:{\small $O(L)$}}] (g7) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=red!10] (c1) {DWConv (large $k$)};
+\node[block, fill=red!10, below=of c1] (c2) {Inverted Bottleneck};
+\node[block, fill=red!10, below=of c2] (c3) {Adjacent Fusion};
+\draw[-{Stealth[scale=0.6]}] (c1) -- (c2);
+\draw[-{Stealth[scale=0.6]}] (c2) -- (c3);
+\node[right=0.1cm of c1, font=\scriptsize\bfseries] {ModernTCN};
+\end{tikzpicture}
+};
+
+% --- Group 8: Linear O(L) ---
+\node[group, fill=gray!3, right=of g7, label={[font=\footnotesize\bfseries]north:{\small $O(L)$}}] (g8) {
+\begin{tikzpicture}[node distance=0.25cm]
+\node[block, fill=gray!10] (d1) {Trend-Season Split};
+\node[block, fill=gray!10, below=of d1] (d2) {Linear Layer (each)};
+\node[block, fill=gray!10, below=of d2] (d3) {Sum + Softmax};
+\draw[-{Stealth[scale=0.6]}] (d1) -- (d2);
+\draw[-{Stealth[scale=0.6]}] (d2) -- (d3);
+\node[right=0.1cm of d1, font=\scriptsize\bfseries] {DLinear};
+\end{tikzpicture}
+};
+
+% Common input arrow
+\node[above=0.3cm of g2, font=\footnotesize] (input) {$\mathbf{X} \in \mathbb{R}^{T \times 3}$};
+\end{tikzpicture}
+\caption{Comparative overview of the eight architectures grouped by efficiency paradigm. Each block highlights the core mechanism(s) that define the architecture's approach to temporal modelling and complexity reduction. Dashed boxes group architectures by computational complexity class.}
+\label{fig:arch_overview}
+\end{figure}
 
 \subsubsection{PatchTST}
 
