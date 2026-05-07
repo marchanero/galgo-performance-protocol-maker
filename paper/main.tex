@@ -472,7 +472,7 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Values are displayed above each bar. Colour coding follows the paradigm convention: grey = prior work \cite{SanchezReolid2022}, blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution, red = linear baseline.}
+\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Colour coding follows the paradigm convention: grey = prior work \cite{SanchezReolid2022}, blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution, red = linear baseline.}
 \label{fig:f1_bars}
 \end{figure}
 
@@ -695,7 +695,7 @@ The identification of Pareto-optimal architectures under different resource budg
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{F1-score as a function of window length under LOSO evaluation. The three grey curves reproduce results from prior work \cite{SanchezReolid2022} (1D-CNN, TST, PatchTST). Solid coloured curves represent anticipated performance of the eight architectures evaluated in this study. Colour coding follows the established paradigm convention. Line styles distinguish architectures within the same paradigm family: solid, dashed, and dotted for green (frequency/periodicity), solid for orange (Fourier/convolution). Mamba and PatchTST are rendered with thicker lines to highlight the top-performing architectures.}
+\caption{F1-score as a function of window length under LOSO evaluation. Grey curves reproduce prior work \cite{SanchezReolid2022}. Mamba and PatchTST (thick lines) degrade most gracefully at short windows. Line styles distinguish architectures within each paradigm.}
 \label{fig:f1_window_length}
 \end{figure}
 
