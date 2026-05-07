@@ -60,7 +60,7 @@ The editor's referee assignment specifies for each referee:
 - **Critical pet peeve** (one from the critical pool)
 - **Constructive pet peeve** (one from the constructive pool)
 
-Dispatch **domain-referee** and **methods-referee** in parallel, each receiving:
+Dispatch **domain-referee**, **methods-referee**, and **consistency-referee** in parallel, each receiving:
 1. The paper manuscript
 2. The target journal name (for .claude/references/journal-profiles.md calibration)
 3. Their assigned disposition and pet peeves, injected into the prompt:
@@ -78,7 +78,7 @@ care about and will scrutinize. The constructive peeve is something you apprecia
 reward when present.
 ```
 
-Both reviews are independent and blind — neither referee sees the other's report.
+All three reviews are independent and blind — no referee sees the others' reports.
 
 Every major comment MUST include a **"What would change my mind"** statement — not just "this is wrong" but the specific evidence, test, or analysis that would resolve the concern.
 

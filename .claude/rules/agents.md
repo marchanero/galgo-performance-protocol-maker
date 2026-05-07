@@ -22,11 +22,11 @@
 
 ### Peer Review (Special Case)
 
-Peer Review uses a different structure — the Orchestrator dispatches two independent referees:
+Peer Review uses a different structure — the Orchestrator dispatches three independent referees:
 
-1. Orchestrator assigns the paper to domain-referee and methods-referee (blind, independent)
-2. Both referees produce scored reports
-3. Orchestrator synthesizes a decision: Accept / Minor Revisions / Major Revisions / Reject
+1. Orchestrator assigns the paper to domain-referee, methods-referee, and consistency-referee (blind, independent)
+2. All three referees produce scored reports
+3. Editor synthesizes a decision: Accept / Minor Revisions / Major Revisions / Reject
 
 ### Enforcement
 

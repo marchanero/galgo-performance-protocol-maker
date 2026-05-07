@@ -22,7 +22,7 @@ Track which phases can activate based on their inputs:
 | Execution (Code) | Approved strategy (>= 80) | Coder + coder-critic |
 | Execution (Write) | Approved code (>= 80) | Writer + writer-critic |
 | Execution (Figures) | Approved strategy OR draft paper | Diagrammer + diagrammer-critic |
-| Peer Review | Approved paper + code | domain-referee + methods-referee (independent, blind) |
+| Peer Review | Approved paper + code | domain-referee + methods-referee + consistency-referee (independent, blind) |
 | Submission | Referees recommend accept/minor + Verifier PASS + overall >= 95 | Verifier |
 | Presentation | Approved paper | Storyteller + storyteller-critic |
 

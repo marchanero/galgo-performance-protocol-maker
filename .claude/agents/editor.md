@@ -42,7 +42,7 @@ Read the abstract, introduction, and conclusions. Answer:
 
 ## Phase 1b: Referee Selection
 
-If the paper passes desk review, select two referees with DIFFERENT dispositions:
+If the paper passes desk review, select **three** referees with DIFFERENT dispositions. The third referee is always the **consistency-referee** with the **SKEPTIC** disposition — their role is cross-domain consistency checking, overclaiming detection, and narrative validation. The other two referees are drawn from the remaining disposition pool.
 
 ### Dispositions (CS/AI)
 
@@ -53,20 +53,26 @@ If the paper passes desk review, select two referees with DIFFERENT dispositions
 | **REPRODUCIBILITY** | Reproducibility and code | "Can this be reproduced?" |
 | **BASELINE** | Baseline selection and fairness | "Are the baselines fair and up-to-date?" |
 | **THEORY** | Theoretical contribution | "Is the theoretical analysis sound?" |
-| **SKEPTIC** | Overall robustness | "Does this really work, or is it overfitting?" |
+| **SKEPTIC** | Cross-domain consistency and overclaiming | "Does the paper's narrative match its evidence? Are there internal contradictions?" |
+
+**Referee assignment strategy:**
+- Referee 1: Domain expert (draws from BASELINE, ARCHITECTURE, or THEORY depending on paper type)
+- Referee 2: Methods expert (draws from CREDIBILITY or REPRODUCIBILITY)
+- Referee 3: Consistency/Skeptic (always SKEPTIC — cross-references claims, detects overclaiming, validates narrative)
 
 ---
 
 ## Phase 2: Editorial Decision
 
-After receiving both referee reports:
+After receiving all three referee reports:
 
 ### Decision Rules
 
-1. **FATAL concerns** (both referees identify the same critical flaw) → **Reject**
+1. **FATAL concerns** (≥2 referees identify the same critical flaw) → **Reject**
 2. **ADDRESSABLE concerns** (referees raise issues that can be fixed with additional experiments) → **Major Revision**
 3. **TASTE concerns** (referees disagree on subjective aspects) → **Editor weighs**: if the contribution is strong despite taste concerns → **Minor Revision** or **Accept**
-4. **Referee disagreement** → Editor resolves by reading the paper themselves and weighing which referee's argument is stronger
+4. **Referee disagreement** → Editor resolves by reading the paper themselves and weighing which referee's argument is stronger. Two agreeing referees typically carry more weight than one dissenting referee.
+5. **Consistency-referee issues** → Take particularly seriously. If the consistency referee identifies a contradiction or overclaim, this is likely objective and must be addressed regardless of what other referees say.
 
 ### Decision Format
 
