@@ -652,13 +652,6 @@ PatchTST, as the only $O(N^2)$ architecture, is anticipated to incur the highest
     grid=major,
     grid style={dashed, gray!30},
     legend style={font=\footnotesize, at={(0.02,0.02)}, anchor=south west, fill=white, fill opacity=0.8},
-    scatter/classes={
-        red/.style={fill=red1, draw=red1, mark=*},
-        orange/.style={fill=orange1, draw=orange1, mark=*},
-        green/.style={fill=green1, draw=green1, mark=*},
-        purple/.style={fill=purple1, draw=purple1, mark=*},
-        blue/.style={fill=blue1, draw=blue1, mark=*},
-    },
 ]
 % === Shaded deployment regions ===
 \fill[red2, opacity=0.3]  (axis cs:0.3,0.78) rectangle (axis cs:2,0.88);
@@ -670,36 +663,32 @@ PatchTST, as the only $O(N^2)$ architecture, is anticipated to incur the highest
 \node[font=\footnotesize\bfseries, text=orange1]     at (axis cs:3.0,0.875)  {Mobile / Edge};
 \node[font=\footnotesize\bfseries, text=blue1]       at (axis cs:6.5,0.875)  {Cloud / Server};
 
-% === Data points ===
-\addplot[scatter, only marks, mark size=3.5pt, scatter src=explicit symbolic]
-table [x=t, y=f1, meta=class] {
-t     f1      class
-0.5   0.800   red
-1.5   0.825   orange
-1.8   0.858   purple
-2.5   0.835   orange
-3.5   0.852   green
-4.0   0.845   green
-5.0   0.848   green
-6.0   0.865   blue
-};
-\addlegendentry{Architectures}
+% === Data points (individual addplot per paradigm = reliable, single entry) ===
+% Red: DLinear (linear baseline)
+\addplot[only marks, mark=*, mark size=3.5pt, fill=red1, draw=red1] coordinates {(0.5,0.800)};
+% Orange: ModernTCN + FEDformer (O(L) conv/Fourier)
+\addplot[only marks, mark=*, mark size=3.5pt, fill=orange1, draw=orange1] coordinates {(1.5,0.825) (2.5,0.835)};
+% Green: Informer + Autoformer + TimesNet (frequency)
+\addplot[only marks, mark=*, mark size=3.5pt, fill=green1, draw=green1] coordinates {(4.0,0.845) (5.0,0.848) (3.5,0.852)};
+% Purple: Mamba (SSM)
+\addplot[only marks, mark=*, mark size=3.5pt, fill=purple1, draw=purple1] coordinates {(1.8,0.858)};
+% Blue: PatchTST (patch attention)
+\addplot[only marks, mark=*, mark size=3.5pt, fill=blue1, draw=blue1] coordinates {(6.0,0.865)};
 
 % === Pareto frontier ===
 \addplot[mark=none, draw=gray1, thick, densely dashed] coordinates {
     (0.5,0.800) (1.5,0.825) (1.8,0.858) (6.0,0.865)
 };
-\addlegendentry{Pareto frontier}
 
-% === Manual labels (better positioning control) ===
-\node[font=\footnotesize, text=red1, anchor=south east] at (axis cs:0.5,0.800)  {DLinear};
-\node[font=\footnotesize, text=orange1, anchor=south east] at (axis cs:1.5,0.825)  {ModernTCN};
-\node[font=\footnotesize, text=purple1, anchor=south west] at (axis cs:1.8,0.858)  {Mamba};
-\node[font=\footnotesize, text=orange1, anchor=south east] at (axis cs:2.5,0.835)  {FEDformer};
-\node[font=\footnotesize, text=green1, anchor=south west]  at (axis cs:3.5,0.852)  {TimesNet};
-\node[font=\footnotesize, text=green1, anchor=north west]  at (axis cs:4.0,0.845)  {Informer};
-\node[font=\footnotesize, text=green1, anchor=north west]  at (axis cs:5.0,0.848)  {Autoformer};
-\node[font=\footnotesize, text=blue1, anchor=south west]   at (axis cs:6.0,0.865)  {PatchTST};
+% === Manual labels ===
+\node[font=\footnotesize, text=red1, anchor=south east]    at (axis cs:0.5,0.800) {DLinear};
+\node[font=\footnotesize, text=orange1, anchor=south east] at (axis cs:1.5,0.825) {ModernTCN};
+\node[font=\footnotesize, text=purple1, anchor=south west] at (axis cs:1.8,0.858) {Mamba};
+\node[font=\footnotesize, text=orange1, anchor=south east] at (axis cs:2.5,0.835) {FEDformer};
+\node[font=\footnotesize, text=green1, anchor=south west]  at (axis cs:3.5,0.852) {TimesNet};
+\node[font=\footnotesize, text=green1, anchor=north west]  at (axis cs:4.0,0.845) {Informer};
+\node[font=\footnotesize, text=green1, anchor=north west]  at (axis cs:5.0,0.848) {Autoformer};
+\node[font=\footnotesize, text=blue1, anchor=south west]   at (axis cs:6.0,0.865) {PatchTST};
 
 \end{axis}
 \end{tikzpicture}%
