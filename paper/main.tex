@@ -171,7 +171,7 @@ To analyse the minimal temporal interval required for reliable arousal classific
 \end{scope}
 
 % === Row 2: Classification + Metrics ===
-\node[proc_purple, below=1.2cm of a1, minimum width=3.5cm] (class) {Binary Classification\\Calm / Stress};
+\node[proc_purple, below=1.6cm of a1, minimum width=3.5cm] (class) {Binary Classification\\Calm / Stress};
 \node[proc_purple, right=1.2cm of class, minimum width=3.5cm] (perf) {Performance Metrics\\Acc, Prec, Rec, F1, AUC};
 \draw[arr] (class) -- (perf);
 
@@ -219,8 +219,8 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \begin{tikzpicture}[
     block/.style={draw=gray1, rounded corners=3pt, minimum width=5.2cm, minimum height=0.5cm, align=center, font=\footnotesize, inner sep=3pt},
     arr/.style={-{Stealth[scale=0.5]}, draw=gray3, thick},
-    group/.style={draw=gray3, dashed, rounded corners=5pt, inner xsep=10pt, inner ysep=12pt},
-    glabel/.style={font=\footnotesize\bfseries, inner sep=2pt, yshift=2pt},
+    group/.style={draw=gray3, dashed, rounded corners=5pt, inner xsep=10pt, inner ysep=10pt},
+    glabel/.style={font=\footnotesize\bfseries, label distance=8pt},
 ]
 % ===== LEFT COLUMN =====
 % --- PatchTST (blue) ---
@@ -234,7 +234,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \end{scope}
 
 % --- Informer (green) ---
-\node[block, fill=green2, draw=green1, below=1.2cm of p3] (i1) {ProbSparse self-attention};
+\node[block, fill=green2, draw=green1, below=1.6cm of p3] (i1) {ProbSparse self-attention};
 \node[block, fill=green2, draw=green1, below=0.35cm of i1] (i2) {Self-attention distilling};
 \node[block, fill=green2, draw=green1, below=0.35cm of i2] (i3) {Global pooling $\to$ Linear classifier};
 \draw[arr] (i1.south) -- (i2.north);
@@ -244,7 +244,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \end{scope}
 
 % --- Autoformer (green) ---
-\node[block, fill=green2, draw=green1, below=1.2cm of i3] (a1) {Auto-Correlation (FFT-based)};
+\node[block, fill=green2, draw=green1, below=1.6cm of i3] (a1) {Auto-Correlation (FFT-based)};
 \node[block, fill=green2, draw=green1, below=0.35cm of a1] (a2) {Progressive trend-season decomp.};
 \node[block, fill=green2, draw=green1, below=0.35cm of a2] (a3) {Global pooling $\to$ Linear classifier};
 \draw[arr] (a1.south) -- (a2.north);
@@ -254,7 +254,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \end{scope}
 
 % --- TimesNet (green) ---
-\node[block, fill=green2, draw=green1, below=1.2cm of a3] (t1) {FFT-based period discovery};
+\node[block, fill=green2, draw=green1, below=1.6cm of a3] (t1) {FFT-based period discovery};
 \node[block, fill=green2, draw=green1, below=0.35cm of t1] (t2) {1D $\to$ 2D reshaping};
 \node[block, fill=green2, draw=green1, below=0.35cm of t2] (t3) {Inception 2D conv $\to$ Linear classifier};
 \draw[arr] (t1.south) -- (t2.north);
@@ -275,7 +275,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \end{scope}
 
 % --- Mamba (purple) ---
-\node[block, fill=purple2, draw=purple1, below=1.2cm of f3] (m1) {Selective state space model};
+\node[block, fill=purple2, draw=purple1, below=1.6cm of f3] (m1) {Selective state space model};
 \node[block, fill=purple2, draw=purple1, below=0.35cm of m1] (m2) {Bidirectional scan};
 \node[block, fill=purple2, draw=purple1, below=0.35cm of m2] (m3) {LayerNorm $+$ projection $\to$ Classifier};
 \draw[arr] (m1.south) -- (m2.north);
@@ -285,7 +285,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \end{scope}
 
 % --- ModernTCN (orange) ---
-\node[block, fill=orange2, draw=orange1, below=1.2cm of m3] (c1) {DWConv (large kernel $k \leq 51$)};
+\node[block, fill=orange2, draw=orange1, below=1.6cm of m3] (c1) {DWConv (large kernel $k \leq 51$)};
 \node[block, fill=orange2, draw=orange1, below=0.35cm of c1] (c2) {Inverted bottleneck $+$ SE};
 \node[block, fill=orange2, draw=orange1, below=0.35cm of c2] (c3) {Adjacent fusion $\to$ Linear classifier};
 \draw[arr] (c1.south) -- (c2.north);
@@ -295,7 +295,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \end{scope}
 
 % --- DLinear (red) ---
-\node[block, fill=red2, draw=red1, below=1.2cm of c3] (d1) {Trend-season decomposition};
+\node[block, fill=red2, draw=red1, below=1.6cm of c3] (d1) {Trend-season decomposition};
 \node[block, fill=red2, draw=red1, below=0.35cm of d1] (d2) {Independent linear layers};
 \node[block, fill=red2, draw=red1, below=0.35cm of d2] (d3) {Sum $+$ Softmax classifier};
 \draw[arr] (d1.south) -- (d2.north);
