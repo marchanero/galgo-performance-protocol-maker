@@ -444,33 +444,33 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
 \begin{tikzpicture}
 \begin{axis}[
     width=16cm, height=5.5cm,
-    ybar=0pt, bar width=8pt,
+    ybar, bar width=8pt,
     ymin=0.74, ymax=0.88,
     ytick={0.74,0.76,0.78,0.80,0.82,0.84,0.86,0.88},
     ylabel={F1-score},
-    symbolic x coords={1D-CNN,TCN,IncTime,TST,DLinear,ModTCN,FEDformer,Informer,Autoformer,TimesNet,Mamba,PatchTST},
-    xtick=data,
+    xtick={0,...,11},
+    xticklabels={1D-CNN,TCN,Inc.Time,TST,DLinear,ModTCN,FEDformer,Informer,Autoformer,TimesNet,Mamba,PatchTST},
     xticklabel style={font=\scriptsize, rotate=60, anchor=north east},
     yticklabel style={font=\footnotesize},
     ylabel style={font=\footnotesize},
     grid=major,
     grid style={dashed, gray!30},
-    enlarge x limits={abs=0.8cm},
+    xmin=-0.8, xmax=11.8,
     nodes near coords,
-    every node near coord/.append style={font=\tiny, rotate=90, anchor=west, /pgf/number format/precision=3},
+    every node near coord/.append style={font=\tiny, rotate=90, anchor=west},
 ]
 % Prior work (grey)
-\addplot[fill=gray3, draw=gray1] coordinates {(1D-CNN,0.796) (TCN,0.812) (IncTime,0.822) (TST,0.840)};
+\addplot[fill=gray3, draw=gray1] coordinates {(0,0.796) (1,0.812) (2,0.822) (3,0.840)};
 % DLinear (red)
-\addplot[fill=red2, draw=red1]       coordinates {(DLinear,0.800)};
+\addplot[fill=red2, draw=red1]       coordinates {(4,0.800)};
 % ModernTCN + FEDformer (orange)
-\addplot[fill=orange2, draw=orange1]  coordinates {(ModTCN,0.827) (FEDformer,0.836)};
+\addplot[fill=orange2, draw=orange1]  coordinates {(5,0.827) (6,0.836)};
 % Informer + Autoformer + TimesNet (green)
-\addplot[fill=green2, draw=green1]    coordinates {(Informer,0.845) (Autoformer,0.848) (TimesNet,0.853)};
+\addplot[fill=green2, draw=green1]    coordinates {(7,0.845) (8,0.848) (9,0.853)};
 % Mamba (purple)
-\addplot[fill=purple2, draw=purple1]  coordinates {(Mamba,0.858)};
+\addplot[fill=purple2, draw=purple1]  coordinates {(10,0.858)};
 % PatchTST (blue)
-\addplot[fill=blue2, draw=blue1]      coordinates {(PatchTST,0.863)};
+\addplot[fill=blue2, draw=blue1]      coordinates {(11,0.863)};
 \end{axis}
 \end{tikzpicture}%
 }
