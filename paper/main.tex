@@ -455,7 +455,6 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
     grid=major,
     grid style={dashed, gray!30},
     xmin=-0.8, xmax=11.8,
-    clip=false,
 ]
 % Draw each bar individually with \draw — perfect alignment guaranteed
 \draw[fill=gray3, draw=gray1]    (axis cs:-0.35,0) rectangle (axis cs:0.35,0.796);
@@ -470,19 +469,6 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
 \draw[fill=green2, draw=green1]   (axis cs:8.65,0) rectangle (axis cs:9.35,0.853);
 \draw[fill=purple2, draw=purple1] (axis cs:9.65,0) rectangle (axis cs:10.35,0.858);
 \draw[fill=blue2, draw=blue1]     (axis cs:10.65,0) rectangle (axis cs:11.35,0.863);
-% Value labels centered inside each bar (at half bar height from y=0)
-\node[font=\footnotesize, text=white] at (axis cs:0,0.398)  {0.796};
-\node[font=\footnotesize, text=white] at (axis cs:1,0.406)  {0.812};
-\node[font=\footnotesize, text=white] at (axis cs:2,0.411)  {0.822};
-\node[font=\footnotesize, text=white] at (axis cs:3,0.420)  {0.840};
-\node[font=\footnotesize, text=white] at (axis cs:4,0.400)  {0.800};
-\node[font=\footnotesize, text=white] at (axis cs:5,0.414)  {0.827};
-\node[font=\footnotesize, text=white] at (axis cs:6,0.418)  {0.836};
-\node[font=\footnotesize, text=white] at (axis cs:7,0.423)  {0.845};
-\node[font=\footnotesize, text=white] at (axis cs:8,0.424)  {0.848};
-\node[font=\footnotesize, text=white] at (axis cs:9,0.427)  {0.853};
-\node[font=\footnotesize, text=white] at (axis cs:10,0.429) {0.858};
-\node[font=\footnotesize, text=white] at (axis cs:11,0.432) {0.863};
 \end{axis}
 \end{tikzpicture}%
 }
