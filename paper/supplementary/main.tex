@@ -41,7 +41,7 @@ PatchTST   & 0.848 & 0.858 (+1.2\%) & 0.863 (+1.8\%) \\
 \end{tabular}
 \end{table}
 
-Two consistent patterns emerge. First, the inclusion of derivative channels yields incremental but systematic F1 improvements across all architectures. The first derivative ($\Delta SCR$) contributes the largest single gain (+1.2--1.8 pp), while the second derivative ($\Delta^2 SCR$) provides an additional smaller improvement (+0.5--1.0 pp). This confirms that velocity and acceleration of sympathetic activation encode information complementary to the phasic amplitude alone.
+Two consistent patterns emerge. First, the inclusion of derivative channels yields incremental but systematic F1 improvements across all architectures. The first derivative ($\Delta SCR$) contributes the largest single gain (+1.0--1.4 pp), while the second derivative ($\Delta^2 SCR$) provides an additional smaller improvement (+0.5--0.8 pp). This confirms that velocity and acceleration of sympathetic activation encode information complementary to the phasic amplitude alone.
 
 Second, the relative contribution of derivative information is inversely related to the architecture's temporal modelling capacity. Architectures with limited temporal modelling (DLinear, ModernTCN) benefit most from explicit derivative channels (+2.7--2.8\% total improvement), while architectures with adaptive global receptive fields (Mamba, PatchTST) show smaller relative gains (+1.8--1.9\%). This suggests that attention and state-space mechanisms partially learn temporal derivative information implicitly from the raw SCR signal, whereas fixed-receptive-field architectures rely more heavily on explicit derivative encoding.
 
@@ -97,7 +97,7 @@ PatchTST   & 0.860 & 0.866 \\
 \end{tabular}
 \end{table}
 
-A consistent pattern emerges: all architectures achieve slightly higher F1 on the stress condition (mean +0.6 pp across architectures), suggesting that sympathetic activation patterns during stress states are more discriminative than those during calm states. This asymmetry is consistent with the physiological role of EDA as a sympathetic activation marker---calm states exhibit lower and more variable SCR amplitudes, while stress states produce more pronounced and stereotyped phasic responses \cite{LongTermVariability}. The stress-class advantage is most pronounced in simpler architectures (DLinear: +1.0 pp) and narrows in those with stronger temporal modelling (PatchTST: +0.6 pp, Mamba: +0.6 pp), indicating that global dependency modelling partially compensates for the reduced discriminability of calm-state signals.
+A consistent pattern emerges: all architectures achieve slightly higher F1 on the stress condition (mean +0.8 pp across architectures), suggesting that sympathetic activation patterns during stress states are more discriminative than those during calm states. This asymmetry is consistent with the physiological role of EDA as a sympathetic activation marker---calm states exhibit lower and more variable SCR amplitudes, while stress states produce more pronounced and stereotyped phasic responses \cite{LongTermVariability}. The stress-class advantage is most pronounced in simpler architectures (DLinear: +1.0 pp) and narrows in those with stronger temporal modelling (PatchTST: +0.6 pp, Mamba: +0.6 pp), indicating that global dependency modelling partially compensates for the reduced discriminability of calm-state signals.
 
 % ======================================================
 \section*{Table S4: Training Time and Convergence}
