@@ -7,34 +7,35 @@ allowed-tools: Read,Grep,Glob,Write,Bash,Task
 
 # Submit
 
-Submission pipeline with four modes covering journal selection through final verification.
+Submission pipeline with four modes covering venue selection through final verification.
 
-**Input:** `$ARGUMENTS` — mode keyword, optionally followed by journal name.
+**Input:** `$ARGUMENTS` — mode keyword, optionally followed by venue name.
 
 ---
 
 ## Modes
 
-### `/submit target` — Journal Targeting
-Get ranked journal recommendations.
+### `/submit target` — Venue Targeting
+Get ranked venue recommendations.
 
-**Agent:** Orchestrator (journal selection function)
+**Agent:** Orchestrator (venue selection function)
 
-Considers: contribution fit, methodology fit, audience fit, recent publications, desk rejection risk. Consults .claude/references/domain-profile.md for journal tiers.
+Considers: contribution fit, methodology fit, audience fit, recent publications, desk rejection risk. Consults .claude/references/domain-profile.md and journal-profiles.md for venue tiers.
 
-Output: Ranked list of 3 target journals with rationale.
-Save to `quality_reports/journal_recommendations_[date].md`
+Output: Ranked list of 3 target venues with rationale.
+Save to `quality_reports/venue_recommendations_[date].md`
 
 ### `/submit package` — Build Replication Package
-Assemble AEA-compliant replication package.
+Assemble reproducible experiment package.
 
 **Agents:** Coder + Verifier
 
 Produces:
-- Master script that runs all analyses end-to-end
-- README with data sources, computational requirements, instructions
-- Data documentation and codebook
-- Organized file structure per AEA standards
+- Master script that runs all experiments end-to-end
+- README with data sources, computational requirements, GPU/hardware specs
+- Data documentation and preprocessing pipeline
+- Requirements file (conda/pip) with pinned versions
+- Organized file structure
 Save to `paper/replication/`
 
 ### `/submit audit` — Audit Replication Package
@@ -45,16 +46,16 @@ Verify replication package completeness.
 Checks:
 1. Master script exists and runs
 2. All tables reproduce
-3. All figures reproduce
+3. All figures reproduce (including training curves)
 4. README complete
 5. Data documentation present
-6. Numbered script order
-7. Dependencies listed
-8. Runtime documented
-9. Output paths match paper references
-10. No hardcoded paths
+6. Dependencies listed with versions
+7. Runtime and hardware requirements documented
+8. Output paths match paper references
+9. No hardcoded paths
+10. Seeds and hyperparameters documented
 
-### `/submit final [journal]` — Final Submission Gate
+### `/submit final [venue]` — Final Submission Gate
 Full verification + score enforcement + submission checklist.
 
 Workflow:

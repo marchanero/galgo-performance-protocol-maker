@@ -1,13 +1,13 @@
-# CLAUDE.MD -- Empirical Economics Research with Claude Code
+# AGENTS.MD -- CS/AI & Engineering Research with Claude Code
 
 <!-- HOW TO USE: Replace [BRACKETED PLACEHOLDERS] with your project info.
      Customize Beamer environments for your talk preamble.
      Keep this file under ~150 lines — Claude loads it every session.
      See the guide at https://hugosantanna.github.io/clo-author/ for full documentation. -->
 
-**Project:** [YOUR PROJECT NAME]
-**Institution:** [YOUR INSTITUTION]
-**Field:** [YOUR FIELD — Economics by default. Can be adapted to Finance, Accounting, Marketing, etc.]
+**Project:** Lightweight Transformers for Electrodermal Activity-based Arousal Classification
+**Institution:** Universidad de Castilla-La Mancha (UCLM) — I3A / TSI
+**Field:** Affective Computing / Biomedical Engineering / Time-Series Deep Learning
 **Branch:** main
 
 ---
@@ -125,8 +125,8 @@ See `quality.md` for weighted aggregation formula.
 <!-- Options: by-script (default) or by-purpose -->
 Output organization: by-script
 
-<!-- by-script:  paper/figures/main_regression/figure1.pdf, paper/tables/main_regression/table1.tex -->
-<!-- by-purpose: paper/figures/estimation/coefplot_main.pdf, paper/tables/robustness/alt_controls.tex -->
+<!-- by-script:  paper/figures/experiments/figure1.pdf, paper/tables/experiments/table1.tex -->
+<!-- by-purpose: paper/figures/results/accuracy_comparison.pdf, paper/tables/ablation/component_contribution.tex -->
 
 ---
 
@@ -134,7 +134,10 @@ Output organization: by-script
 
 | Component | File | Status | Description |
 |-----------|------|--------|-------------|
-| Paper | `paper/main.tex` | [draft/submitted/R&R] | [Brief description] |
-| Data | `scripts/R/` | [complete/in-progress] | [Analysis description] |
-| Replication | `paper/replication/` | [not started/ready] | [Deposit status] |
-| Job Market Talk | `paper/talks/job_market_talk.tex` | -- | [Status] |
+| Paper | `paper/main.tex` | draft — structure created | Lightweight Transformers for EDA-based Arousal Classification |
+| Reference | `paper/reference_paper.tex` | in review | Prior work: comparative evaluation of 5 deep architectures for EDA |
+| Bibliography | `paper/bibliography.bib` | populated | 40+ real references (EDA, transformers, biomedical signals) |
+| Spec | `quality_reports/specs/2026-05-07_lightweight-transformers-eda.md` | complete | Requirements and candidate architectures |
+| Data | `data/` | not started | EDA signals from 147 participants (to be added) |
+| Scripts | `scripts/` | not started | Training/evaluation pipeline (to be implemented) |
+| Replication | `paper/replication/` | not started | Replication package |

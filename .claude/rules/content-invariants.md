@@ -12,15 +12,15 @@ These are non-negotiable. Every agent checks against them. Violations are deduct
 
 **INV-3.** No `\hline` — use `\toprule`, `\midrule`, `\bottomrule` (booktabs). No vertical rules.
 
-**INV-4.** Significance stars follow the journal profile. AEA journals: no stars, report standard errors and use confidence intervals. Default: stars with note defining thresholds.
+**INV-4.** Significance reporting follows venue conventions. CS/AI venues: report exact metrics with standard deviations across folds. No significance stars in tables — report p-values or confidence intervals where relevant.
 
 **INV-5.** Abstract is 150 words or fewer.
 
-**INV-6.** JEL codes and keywords present after the abstract.
+**INV-6.** Keywords (and ACM/IEEE classification terms where applicable) present after the abstract.
 
 **INV-7.** Notation is consistent across all sections — the same symbol means the same thing everywhere. Different concepts get different symbols.
 
-**INV-8.** Every causal claim has a corresponding identification section. No causal language in descriptive papers.
+**INV-8.** Every performance/efficiency claim has supporting experimental evidence. No unsupported causal language (e.g., "component X causes improvement Y" without controlled ablation).
 
 **INV-9.** `biblatex` + `biber`, not `natbib` + `bibtex`.
 

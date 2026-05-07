@@ -24,8 +24,8 @@ Phase 1: Discovery
   └── /discover data → Data Assessment
 
 Phase 2: Strategy (depends on Phase 1)
-  ├── /strategize → Strategy Memo + Robustness Plan
-  └── /strategize theory → Theory Section (conditional — econometric methods, theory+empirics, structural, methodological reduced-form)
+  ├── /strategize → Strategy Memo + Experimental Design + Ablation Plan
+  └── /strategize theory → Formal Analysis (conditional — complexity proofs, convergence bounds)
 
 Phase 3: Execution (depends on Phase 2)
   ├── /analyze → Scripts + Tables + Figures

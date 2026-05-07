@@ -7,9 +7,9 @@ allowed-tools: Read,Grep,Glob,Write,Edit,Bash,Task
 
 # Analyze
 
-Run end-to-end data analysis by dispatching the **Coder** (analysis), **Data-engineer** (cleaning + figures), and **coder-critic** (code review).
+Run end-to-end ML/DL experiments by dispatching the **Coder** (experimental pipeline) and **coder-critic** (code review). Primary language: Python (PyTorch/TensorFlow).
 
-**Input:** `$ARGUMENTS` — dataset path or description of analysis goal.
+**Input:** `$ARGUMENTS` — dataset path or description of experiment goal.
 
 ---
 
@@ -22,19 +22,17 @@ Before writing any code, the Coder must output a structured report proving it re
 ## Pre-Code Report
 **Strategy memo:** [path or "not found"]
 **Domain profile:** [loaded / not found]
-**Language:** [R / Python / Julia — from CLAUDE.md]
-**Paper type:** [reduced-form / structural / theory+empirics / descriptive]
+**Language:** Python (PyTorch — from AGENTS.md)
+**Paper type:** [novel architecture / benchmark / ablation / application]
 
-**Identification strategy:** [one sentence from memo]
+**Task:** [classification / regression / representation learning]
 **Key variables:**
-- Outcome: [paper name] → [code name]
-- Treatment: [paper name] → [code name]
-- Controls: [list]
-- Fixed effects: [list]
-- Clustering: [level]
+- Input: [signal type, dimensions T×D]
+- Output: [class labels, number of classes]
 **Data source:** [path or description]
-**Estimator:** [from strategy memo]
-**Robustness checks required:** [list from memo]
+**Architecture:** [from strategy memo]
+**Baselines:** [list from strategy memo]
+**Ablations required:** [list from memo]
 **Naming map confirms:** [yes / no — do planned code names match paper notation?]
 
 Proceeding to implementation.

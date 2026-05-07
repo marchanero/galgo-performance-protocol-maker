@@ -37,24 +37,25 @@ Before drafting, read all available context:
 #### 2. Paper Type Detection
 
 Before routing, identify the paper type from the strategy memo or existing draft:
-- **Reduced-form** — DiD, IV, RDD, event study
-- **Structural** — Model estimation, counterfactual simulations
-- **Theory + empirics** — Propositions tested with data
-- **Descriptive / measurement** — New data, new measure, stylized facts
+- **Novel architecture** — New model or architectural component
+- **Comparative benchmark** — Systematic comparison of existing methods
+- **Ablation study** — Isolating contributions of design choices
+- **Application / deployment** — Domain adaptation or deployment validation
 
 This determines which section templates the Writer uses.
 
 #### 3. Section Routing
 
 Based on `$ARGUMENTS`:
-- **`full`**: Draft all sections in sequence, pausing between major sections for user feedback
+- **`full`**: Draft all sections in sequence. For conferences (integrated style): Intro → Method → Experimental Setup → Results and Discussion → Related Work → Conclusion. For journals (traditional style): Intro → Related Work → Method → Experimental Setup → Results and Discussion → Conclusion. Pause between major sections for user feedback.
 - **`intro`**: Draft introduction (most common request)
-- **`strategy`**: Draft empirical strategy (reduced-form), model + estimation (structural), or model + tests (theory+empirics)
-- **`results`**: Draft results — narration style depends on paper type and output type (regression tables, event study figures, counterfactual simulations, etc.)
-- **`conclusion`**: Draft conclusion with type-appropriate ending (policy implications, counterfactual implications, or research agenda)
+- **`method` or `strategy`**: Draft method/architecture section or experimental setup
+- **`related-work` or `lit`**: Draft related work section (placement-aware: end-of-paper for integrated style, post-intro for traditional)
+- **`results`**: Draft results and discussion — combined section with inline interpretation (default) or just results if journal requires split
+- **`discussion`**: Draft standalone discussion section (only if results and discussion are split — rare in CS/AI)
+- **`conclusion`**: Draft conclusion — brief in integrated style (interpretation already done in Results+Discussion), slightly longer if standalone Discussion was used
 - **`abstract`**: Draft abstract (must have other sections first)
-- **`data`**: Draft data section — expanded for descriptive/measurement papers
-- **`model`**: Draft model section (structural or theory+empirics papers only)
+- **`experiments`**: Draft experimental setup section only (datasets, protocol, metrics, baselines)
 - **No argument**: Ask user which section to draft
 
 #### 4. Dispatch Writer
@@ -65,17 +66,19 @@ Dispatch Writer with paper type and argument-move templates for the target secti
 
 Before presenting the draft:
 - [ ] Paper type identified and correct template used
+- [ ] Section organization matches target venue conventions (integrated vs traditional)
 - [ ] Every paragraph has an identifiable purpose (argument move type)
 - [ ] Findings lead sentences — not buried after setup
-- [ ] Design-specific elements present (see writer.md for checklists per design)
+- [ ] Each result is followed by its interpretation (Results+Discussion integrated)
+- [ ] Paper-type-specific elements present (see writer.md per type)
 - [ ] Every displayed equation is numbered (`\label{eq:...}`)
 - [ ] All `\cite{}` keys exist in `Bibliography_base.bib`
 - [ ] Introduction contribution paragraph names specific papers
-- [ ] Effect sizes stated with units
+- [ ] Metric values stated with numbers and precision (±std across folds)
+- [ ] Efficiency claims backed by numbers (params, FLOPs, inference time)
 - [ ] No banned hedging phrases
 - [ ] Notation consistent throughout
 - [ ] All tables/figures referenced actually exist in `paper/tables/` or `paper/figures/`
-- [ ] Results narrated correctly for output type (tables, event study figures, counterfactuals)
 
 #### 6. Present to User
 
@@ -139,23 +142,27 @@ Strips 24 patterns across 4 categories:
 
 ## Section Standards
 
-**All paper types share the same backbone. Moves diverge by type — see writer.md for full templates.**
+**Two organization styles — see writer.md for full details and templates.**
 
-| Section | Length | Reduced-Form | Structural | Theory+Empirics | Descriptive |
-|---------|--------|-------------|-----------|----------------|-------------|
-| Introduction | 1000-1500 | ...preview → result → contribution | ...model preview → counterfactual → contribution | ...theory preview → test result → contribution | ...data innovation → key fact → contribution |
-| Data | 800-1200 | Treatment, outcome, controls | Moments that identify parameters | Standard | 1200-1800 (core contribution) |
-| Strategy/Model | 800-1500 | Design-specific (DiD/IV/RDD/ES) | Environment → decisions → equilibrium → estimation | Model → propositions → tests | N/A (merged into Data) |
-| Results | 800-1500 | Main spec → robustness → heterogeneity | Estimates → model fit → counterfactuals → welfare | Prediction-by-prediction evidence | Key facts → decompositions → implications |
-| Conclusion | 500-700 | Policy implications | Counterfactual implications + model limitations | What model gets right/wrong | Research agenda enabled by new data |
-| Abstract | 100-150 | Question, design, finding with magnitude | Question, model, counterfactual finding | Question, prediction, test result | Question, measurement, key fact |
+| Section | Length | Integrated Style (Conferences) | Traditional Style (Journals) |
+|---------|--------|-------------------------------|------------------------------|
+| Introduction | 800-1200 | Motivation, gap, approach, contributions, roadmap | Same |
+| Related Work | 500-800 | **After Experiments**, before Conclusion; contrasts with what was shown | **After Introduction**, before Method; establishes context first |
+| Method | 1000-2000 | Component walkthrough + training methodology | Same |
+| Experimental Setup | 400-600 | Datasets, metrics, baselines, hyperparameters | Same |
+| Results and Discussion | 800-1500 | **Combined section** — results with inline interpretation + synthesis at end | **Combined** (default for IEEE TAC/TBME/JBHI) or **split** if venue requires |
+| Conclusion | 200-400 | Brief takeaway (discussion already done) | Slightly longer (discussion was integrated or separate) |
+
+**When splitting Results and Discussion (rare, venue-dependent):**
+- Results (600-1000 words): What was found — minimal interpretation
+- Discussion (400-600 words): Why + what it means — synthesis, limitations, implications
 
 ---
 
 ## LaTeX Conventions
 
-- `\citet{}` for textual citations ("Smith (2024) shows...")
-- `\citep{}` for parenthetical citations ("...is well documented (Smith, 2024)")
+- `\citet{}` for textual citations ("Vaswani et al. (2017) proposed...")
+- `\citep{}` for parenthetical citations ("...as shown in prior work \citep{vaswani2017attention}")
 - `booktabs` rules (`\toprule`, `\midrule`, `\bottomrule`) — never `\hline`
 - Notation protocol: `Y_{it}`, `D_{it}`, `\gamma_i`, `\delta_t`, `\varepsilon_{it}`
 

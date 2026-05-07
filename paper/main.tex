@@ -1,0 +1,288 @@
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+%
+\begin{document}
+%
+\title{Efficient Transformer Architectures for\\Electrodermal Activity-based Arousal Classification}
+%
+\titlerunning{Efficient Transformers for EDA-based Arousal Classification}
+%
+\author{
+Roberto S\'{a}nchez-Reolid\inst{1,2}\orcidID{0000-0003-4455-370X} \and
+Francisco Javier Celdr\'{a}n\inst{1}\orcidID{0009-0000-2699-219X} \and
+Daniel S\'{a}nchez-Reolid\inst{3}\orcidID{0000-0003-3612-1261} \and
+Antonio Fern\'{a}ndez-Caballero\inst{1,3,4}\orcidID{0000-0002-8211-0398}
+}
+\authorrunning{R. S\'{a}nchez-Reolid et al.}
+%
+\institute{
+Instituto de Investigaci\'{o}n en Inform\'{a}tica de Albacete (I3A), \\Universidad de Castilla-La Mancha, Albacete, Spain
+\and
+Departamento de Tecnolog\'{i}as y Sistemas de Informaci\'{o}n, \\Universidad de Castilla-La Mancha, Talavera de la Reina, Spain\\
+\email{roberto.sanchez@uclm.es}
+\and
+Departamento de Sistemas Inform\'{a}ticos, Universidad de Castilla-La Mancha, Albacete, Spain
+\and
+Biomedical Research Networking Centre in Mental Health, Madrid, Spain
+}
+%
+\maketitle
+%
+\begin{abstract}
+Electrodermal Activity (EDA) is a reliable, non-invasive biomarker of sympathetic arousal increasingly used in wearable affective computing. While recent work has demonstrated that Transformer-based architectures outperform convolutional baselines for subject-independent arousal classification from EDA, their computational cost limits practical deployment in resource-constrained wearable and mobile devices. This work presents the first systematic comparison of efficient Transformer variants---specifically PatchTST, Informer, Autoformer, FEDformer, and the lightweight linear baseline DLinear---for binary arousal classification from EDA signals collected from 147 participants under a controlled laboratory protocol. All models are evaluated using strict Leave-One-Subject-Out (LOSO) cross-validation to ensure subject-independent generalisation. Beyond predictive accuracy, we introduce computational efficiency (parameter count, FLOPs, inference time, and memory footprint) as a primary evaluation dimension, enabling explicit characterisation of the accuracy-efficiency Pareto frontier across architectures. By jointly evaluating classification performance and resource consumption, this work provides actionable guidance for selecting and deploying Transformer-based arousal classifiers on edge devices.
+\keywords{Electrodermal Activity \and Arousal Classification \and Efficient Transformers \and Lightweight Deep Learning \and Subject-Independent Evaluation \and Edge Deployment}
+\end{abstract}
+%
+% ======================================================
+\section{Introduction}
+
+Electrodermal Activity (EDA) reflects sympathetic nervous system activation through sudomotor nerve activity, providing a robust and non-concealable biomarker for emotional arousal \cite{Hossain2024,Meijer2023}. Unlike other peripheral physiological signals such as heart rate or respiration, EDA is exclusively innervated by the sympathetic branch of the autonomic nervous system, making it a uniquely specific indicator of arousal without parasympathetic confounds \cite{LongTermVariability}. The EDA signal comprises two superimposed components: a slow-varying tonic level reflecting prolonged arousal states, and rapid phasic skin conductance responses (SCRs) that reflect immediate, stimulus-evoked sympathetic activation \cite{sanchez2020deep}.
+
+The growing availability of wrist-worn and palm-based wearable sensors capable of continuous EDA monitoring \cite{Schmidt2018WESAD} has generated substantial interest in deploying machine learning models for automatic arousal classification directly on resource-constrained edge devices. Applications span mental health monitoring, stress detection in occupational settings, adaptive human-computer interaction, and real-time biofeedback for anxiety management \cite{Mukhopadhyay2024,Naithani2026}. However, translating these laboratory-validated models to practical wearable deployment requires architectures that simultaneously achieve high classification accuracy under subject-independent conditions, low computational cost, and minimal memory footprint---a combination that has received limited systematic investigation.
+
+In prior work \cite{SanchezReolid2022}, we conducted a systematic comparison of five deep learning architectures---1D-CNN, Temporal Convolutional Networks (TCN), InceptionTime, Time-Series Transformer (TST), and PatchTST---for subject-independent binary arousal classification from EDA. Under strict Leave-One-Subject-Out (LOSO) validation with 147 participants, Transformer-based architectures consistently outperformed convolutional baselines. PatchTST achieved the best performance (F1 = 0.852, AUC = 0.912), demonstrating that global dependency modelling through self-attention captures physiologically relevant temporal patterns more effectively than fixed convolutional receptive fields. Interpretability analyses further revealed that Transformer attention mechanisms concentrate on SCR onset and rising phases, aligning with established physiological knowledge of sympathetic activation dynamics.
+
+Despite these findings, PatchTST incurs non-trivial computational demands. Although patch-based tokenisation reduces the effective sequence length from $T$ to $N \ll T$, the core self-attention operation retains $O(N^2)$ complexity and the architecture requires multiple encoder layers with learned positional embeddings, feed-forward projections, and layer normalisation. For a 40-second EDA window sampled at 4 Hz ($T = 160$), this translates to a forward pass whose latency and memory consumption may exceed the constraints of low-power microcontrollers and mobile processors typical of wearable devices. This practical limitation motivates a focused investigation of more aggressively efficient architectures.
+
+The time-series forecasting community has developed a rich family of efficient Transformer variants that achieve sub-quadratic or even linear complexity through fundamentally different attention mechanisms \cite{Wen2023}. The Informer \cite{Informer2021} introduced ProbSparse self-attention, which measures query sparsity through the Kullback-Leibler divergence between the attention probability distribution and a uniform distribution, reducing time and memory complexity from $O(L^2)$ to $O(L \log L)$. The Autoformer \cite{Autoformer2021} replaced point-wise attention entirely with an Auto-Correlation mechanism that computes series-wise correlations in the frequency domain based on discovered periodicities, while integrating progressive seasonal-trend decomposition as an internal architectural block. The FEDformer \cite{FEDformer2022} achieved $O(L)$ complexity---the only linear-complexity candidate considered---by operating in the frequency domain through Fourier-enhanced attention blocks that randomly select a subset of Fourier modes. Concurrently, the provocative DLinear model \cite{DLinear2023} demonstrated that a decomposition into trend (moving average) and seasonal (residual) components followed by independent one-layer linear networks can outperform sophisticated Transformer architectures on multiple forecasting benchmarks, raising fundamental questions about the necessity of attention mechanisms for temporal modelling.
+
+Despite these advances in the forecasting literature, no systematic evaluation of efficient Transformer architectures exists for physiological signal classification under rigorous subject-independent validation protocols. This gap is significant for two reasons. First, physiological signals such as EDA exhibit distinct statistical properties---including inter-subject variability, non-stationarity, and structured phasic responses---that may interact differently with each efficiency mechanism compared to the electricity, traffic, and weather datasets on which these architectures were originally benchmarked. Second, the forecasting task differs fundamentally from classification: the former predicts continuous future values, while the latter aggregates temporal information into a discrete decision boundary, potentially altering the relative importance of different architectural components such as the decoder and the aggregation mechanism \cite{TST_Zerveas2021}. Bridging this gap requires empirical evaluation under a task and data distribution that reflect the intended deployment scenario.
+
+This work addresses this gap by presenting the first systematic comparison of efficient Transformer variants for EDA-based arousal classification. Five architectures spanning distinct efficiency paradigms are evaluated: PatchTST (patch-based tokenisation, serving as our prior baseline), Informer (ProbSparse attention, $O(L \log L)$), Autoformer (Auto-Correlation with progressive decomposition, $O(L \log L)$), FEDformer (frequency-domain attention, $O(L)$), and DLinear (simple linear decomposition, $O(L)$). All architectures are assessed on the identical dataset of 147 participants and LOSO protocol as our prior work \cite{SanchezReolid2022}, ensuring direct comparability of results. Crucially, we elevate computational efficiency---measured through parameter count, FLOPs, inference time, and memory footprint---to a primary evaluation dimension alongside standard classification metrics.
+
+The contributions of this work are fourfold: (i) the first systematic comparison of efficient Transformer variants for subject-independent EDA-based arousal classification under strict LOSO validation; (ii) explicit characterisation of the accuracy-efficiency Pareto frontier through joint evaluation of predictive performance and resource consumption, directly informing architectural selection for edge deployment; (iii) inclusion of DLinear as a ``sanity check'' baseline, testing whether complex attention mechanisms provide measurable benefit over simple linear decomposition for EDA signals; and (iv) analysis of how each efficiency mechanism interacts with the specific temporal dynamics of phasic EDA responses, contributing physiologically-grounded insights into architecture design for biosignal classification.
+
+% ======================================================
+\section{Materials and Methods}
+
+\subsection{Dataset and Experimental Protocol}
+
+The experimental dataset follows a controlled stress elicitation protocol described in previous work \cite{sanchez2020deep}. Electrodermal Activity signals were recorded from 147 healthy participants (aged 18--44 years) exposed to audiovisual stimuli designed to induce calm and stress states under controlled laboratory conditions. Each stimulus lasted 47 seconds. To eliminate transition artefacts associated with stimulus onset and offset, the first 4 seconds and the last 3 seconds were removed, resulting in 40-second effective segments per trial. Signals were acquired at a constant sampling frequency of 4 Hz.
+
+Each participant completed multiple trials in both calm and stress conditions, producing a balanced binary classification dataset. All trials belonging to the same participant were preserved within the same fold during cross-validation to prevent subject-level data leakage---a critical methodological safeguard given the strong inter-subject variability characteristic of EDA signals \cite{LongTermVariability,Azad2025}.
+
+\subsection{EDA Signal Processing and Input Representation}
+
+Raw skin conductance signals were preprocessed following the pipeline established in our prior work \cite{SanchezReolid2022}. A low-pass FIR filter (cut-off frequency: 4 Hz) was applied, followed by Gaussian smoothing to attenuate acquisition noise. Continuous Decomposition Analysis (CDA) was used to separate the tonic skin conductance level ($SCL$) and the phasic skin conductance response ($SCR$):
+
+\begin{equation}
+SC(t) = SCL(t) + SCR(t)
+\end{equation}
+
+Only the phasic component $SCR(t)$ was retained for modelling, as it directly reflects sympathetic nervous system activation uncontaminated by slow tonic drift. To enrich the short-term dynamic representation and facilitate early detection of sympathetic responses, two derivative channels were computed from the phasic signal: the first temporal derivative ($\Delta SCR$) and the second temporal derivative ($\Delta^2 SCR$). These channels encode the velocity and acceleration of sympathetic activation respectively, providing the model with explicit information about the rate and pattern of phasic change \cite{sanchez2022one}.
+
+Each temporal window of length $n$ seconds was thus represented as:
+
+\begin{equation}
+\mathbf{X} \in \mathbb{R}^{T \times C}, \quad T = 4n,\; C = 3
+\end{equation}
+
+\noindent where $C = 3$ corresponds to the channels $(SCR, \Delta SCR, \Delta^2 SCR)$.
+
+To analyse the minimal temporal interval required for reliable arousal classification, window lengths were systematically varied from $n = 1$ to $n = 40$ seconds. Two segmentation strategies were evaluated: (i) non-overlapping windows and (ii) sliding windows with 1-second stride (4 samples). As noted above, all windows belonging to the same subject were preserved within the same LOSO fold.
+
+\subsection{Efficient Transformer Architectures}
+
+Five architectures were selected to represent distinct efficiency paradigms in time-series modelling (Table~\ref{tab:architectures}). For all Transformer-based architectures, the original forecasting head was replaced with a global average pooling operation over the encoded sequence followed by a linear classification layer. DLinear, which does not employ an encoder-decoder structure, was adapted by feeding the decomposed representations into a linear classification head.
+
+\begin{table}[!ht]
+\centering
+\caption{Overview of evaluated architectures and their efficiency mechanisms. $L$ denotes input sequence length, $N$ denotes the number of patches after tokenisation ($N \ll L$), and $M$ denotes the number of selected Fourier modes ($M \ll L$).}
+\label{tab:architectures}
+\begin{tabular}{lccc}
+\toprule
+Architecture & Core Mechanism & Complexity & Venue \\
+\midrule
+PatchTST   & Patch tokenisation + self-attention & $O(N^2)$ & ICLR 2023 \\
+Informer   & ProbSparse self-attention & $O(L \log L)$ & AAAI 2021 \\
+Autoformer & Auto-Correlation + decomposition & $O(L \log L)$ & NeurIPS 2021 \\
+FEDformer  & Fourier-enhanced attention & $O(L)$ & ICML 2022 \\
+DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{PatchTST}
+
+PatchTST \cite{PatchTST2023} reduces computational cost by segmenting each channel into non-overlapping patches of length $P$ prior to tokenisation. Given a univariate input $\mathbf{x} \in \mathbb{R}^{T}$, the patching operation produces $N$ patches:
+
+\begin{equation}
+N = \left\lfloor \frac{T - P}{S} \right\rfloor + 1
+\end{equation}
+
+\noindent where $S$ is the stride between consecutive patches (typically $S = P$ for non-overlapping patches). Each patch is projected to dimension $D$ via a learned linear transformation:
+
+\begin{equation}
+\mathbf{z}_i = \mathbf{W}_p \, [x_{i \cdot S};\, x_{i \cdot S + 1};\, \dots;\, x_{i \cdot S + P - 1}] + \mathbf{b}_p
+\end{equation}
+
+Channel-independent encoding is applied: each of the $C$ input channels is encoded independently, and the resulting representations are concatenated before the classification head. This design preserves per-channel morphological structure while reducing the effective sequence length. Given 4 Hz sampling, patch lengths of $P \in \{4, 8, 16\}$ correspond to physiological windows of 1, 2, and 4 seconds. PatchTST serves as the baseline against which the remaining architectures are compared, as it achieved the best accuracy-efficiency balance in our prior work \cite{SanchezReolid2022}.
+
+\subsubsection{Informer}
+
+Informer \cite{Informer2021} addresses the quadratic bottleneck of canonical self-attention through ProbSparse attention. In standard scaled dot-product attention, the attention distribution of the $i$-th query over all keys is:
+
+\begin{equation}
+\mathcal{A}(\mathbf{q}_i, \mathbf{K}, \mathbf{V}) = \sum_{j} \frac{k(\mathbf{q}_i, \mathbf{k}_j)}{\sum_{l} k(\mathbf{q}_i, \mathbf{k}_l)} \mathbf{v}_j
+\end{equation}
+
+\noindent where $k(\mathbf{q}_i, \mathbf{k}_j) = \exp(\mathbf{q}_i \mathbf{k}_j^\top / \sqrt{d})$. The key insight of ProbSparse attention is that the attention distribution of dominant queries departs substantially from a uniform distribution. This sparsity is measured via the Kullback-Leibler divergence:
+
+\begin{equation}
+M(\mathbf{q}_i, \mathbf{K}) = \max_j \left\{ \frac{\mathbf{q}_i \mathbf{k}_j^\top}{\sqrt{d}} \right\} - \frac{1}{L_K} \sum_{j=1}^{L_K} \frac{\mathbf{q}_i \mathbf{k}_j^\top}{\sqrt{d}}
+\end{equation}
+
+Only the top-$u$ queries (where $u = c \cdot \ln L_Q$) with the highest sparsity scores are selected for dot-product computation; the remaining queries are assigned the mean of the value vectors. This reduces the time and memory complexity of self-attention from $O(L^2)$ to $O(L \log L)$. Informer additionally employs self-attention distilling: at each encoder layer, a 1D convolution with stride $> 1$ halves the input sequence length, progressively reducing the effective $L$ across layers.
+
+\subsubsection{Autoformer}
+
+Autoformer \cite{Autoformer2021} replaces point-wise self-attention entirely with an Auto-Correlation mechanism grounded in stochastic process theory. Rather than computing pairwise dot products between query and key vectors, Auto-Correlation computes the correlation between a query series $\mathbf{q}$ and a key series $\mathbf{k}$ at different lag values $\tau$ via the Fast Fourier Transform (FFT):
+
+\begin{equation}
+\mathcal{R}_{\mathbf{q},\mathbf{k}}(\tau) = \mathcal{F}^{-1}\big( \mathcal{F}(\mathbf{q}) \cdot \overline{\mathcal{F}(\mathbf{k})} \big)
+\end{equation}
+
+\noindent where $\mathcal{F}$ denotes the FFT, $\mathcal{F}^{-1}$ its inverse, and $\overline{\cdot}$ the complex conjugate. The top-$k$ lag values with the highest auto-correlation are selected as dominant periodicities. The final representation is aggregated via a time delay operation:
+
+\begin{equation}
+\text{Auto-Correlation}(\mathbf{q}, \mathbf{k}, \mathbf{v}) = \sum_{i=1}^{k} \text{Roll}(\mathbf{v}, \tau_i) \cdot \text{Softmax}(\mathcal{R}_{\mathbf{q},\mathbf{k}}(\tau_i))
+\end{equation}
+
+\noindent where $\text{Roll}(\cdot, \tau)$ shifts the sequence by $\tau$ positions. This mechanism achieves $O(L \log L)$ complexity through the FFT, while the progressive seasonal-trend decomposition block---integrated as an internal architectural unit rather than a preprocessing step---enables gradual extraction of long-term (tonic) and short-term (phasic) components. This decomposition aligns conceptually with EDA physiology, where tonic and phasic signals coexist.
+
+\subsubsection{FEDformer}
+
+FEDformer \cite{FEDformer2022} achieves $O(L)$ complexity---the only linear-complexity candidate in this comparison---by performing attention in the frequency domain. The Fourier-enhanced attention block randomly selects $M \ll L$ Fourier modes and computes attention exclusively over the selected frequency components:
+
+\begin{equation}
+\tilde{\mathbf{Q}} = \text{Select}(\mathcal{F}(\mathbf{Q}), M), \quad \tilde{\mathbf{K}} = \text{Select}(\mathcal{F}(\mathbf{K}), M)
+\end{equation}
+
+\begin{equation}
+\text{Attention}_{\text{freq}} = \mathcal{F}^{-1}\big( \text{Softmax}(\tilde{\mathbf{Q}} \tilde{\mathbf{K}}^\top) \cdot \mathcal{F}(\mathbf{V}) \big)
+\end{equation}
+
+FEDformer also incorporates a seasonal-trend decomposition block similar to Autoformer's, and employs a mixture-of-experts strategy that combines frequency-domain and time-domain representations. Operating on a sparse set of Fourier modes provides two advantages for EDA signals: (i) phasic SCR responses have characteristic frequency signatures that may be efficiently captured in the spectral domain, and (ii) the mode selection acts as an implicit denoising mechanism, attenuating high-frequency acquisition artefacts \cite{Tsirmpas2025}.
+
+\subsubsection{DLinear}
+
+DLinear \cite{DLinear2023} represents the simplest model in the comparison and serves as a critical baseline. The architecture consists of three steps:
+
+\begin{enumerate}
+    \item \textbf{Decomposition:} The input $\mathbf{X} \in \mathbb{R}^{T \times C}$ is decomposed into a trend component $\mathbf{X}_t$ (computed via a moving average kernel of size $k$) and a residual (seasonal) component $\mathbf{X}_s = \mathbf{X} - \mathbf{X}_t$.
+    \item \textbf{Linear projection:} Independent single-layer linear networks are applied to each component: $\mathbf{\hat{y}}_t = \mathbf{W}_t \mathbf{X}_t + \mathbf{b}_t$ and $\mathbf{\hat{y}}_s = \mathbf{W}_s \mathbf{X}_s + \mathbf{b}_s$.
+    \item \textbf{Fusion:} The final output is obtained by summation: $\mathbf{\hat{y}} = \mathbf{\hat{y}}_t + \mathbf{\hat{y}}_s$, followed by a softmax classification layer.
+\end{enumerate}
+
+Despite its extreme simplicity---no attention, no convolutions, no recurrence---DLinear has demonstrated competitive or superior performance to state-of-the-art Transformers on multiple time-series forecasting benchmarks \cite{DLinear2023}. Its inclusion here tests a provocative hypothesis: given that EDA signals can be meaningfully decomposed into tonic and phasic components \cite{LongTermVariability}, a simple linear model may capture sufficient discriminative information without requiring attention mechanisms, convolutions, or any non-linear transformation beyond the final classification layer. If DLinear approaches the performance of Transformer-based architectures, this would have significant implications for the design of deployable EDA classifiers.
+
+\subsection{Training and Hyperparameter Configuration}
+
+All models were trained end-to-end using the AdamW optimiser with cross-entropy loss. The initial learning rate was set to $10^{-3}$ with cosine annealing scheduling. Mini-batch size was 32. Training was conducted for up to 100 epochs with early stopping (patience = 15) based on validation loss computed on a 20\% hold-out subset of the training subjects within each LOSO fold.
+
+Regularisation included dropout ($p \in [0.1, 0.3]$), weight decay ($\lambda = 10^{-4}$), and gradient clipping (maximum norm = 1.0). Hyperparameters were tuned under identical search budgets across all architectures:
+
+\begin{itemize}
+    \item Encoder layers $L \in \{1, 2, 3, 4\}$
+    \item Attention heads $H \in \{1, 2, 4, 8\}$
+    \item Embedding dimension $D \in \{16, 32, 64, 128\}$
+    \item Feed-forward dimension $\in \{32, 64, 128, 256\}$
+    \item Patch size (PatchTST only) $P \in \{4, 8, 16\}$
+    \item Moving average kernel (Autoformer, FEDformer, DLinear) $k \in \{3, 5, 7, 9, 11\}$
+    \item Sampling factor (Informer only) $c \in \{3, 5, 7\}$ (controls $u = c \cdot \ln L_Q$)
+    \item Number of Fourier modes (FEDformer only) $M \in \{16, 32, 64\}$
+\end{itemize}
+
+Z-score normalisation was computed using training-fold statistics only (mean and standard deviation estimated from training subjects within each fold) and applied identically to validation and test subjects. This prevents statistical leakage of test-subject information into the normalisation parameters.
+
+\subsection{Validation Protocol and Evaluation Metrics}
+
+\subsubsection{Leave-One-Subject-Out (LOSO)}
+
+A strict LOSO protocol was enforced to ensure subject-independent evaluation. In each of the 147 folds, one participant was withheld for testing, while the remaining 146 participants were used for training (80\%) and validation (20\%). This protocol prevents models from learning subject-specific biometric baselines---a well-documented source of overestimated performance in EDA classification \cite{Azad2025,LongTermVariability}.
+
+\subsubsection{Classification Performance}
+
+Standard classification metrics were computed for each fold and averaged across all 147 folds: Accuracy, Precision, Recall, F1-score, and Area Under the Receiver Operating Characteristic Curve (AUC). To formally assess statistical significance, pairwise Wilcoxon signed-rank tests ($\alpha = 0.05$) were conducted on the per-fold F1-score distributions.
+
+\subsubsection{Computational Efficiency Metrics}
+
+Four complementary efficiency metrics were recorded for each architecture under identical input conditions (40-second window, $T = 160$, $C = 3$, batch size = 1 for single-inference metrics):
+
+\begin{itemize}
+    \item \textbf{Parameter count ($N_{\text{params}}$):} Total number of trainable parameters (millions). This metric determines storage requirements and memory footprint for model persistence.
+    \item \textbf{FLOPs:} Number of floating-point operations required for a single forward pass (millions). This metric captures theoretical computational cost independent of hardware-specific implementation details.
+    \item \textbf{Inference time ($t_{\text{inf}}$):} Wall-clock time per sample in milliseconds, averaged over 1,000 forward passes on a single NVIDIA GPU. This metric reflects practical latency in a deployment-relevant setting.
+    \item \textbf{Peak memory ($M_{\text{peak}}$):} Maximum GPU memory consumption during a single forward pass (MB). This metric constrains deployment on memory-limited devices.
+\end{itemize}
+
+All four metrics were measured with the optimal hyperparameter configuration for each architecture (selected via grid search on the classification F1-score) to ensure that efficiency comparisons reflect the configurations that practitioners would actually deploy.
+
+\subsubsection{Interpretability Analysis}
+
+For Transformer-based architectures (PatchTST, Informer, Autoformer, FEDformer), attention weight distributions were extracted and analysed to quantify temporal relevance across the observation window. Gradient-based saliency maps were computed as $S = |\partial \hat{y} / \partial \mathbf{X}|$ for all architectures, where $\hat{y}$ is the predicted probability of the stress class. Saliency was aggregated across time steps and channels to assess the relative contribution of the phasic signal and its derivatives.
+
+A channel ablation protocol was evaluated under the same LOSO framework: (i) SCR only, (ii) SCR + $\Delta SCR$, and (iii) SCR + $\Delta SCR$ + $\Delta^2 SCR$, to quantify the marginal contribution of derivative information for each architecture.
+
+% ======================================================
+\section{Results and Discussion}
+
+\textit{[The following section presents the anticipated structure of the results. All tables, figures, and numerical values will be populated upon completion of model training and evaluation.]}
+
+\subsection{Overall Classification Performance}
+
+\textit{[Table 2 reports the LOSO performance of each architecture using mean $\pm$ standard deviation across folds, following the format established in our prior work. Metrics include Accuracy, Precision, Recall, F1-score, and AUC. Expected findings: (a) Transformer-based efficient architectures achieve competitive performance relative to PatchTST; (b) DLinear provides a lower bound on classification accuracy, quantifying the contribution of non-linear attention mechanisms; (c) fold-wise standard deviations indicate robustness to inter-subject variability.]}
+
+\subsection{Computational Efficiency}
+
+\textit{[Table 3 reports parameter count, FLOPs, inference time, and peak memory for each architecture. Expected findings: (a) FEDformer achieves the lowest FLOPs due to linear complexity; (b) DLinear has the fewest parameters; (c) PatchTST's patch tokenisation yields competitive inference times despite quadratic attention complexity.]}
+
+\subsection{Accuracy-Efficiency Pareto Frontier}
+
+\textit{[Figure 1 presents a scatter plot of F1-score vs. inference time (or FLOPs), annotated with Pareto-optimal architectures. This dual-axis analysis is the central contribution of the paper, directly informing architecture selection under different deployment constraints: cloud/server (F1-priority), mobile/edge (balanced), and wearable/microcontroller (efficiency-priority).]}
+
+\subsection{Minimal Temporal Interval Behaviour}
+
+\textit{[Figure 2 displays F1-score as a function of window length (1--40 s) for each architecture, analogous to Figure 1 in our prior work \cite{SanchezReolid2022}. Expected analysis: architectures with global receptive fields (Informer, Autoformer) may degrade more gracefully than DLinear at short window lengths, while FEDformer's frequency-domain processing may benefit from longer windows that resolve SCR spectral signatures.]}
+
+\subsection{Statistical Significance}
+
+\textit{[Table 4 reports pairwise Wilcoxon signed-rank p-values on per-fold F1-scores. Expected findings: statistically significant differences between Transformer-based and linear architectures; potentially non-significant differences between certain efficient Transformer pairs, indicating near-equivalent performance at different computational costs.]}
+
+\subsection{Interpretability Insights}
+
+\textit{[Attention maps for Transformer architectures are expected to show concentration on SCR onset and rising phases, consistent with prior findings \cite{SanchezReolid2022}. Saliency analysis is expected to reveal complementary contributions of derivative channels, particularly $\Delta SCR$ for early response detection. Channel ablation results are anticipated to confirm incremental benefit of derivative information across all architectures.]}
+
+\subsection{Comparison with Prior Convolutional Baselines}
+
+\textit{[The results are contextualised against the five architectures evaluated in our prior work \cite{SanchezReolid2022}: 1D-CNN (F1 = 0.796), TCN (F1 = 0.812), InceptionTime (F1 = 0.822), TST (F1 = 0.840), and PatchTST (F1 = 0.852). This comparison addresses the question of whether efficient Transformers can match or exceed the accuracy of PatchTST at substantially lower computational cost.]}
+
+% ======================================================
+\section{Conclusion and Future Work}
+
+\textit{[The following presents the anticipated conclusion structure. Content will be populated upon completion of results.]}
+
+This study presented the first systematic comparison of efficient Transformer architectures for subject-independent arousal classification from Electrodermal Activity. Five architectures spanning distinct efficiency paradigms---PatchTST, Informer, Autoformer, FEDformer, and DLinear---were evaluated under a strict Leave-One-Subject-Out validation framework using EDA signals from 147 participants. By jointly evaluating classification performance and computational cost, this work provides the first explicit characterisation of the accuracy-efficiency trade-off for Transformer-based EDA classification.
+
+\textit{[Key findings TBD: (1) whether efficient Transformers approach PatchTST accuracy at lower cost, (2) whether DLinear validates or disproves the necessity of attention for EDA, (3) which architecture achieves the optimal Pareto trade-off for each deployment scenario, and (4) implications for the broader question of architectural complexity in physiological time-series classification.]}
+
+The inclusion of computational efficiency as a primary evaluation metric reflects a pragmatic recognition that the translational value of affective computing research depends not only on laboratory accuracy but on deployability in real-world, resource-constrained settings. The analysis of temporal window length further informs the latency requirements of real-time wearable applications.
+
+Future work will explore three directions. First, self-supervised pre-training strategies tailored to efficient architectures \cite{MTECG2023} may improve performance on limited physiological datasets by leveraging unlabelled data. Second, multi-modal integration with complementary biosignals such as heart rate variability and electrocardiogram \cite{Oliver2025WESAD} may enrich the information available to lightweight classifiers. Third, deployment-oriented optimisation through quantisation, pruning, and knowledge distillation \cite{Mukhopadhyay2024} applied to the most promising architectures identified here will further narrow the gap between laboratory performance and wearable deployment.
+
+% ---- Bibliography ----
+\bibliographystyle{splncs04}
+\bibliography{bibliography.bib}
+%
+\end{document}

@@ -1,6 +1,6 @@
-# Coding Standards: Python
+# Coding Standards: Python (ML/DL)
 
-These standards apply to all Python code produced by the Coder agent. Derived from C++ Core Guidelines engineering discipline, adapted for Python in empirical economics. The coder-critic enforces these rules.
+These standards apply to all Python code produced by the Coder agent. Derived from software engineering discipline, adapted for ML/DL research in CS/AI and biomedical engineering. The coder-critic enforces these rules.
 
 ---
 
@@ -15,20 +15,35 @@ These standards apply to all Python code produced by the Coder agent. Derived fr
 
 | Package | Purpose |
 |---------|---------|
-| `numpy` | Array operations, linear algebra |
-| `scipy` | Statistical distributions, optimization |
-| `pandas` | Panel data manipulation |
-| `matplotlib` | All figures |
-| `joblib` | Parallel bootstrap/simulation |
-| `statsmodels` | Auxiliary regression tools |
-| `linearmodels` | Panel models, IV, fixed effects |
+| `torch` (PyTorch) | Deep learning framework (primary) |
+| `torchvision` / `torchaudio` | Domain-specific extensions if needed |
+| `numpy` | Array operations |
+| `scipy` | Signal processing (filters, stats) |
+| `pandas` | Tabular data manipulation, results tables |
+| `scikit-learn` | Metrics, cross-validation splits, preprocessing |
+| `matplotlib` | All figures (PDF output) |
+| `seaborn` | Confusion matrices, statistical plots (paper figures only via matplotlib backend) |
+| `tqdm` | Progress bars |
+| `tensorboard` or `wandb` | Experiment logging |
+| `thop` or `fvcore` | FLOPs/profiling |
+| `pyyaml` | Config file parsing |
+| `pathlib` | File path handling |
+
+### Optional (Based on Domain)
+
+| Package | Purpose |
+|---------|---------|
+| `cvxEDA` / `neurokit2` | EDA signal decomposition (tonic/phasic) |
+| `mne` | General physiological signal processing |
+| `pytorch-lightning` | Training loop standardization (optional, for complex projects) |
 
 ### Prohibited
 
 | Package | Reason | Replacement |
 |---------|--------|-------------|
-| `sklearn` for inference | Not designed for causal inference | Custom or `statsmodels` |
-| `plotly` / `seaborn` for paper figures | PDF output issues, non-standard for econ | `matplotlib` |
+| `sklearn` for neural network models | Not designed for DL | PyTorch / TensorFlow |
+| `plotly` for paper figures | PDF issues in LaTeX | `matplotlib` with PDF backend |
+| `tensorflow` + `pytorch` mixed | Increases complexity | Choose one framework |
 
 ---
 
@@ -36,14 +51,15 @@ These standards apply to all Python code produced by the Coder agent. Derived fr
 
 | Element | Convention | Example |
 |---------|-----------|---------|
-| Files / modules | `snake_case.py` | `estimation.py` |
-| Functions | `snake_case` | `estimate_att()` |
-| Variables | `snake_case` | `n_obs`, `y_grid` |
-| Constants | `UPPER_SNAKE_CASE` | `N_BOOT`, `ALPHA` |
-| Classes | `PascalCase` | `EstimationResult` |
-| Type aliases | `PascalCase` | `LinkFunction` |
-| Booleans | `is_`, `has_` prefix | `is_treated`, `has_converged` |
-| Private helpers | `_leading_underscore` | `_validate_index()` |
+| Files / modules | `snake_case.py` | `trainer.py`, `eda_dataset.py` |
+| Functions | `snake_case` | `compute_f1()`, `set_seed()` |
+| Variables | `snake_case` | `n_subjects`, `learning_rate` |
+| Constants | `UPPER_SNAKE_CASE` | `N_SEEDS`, `BATCH_SIZE`, `DROPOUT_RATE` |
+| Classes | `PascalCase` | `LightweightTransformer`, `EDADataset` |
+| Type aliases | `PascalCase` | `TensorDict` |
+| Booleans | `is_`, `has_` prefix | `is_training`, `has_converged` |
+| Private helpers | `_leading_underscore` | `_validate_input_shape()` |
+| Model components | `PascalCase` | `MultiScaleAttention`, `LightweightPE` |
 
 ---
 
@@ -57,152 +73,381 @@ These standards apply to all Python code produced by the Coder agent. Derived fr
 - **Type hints:** required on all function signatures
 
 ```python
-from typing import Callable
+from pathlib import Path
+from typing import Optional, Union
+
 import numpy as np
-from numpy.typing import NDArray
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader
 
-FloatArray = NDArray[np.float64]
-LinkFunction = Callable[[FloatArray], FloatArray]
 
-def estimate_att(
-    data: pd.DataFrame,
-    g: int,
-    t: int,
-    *,
-    weights: FloatArray | None = None,
-) -> dict[str, FloatArray | int]:
-    ...
+class EDADataset(Dataset):
+    """Dataset for EDA time-series classification.
+
+    Parameters
+    ----------
+    data_path : Path
+        Path to preprocessed data file.
+    window_size : int
+        Number of timesteps per sample.
+    stride : int
+        Stride between consecutive windows.
+    """
+    def __init__(
+        self,
+        data_path: Path,
+        window_size: int = 256,
+        stride: int = 128,
+    ) -> None:
+        ...
 ```
 
 ---
 
 ## 4. Numerical Discipline
 
-### NumPy Discipline
-- All numerical computation through NumPy arrays, never Python lists
-- Use `np.float64` explicitly
-- `np.sum()`, `np.min()`, `np.max()` — never Python builtins on arrays
-
 ### Float Safety
 ```python
-def safe_link_inv(
-    p: FloatArray, link_inv: LinkFunction, eps: float = 1e-12
-) -> FloatArray:
-    """Apply inverse link with boundary clamping."""
-    p_clamped = np.clip(p, eps, 1.0 - eps)
-    return link_inv(p_clamped)
+def safe_loss(predictions: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+    """Compute loss with NaN/Inf checking."""
+    loss = nn.functional.cross_entropy(predictions, targets)
+    if torch.isnan(loss) or torch.isinf(loss):
+        raise RuntimeError(f"NaN/Inf loss detected")
+    return loss
 ```
 
-### CDF Monotonicity
+### Output Clamping
 ```python
-def enforce_monotone(f: FloatArray) -> FloatArray:
-    """Enforce non-decreasing constraint on CDF values."""
-    return np.maximum.accumulate(f)
+# Clamp probabilities to avoid log(0) issues
+probs = torch.clamp(raw_output, min=1e-7, max=1.0 - 1e-7)
+log_probs = torch.log(probs)
 ```
 
 ### Reproducibility
 ```python
-# RIGHT: explicit RNG object
-rng = np.random.default_rng(seed=SEED)
-weights = rng.exponential(scale=1.0, size=(N, N_BOOT))
+import random
+import numpy as np
+import torch
 
-# WRONG: global state
-np.random.seed(42)
-weights = np.random.exponential(1.0, size=(N, N_BOOT))
+
+def set_seed(seed: int) -> None:
+    """Set all random seeds for reproducibility."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+# WRONG: only setting one seed
+torch.manual_seed(42)
 ```
 
 ### Pre-allocation
 ```python
-# RIGHT
-boot_results = np.empty((n_grid, N_BOOT), dtype=np.float64)
-for b in range(N_BOOT):
-    boot_results[:, b] = estimate_weighted(...)
+# RIGHT: pre-allocate results array
+n_models, n_folds, n_metrics = 5, 5, 4
+results = np.empty((n_models, n_folds, n_metrics), dtype=np.float32)
 
 # WRONG: growing a list
 results = []
-for b in range(N_BOOT):
-    results.append(estimate_weighted(...))
+for model in models:
+    model_results = []
+    for fold in range(n_folds):
+        model_results.append(evaluate(model, fold))
+    results.append(model_results)
 ```
 
 ---
 
-## 5. Function Design
+## 5. Model Design Standards
 
-### Consistent API
+### Architecture Class Structure
 ```python
-def estimate_att(
-    data: pd.DataFrame,
-    g: int,
-    t: int,
-    *,
-    link_fn: LinkFunction = scipy.stats.norm.cdf,
-    link_inv: LinkFunction = scipy.stats.norm.ppf,
-    y_grid: FloatArray,
-    weights: FloatArray | None = None,
-) -> dict[str, FloatArray | int]:
-    """Estimate ATT for group g at time t.
+class BaseModel(nn.Module):
+    """Abstract base class for all models."""
 
-    Parameters
-    ----------
-    data : pd.DataFrame
-        Panel data with columns: unit_id, group, time, outcome.
-    ...
+    def __init__(self, config: dict) -> None:
+        super().__init__()
+        self.config = config
 
-    Returns
-    -------
-    dict
-        Keys: 'estimate', 'se', 'n_obs'.
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        raise NotImplementedError
+
+    def count_parameters(self) -> int:
+        """Return number of trainable parameters."""
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+    def get_complexity(self, input_shape: tuple) -> dict:
+        """Return parameter count and estimated FLOPs."""
+        return {
+            "n_params": self.count_parameters(),
+            "input_shape": input_shape,
+        }
+```
+
+### Component Isolation
+Each novel component goes in its own class:
+```python
+class MultiScaleAttention(nn.Module):
+    """Multi-scale attention module.
+
+    Computes attention at multiple temporal resolutions and fuses
+    the results via learned weights.
     """
+    def __init__(
+        self,
+        d_model: int,
+        n_heads: int = 8,
+        scales: list[int] = [1, 2, 4],
+        dropout: float = 0.1,
+    ) -> None:
+        ...
 ```
 
-### Fail Fast
+### Forward Pass Clarity
 ```python
-def ecdf_panel(data: pd.DataFrame, g: int, t: int, y_grid: FloatArray) -> FloatArray:
-    mask = (data["group"] == g) & (data["time"] == t)
-    outcomes = data.loc[mask, "outcome"].to_numpy()
-    if len(outcomes) == 0:
-        raise ValueError(f"No observations for group {g}, time {t}")
-    return np.array([np.mean(outcomes <= y) for y in y_grid])
+def forward(self, x: torch.Tensor) -> torch.Tensor:
+    # Embedding
+    x = self.embedding(x)
+
+    # Transformer encoder
+    x = self.encoder(x)
+
+    # Pooling
+    x = self.pooling(x)
+
+    # Classification head
+    x = self.classifier(x)
+
+    return x
 ```
 
 ---
 
-## 6. Parallelism
+## 6. Training Loop Standards
+
+### Trainer Pattern
+```python
+class Trainer:
+    """Training loop with early stopping and logging."""
+
+    def __init__(self, model: nn.Module, config: dict, device: torch.device):
+        self.model = model.to(device)
+        self.device = device
+        self.config = config
+        self.optimizer = torch.optim.AdamW(
+            model.parameters(),
+            lr=config["learning_rate"],
+            weight_decay=config["weight_decay"],
+        )
+        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+            self.optimizer, T_0=config["T_0"]
+        )
+        self.criterion = nn.CrossEntropyLoss()
+
+    def train_epoch(self, loader: DataLoader) -> float:
+        self.model.train()
+        total_loss = 0.0
+        for batch in loader:
+            inputs, targets = batch["signal"].to(self.device), batch["label"].to(self.device)
+            self.optimizer.zero_grad()
+            outputs = self.model(inputs)
+            loss = self.criterion(outputs, targets)
+            loss.backward()
+            self.optimizer.step()
+            total_loss += loss.item()
+        return total_loss / len(loader)
+
+    @torch.no_grad()
+    def validate(self, loader: DataLoader) -> dict:
+        self.model.eval()
+        all_preds, all_targets = [], []
+        for batch in loader:
+            inputs, targets = batch["signal"].to(self.device), batch["label"].to(self.device)
+            outputs = self.model(inputs)
+            preds = outputs.argmax(dim=1)
+            all_preds.append(preds.cpu())
+            all_targets.append(targets.cpu())
+        return compute_metrics(
+            torch.cat(all_preds), torch.cat(all_targets)
+        )
+```
+
+### Gradient Accumulation (for large models)
+```python
+ACCUMULATION_STEPS = 4
+for i, batch in enumerate(loader):
+    outputs = self.model(inputs)
+    loss = self.criterion(outputs, targets) / ACCUMULATION_STEPS
+    loss.backward()
+    if (i + 1) % ACCUMULATION_STEPS == 0:
+        self.optimizer.step()
+        self.optimizer.zero_grad()
+```
+
+---
+
+## 7. GPU Discipline
 
 ```python
-from joblib import Parallel, delayed
+# Device management
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-results = Parallel(n_jobs=-1)(
-    delayed(estimate_weighted)(data, weights=boot_weights[:, b], ...)
-    for b in range(N_BOOT)
+# Model to device
+model = model.to(device)
+
+# Data to device in training loop, not in Dataset
+for inputs, targets in loader:
+    inputs, targets = inputs.to(device), targets.to(device)
+
+# Memory management between experiments
+del model, optimizer
+torch.cuda.empty_cache()
+
+# Mixed precision (optional, for large models)
+from torch.cuda.amp import autocast, GradScaler
+scaler = GradScaler()
+with autocast():
+    outputs = model(inputs)
+    loss = criterion(outputs, targets)
+scaler.scale(loss).backward()
+scaler.step(optimizer)
+scaler.update()
+```
+
+---
+
+## 8. Experiment Configuration
+
+```python
+# config.py — single source of truth for all experiment parameters
+from pathlib import Path
+
+# Paths
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = PROJECT_ROOT / "data"
+RAW_DATA_DIR = DATA_DIR / "raw"
+PROCESSED_DATA_DIR = DATA_DIR / "processed"
+RESULTS_DIR = PROJECT_ROOT / "results"
+
+# Model
+D_MODEL = 128
+N_HEADS = 8
+N_LAYERS = 4
+DROPOUT = 0.1
+
+# Training
+BATCH_SIZE = 64
+LEARNING_RATE = 1e-4
+WEIGHT_DECAY = 1e-4
+N_EPOCHS = 100
+EARLY_STOPPING_PATIENCE = 15
+GRADIENT_CLIP_NORM = 1.0
+
+# Data
+WINDOW_SIZE = 256
+STRIDE = 128
+LOWPASS_CUTOFF = 4.0  # Hz
+
+# Experiment
+N_FOLDS = 5
+N_SEEDS = 5
+SEED_BASE = 42
+
+# Hardware
+DEVICE = "cuda"  # or "cpu"
+N_WORKERS = 4
+```
+
+---
+
+## 9. Evaluation Standards
+
+```python
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+    confusion_matrix,
+    classification_report,
 )
-```
 
-Pass `rng` objects or pre-generated seeds — never rely on global state for parallel work.
+
+def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_score: np.ndarray | None = None) -> dict:
+    """Compute standard classification metrics."""
+    metrics = {
+        "accuracy": accuracy_score(y_true, y_pred),
+        "f1_macro": f1_score(y_true, y_pred, average="macro"),
+        "f1_weighted": f1_score(y_true, y_pred, average="weighted"),
+        "precision_macro": precision_score(y_true, y_pred, average="macro"),
+        "recall_macro": recall_score(y_true, y_pred, average="macro"),
+    }
+    if y_score is not None and len(np.unique(y_true)) == 2:
+        metrics["auc_roc"] = roc_auc_score(y_true, y_score[:, 1])
+    return metrics
+```
 
 ---
 
-## 7. Error Handling
+## 10. Metric Reporting Format
+
+Always report:
+- Mean ± standard deviation across folds/seeds
+- Primary metric first
+- Appropriate precision (3-4 significant digits for percentages)
+
+```python
+# RIGHT
+f"F1 = {mean_f1:.3f} ± {std_f1:.3f}"
+
+# WRONG
+f"F1 = {mean_f1}"
+```
+
+---
+
+## 11. Error Handling
 
 - Raise `ValueError` for bad inputs, `RuntimeError` for computation failures
-- Never return `None` silently on failure
-- Check for `np.nan` / `np.inf` after numerical operations:
+- Never return silently on failure
+- Check for `NaN` / `Inf` after loss computation and forward pass
+- Validate input shapes before model forward
+- Validate output shapes after model forward
+
 ```python
-if np.any(np.isnan(estimates)) or np.any(np.isinf(estimates)):
-    raise RuntimeError(f"NaN/Inf in estimates for group {g}, time {t}")
+def forward(self, x: torch.Tensor) -> torch.Tensor:
+    if x.dim() != 3:
+        raise ValueError(f"Expected 3D input (batch, time, features), got {x.dim()}D")
+
+    output = self._forward_impl(x)
+
+    if torch.isnan(output).any():
+        raise RuntimeError("NaN detected in model output")
+
+    return output
 ```
 
 ---
 
-## 8. Prohibited Patterns
+## 12. Prohibited Patterns
 
 | Pattern | Reason | Replacement |
 |---------|--------|-------------|
 | `os.chdir()` | Breaks portability | `pathlib.Path` relative to project root |
-| Hardcoded paths | Breaks portability | `pathlib.Path` or config module |
+| Hardcoded paths | Breaks portability | `config.py` constants with `pathlib` |
 | `from module import *` | Namespace pollution | Explicit imports |
-| Python `sum/min/max` on arrays | Slow, wrong semantics | `np.sum`, `np.min`, `np.max` |
-| `np.random.seed()` global state | Not thread-safe, not parallel-safe | `np.random.default_rng(seed)` |
-| Growing lists in loops | O(n²) for large n | Pre-allocate `np.empty()` |
+| `DataLoader(shuffle=True)` for val/test | Misleading metrics | `shuffle=False` |
+| `np.random.seed()` alone | Incomplete reproducibility | `set_seed()` (all sources) |
+| `torch.save(model)` without `model.eval()` | Wrong batch-norm stats | Set eval mode first |
+| Test set in hyperparameter tuning | Data leakage | Strict train/val/test separation |
+| Mixing numpy/torch without device awareness | CPU/GPU mismatch | Consistent `to(device)` |
 | `except:` bare | Swallows all errors | `except SpecificError:` |
 | Mutable default arguments | Shared state bug | `None` default + create inside |
+| `print()` for training progress | Messy output | `tqdm` or `logging` |
+| Growing lists in evaluation loops | Memory inefficiency | Pre-allocate numpy arrays |
+| Global variables for experiment state | Non-reproducible | Pass state via config dicts |
+| Not saving preprocessing parameters | Can't reproduce pipeline | Save scalers/filters alongside data |

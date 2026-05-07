@@ -34,13 +34,13 @@ Enter at any stage. Use `/new-project` for the full pipeline.
 |---------|-------------|
 | `/new-project [topic]` | Full pipeline: idea to paper (orchestrated) |
 | `/discover [interview\|lit\|data]` | Research spec, literature review, or data discovery |
-| `/strategize [question]` | Identification strategy + Econometrician review |
-| `/analyze [dataset]` | End-to-end analysis: scripts, output, code review |
+| `/strategize [question]` | ML/DL experimental strategy + methods review |
+| `/analyze [dataset]` | End-to-end experiments: models, training, evaluation, code review |
 | `/write [section]` | Draft paper sections + humanizer pass |
 | `/review [file]` | Multi-agent quality review + weighted score |
 | `/revise [report]` | Route referee comments, draft response letter |
 | `/talk [format]` | Beamer presentation from paper (4 formats) |
-| `/submit [journal]` | Final gate: score >= 95, all components >= 80 |
+| `/submit [venue]` | Final gate: score >= 95, all components >= 80 |
 | `/tools [subcommand]` | commit, compile, validate-bib, journal, learn, deploy, context |
 
 ---
@@ -62,7 +62,7 @@ Weighted aggregate: Literature 10% + Data 10% + Identification 25% + Code 15% + 
 ## I Ask You When
 
 - **Design forks:** "Option A vs. Option B. Which?"
-- **Identification choice:** "CS DiD vs. Sun-Abraham for this setting?"
+- **Architecture choice:** "Transformer variant vs. CNN-LSTM for this task?"
 - **Disagreement with referee:** "DISAGREE classification — please review"
 - **After 3 strikes:** "Coder and coder-critic can't agree — your call"
 

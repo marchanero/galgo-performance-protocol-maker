@@ -27,11 +27,11 @@ Conduct a structured conversational interview to formalize a research idea.
 **Output:** Research specification + domain profile
 
 Interview structure:
-1. **Big Picture** (1-2 questions): "What phenomenon are you trying to understand?" "Why does this matter?"
-2. **Theoretical Motivation** (1-2 questions): "What's your intuition for why X happens?" "What would standard theory predict?"
-3. **Data and Setting** (1-2 questions): "What data do you have access to?" "Is there a specific institutional setting?"
-4. **Identification** (1-2 questions): "Is there a natural experiment or policy change you can exploit?" "What's the biggest threat to causal interpretation?"
-5. **Expected Results** (1-2 questions): "What would you expect to find?" "What would surprise you?"
+1. **Big Picture** (1-2 questions): "What problem are you trying to solve?" "Why does this matter?"
+2. **Technical Motivation** (1-2 questions): "What's the limitation of current approaches?" "What's your key insight?"
+3. **Data and Setting** (1-2 questions): "What datasets do you have access to?" "What's the domain/application context?"
+4. **Method** (1-2 questions): "What approach are you considering?" "What baselines would you compare against?"
+5. **Expected Contributions** (1-2 questions): "What improvement do you expect?" "What would be a surprising finding?"
 6. **Contribution** (1 question): "How does this differ from what's been done? What gap are you filling?"
 
 Interview style:
@@ -46,12 +46,12 @@ After interview (5-8 exchanges), produce three outputs:
 ```markdown
 # Research Specification: [Title]
 ## Research Question — [one sentence]
-## Motivation — [why this matters, theoretical context, policy relevance]
-## Hypothesis — [testable prediction with expected direction]
-## Empirical Strategy — [method, treatment, control, identifying assumption, robustness]
-## Data — [primary dataset, key variables, sample, unit of observation]
+## Motivation — [why this matters, limitations of current approaches]
+## Hypothesis — [expected performance improvement or insight, with rationale]
+## Experimental Strategy — [paper type, architecture/method, baselines, evaluation protocol]
+## Data — [primary dataset(s), subjects, samples, classes]
 ## Expected Results — [what the researcher expects and why]
-## Contribution — [how this advances the literature]
+## Contribution — [how this advances the state of the art]
 ## Open Questions — [issues needing further thought]
 ```
 

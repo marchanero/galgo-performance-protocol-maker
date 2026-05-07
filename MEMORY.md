@@ -70,3 +70,11 @@ When a mistake is corrected, append a `[LEARN:category]` entry below.
 [LEARN:meta] Dogfooding principles must be enforced: plan-first, spec-then-plan, quality gates, session logs → we follow our own guide.
 
 [LEARN:meta] Template development work (building infrastructure, docs) doesn't create session logs in quality_reports/ → those are for user work (slides, analysis), not meta-work. Keeps template clean for users who fork.
+
+[LEARN:eda-project] When creating a new paper from a reference, follow this sequence: (1) spec document with MUST/SHOULD/MAY requirements, (2) bibliography.bib with all real references, (3) main.tex skeleton with LNCS format, (4) ask user questions at key decision points (architecture selection, dataset, metrics). All files live under paper/ directory.
+
+[LEARN:eda-project] Reference paper provides reproducibility anchor: same dataset (147 participants), same LOSO protocol, same input channels (SCR+ΔSCR+Δ²SCR), same sampling rate (4 Hz). New paper should be comparable but with novel contribution (here: efficiency as primary metric vs. pure accuracy in reference).
+
+[LEARN:eda-project] For Overleaf compatibility: use \bibliography{bibliography.bib} (no path), configure latexmkrc with ensure_path('BIBINPUTS', '..//;.//'), use splncs04 bibliography style for LNCS. Keep preamble identical to reference paper.
+
+[LEARN:eda-project] Architecture selection criteria for EDA/physiological signals: cover multiple efficiency paradigms (sparse attention, frequency domain, auto-correlation, patching, linear) rather than picking similar architectures. DLinear is essential as a "do we need transformers?" sanity check.
