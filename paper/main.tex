@@ -634,8 +634,76 @@ PatchTST, as the only $O(N^2)$ architecture, is anticipated to incur the highest
 
 \begin{figure}[t]
 \centering
-\textit{[Figure 1: Scatter plot of F1-score vs.\ inference time (log scale), with each architecture represented as a labelled marker. The Pareto frontier is highlighted as a connecting line through non-dominated points. Shaded regions indicate deployment scenarios: wearable/microcontroller (F1 $\geq$ 0.80, $t_{\text{inf}} < 2$ ms), mobile/edge (F1 $\geq$ 0.83, $t_{\text{inf}} < 5$ ms), and cloud/server (F1-priority, no latency constraint).]}
-\caption{Accuracy-efficiency trade-off across architectures. Pareto-optimal architectures are connected by the frontier line. Shaded regions denote target deployment scenarios. Numerical values are expected estimates pending experimental completion.}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}
+\begin{axis}[
+    width=14cm, height=7cm,
+    xmode=log,
+    log basis x={10},
+    xmin=0.3, xmax=9,
+    ymin=0.78, ymax=0.88,
+    xlabel={Inference time $t_{\text{inf}}$ (ms, log scale)},
+    ylabel={F1-score},
+    xlabel style={font=\footnotesize},
+    ylabel style={font=\footnotesize},
+    xticklabel style={font=\footnotesize},
+    yticklabel style={font=\footnotesize},
+    grid=major,
+    grid style={dashed, gray!30},
+    legend style={font=\footnotesize, at={(0.02,0.02)}, anchor=south west, fill=white, fill opacity=0.8},
+    scatter/classes={
+        red/.style={fill=red1, draw=red1, mark=*},
+        orange/.style={fill=orange1, draw=orange1, mark=*},
+        green/.style={fill=green1, draw=green1, mark=*},
+        purple/.style={fill=purple1, draw=purple1, mark=*},
+        blue/.style={fill=blue1, draw=blue1, mark=*},
+    },
+]
+% === Shaded deployment regions ===
+\fill[red2, opacity=0.3]  (axis cs:0.3,0.78) rectangle (axis cs:2,0.88);
+\fill[orange2, opacity=0.2] (axis cs:2,0.78)   rectangle (axis cs:5,0.88);
+\fill[blue2, opacity=0.12]  (axis cs:5,0.78)   rectangle (axis cs:9,0.88);
+
+% Region labels
+\node[font=\footnotesize\bfseries, text=red1]        at (axis cs:0.75,0.875) {Wearable};
+\node[font=\footnotesize\bfseries, text=orange1]     at (axis cs:3.0,0.875)  {Mobile / Edge};
+\node[font=\footnotesize\bfseries, text=blue1]       at (axis cs:6.5,0.875)  {Cloud / Server};
+
+% === Data points ===
+\addplot[scatter, only marks, mark size=3.5pt, scatter src=explicit symbolic]
+table [x=t, y=f1, meta=class] {
+t     f1      class
+0.5   0.800   red
+1.5   0.825   orange
+1.8   0.858   purple
+2.5   0.835   orange
+3.5   0.852   green
+4.0   0.845   green
+5.0   0.848   green
+6.0   0.865   blue
+};
+\addlegendentry{Architectures}
+
+% === Pareto frontier ===
+\addplot[mark=none, draw=gray1, thick, densely dashed] coordinates {
+    (0.5,0.800) (1.5,0.825) (1.8,0.858) (6.0,0.865)
+};
+\addlegendentry{Pareto frontier}
+
+% === Manual labels (better positioning control) ===
+\node[font=\footnotesize, text=red1, anchor=south east] at (axis cs:0.5,0.800)  {DLinear};
+\node[font=\footnotesize, text=orange1, anchor=south east] at (axis cs:1.5,0.825)  {ModernTCN};
+\node[font=\footnotesize, text=purple1, anchor=south west] at (axis cs:1.8,0.858)  {Mamba};
+\node[font=\footnotesize, text=orange1, anchor=south east] at (axis cs:2.5,0.835)  {FEDformer};
+\node[font=\footnotesize, text=green1, anchor=south west]  at (axis cs:3.5,0.852)  {TimesNet};
+\node[font=\footnotesize, text=green1, anchor=north west]  at (axis cs:4.0,0.845)  {Informer};
+\node[font=\footnotesize, text=green1, anchor=north west]  at (axis cs:5.0,0.848)  {Autoformer};
+\node[font=\footnotesize, text=blue1, anchor=south west]   at (axis cs:6.0,0.865)  {PatchTST};
+
+\end{axis}
+\end{tikzpicture}%
+}
+\caption{Accuracy-efficiency Pareto frontier across the eight evaluated architectures. Each marker represents one architecture positioned by F1-score (predictive performance) and inference time per sample (computational cost, log scale). The dashed line connects Pareto-optimal architectures---those for which no other architecture simultaneously achieves higher F1 and lower inference time. Shaded regions delineate three deployment scenarios: wearable/microcontroller ($t_{\text{inf}} < 2$ ms), mobile/edge ($2 \leq t_{\text{inf}} < 5$ ms), and cloud/server ($t_{\text{inf}} \geq 5$ ms). Marker colours follow the paradigm convention. Numerical values are anticipated estimates pending experimental measurement.}
 \label{fig:pareto}
 \end{figure}
 
