@@ -317,129 +317,35 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 
 \subsubsection{PatchTST}
 
-PatchTST \cite{PatchTST2023} reduces computational cost by segmenting each channel into non-overlapping patches of length $P$ prior to tokenisation. Given a univariate input $\mathbf{x} \in \mathbb{R}^{T}$, the patching operation produces $N$ patches:
-
-\begin{equation}
-N = \left\lfloor \frac{T - P}{S} \right\rfloor + 1
-\end{equation}
-
-\noindent where $S$ is the stride between consecutive patches (typically $S = P$ for non-overlapping patches). Each patch is projected to dimension $D$ via a learned linear transformation:
-
-\begin{equation}
-\mathbf{z}_i = \mathbf{W}_p \, [x_{i \cdot S};\, x_{i \cdot S + 1};\, \dots;\, x_{i \cdot S + P - 1}] + \mathbf{b}_p
-\end{equation}
-
-Channel-independent encoding is applied: each of the $C$ input channels is encoded independently, and the resulting representations are concatenated before the classification head. This design preserves per-channel morphological structure while reducing the effective sequence length. Given 4 Hz sampling, patch lengths of $P \in \{4, 8, 16\}$ correspond to physiological windows of 1, 2, and 4 seconds. PatchTST serves as the baseline against which the remaining architectures are compared, as it achieved the best accuracy-efficiency balance in our prior work \cite{SanchezReolid2022}.
+PatchTST \cite{PatchTST2023} segments each channel into non-overlapping patches of length $P$ and projects them to dimension $D$, reducing the effective sequence length from $T$ to $N = \lfloor (T-P)/S \rfloor + 1$. Channel-independent encoding preserves per-channel morphology, and a standard Transformer encoder with self-attention ($O(N^2)$) is applied to the patch sequence. A global average pooling operation aggregates the encoder output before the linear classification head. Given 4 Hz sampling, patch lengths $P \in \{4, 8, 16\}$ correspond to physiological windows of 1--4 seconds. PatchTST serves as the top-performing baseline from our prior work \cite{SanchezReolid2022}.
 
 \subsubsection{Informer}
 
-Informer \cite{Informer2021} addresses the quadratic bottleneck of canonical self-attention through ProbSparse attention. In standard scaled dot-product attention, the attention distribution of the $i$-th query over all keys is:
-
-\begin{equation}
-\mathcal{A}(\mathbf{q}_i, \mathbf{K}, \mathbf{V}) = \sum_{j} \frac{k(\mathbf{q}_i, \mathbf{k}_j)}{\sum_{l} k(\mathbf{q}_i, \mathbf{k}_l)} \mathbf{v}_j
-\end{equation}
-
-\noindent where $k(\mathbf{q}_i, \mathbf{k}_j) = \exp(\mathbf{q}_i \mathbf{k}_j^\top / \sqrt{d})$. The key insight of ProbSparse attention is that the attention distribution of dominant queries departs substantially from a uniform distribution. This sparsity is measured via the Kullback-Leibler divergence:
-
-\begin{equation}
-M(\mathbf{q}_i, \mathbf{K}) = \max_j \left\{ \frac{\mathbf{q}_i \mathbf{k}_j^\top}{\sqrt{d}} \right\} - \frac{1}{L_K} \sum_{j=1}^{L_K} \frac{\mathbf{q}_i \mathbf{k}_j^\top}{\sqrt{d}}
-\end{equation}
-
-Only the top-$u$ queries (where $u = c \cdot \ln L_Q$) with the highest sparsity scores are selected for dot-product computation; the remaining queries are assigned the mean of the value vectors. This reduces the time and memory complexity of self-attention from $O(L^2)$ to $O(L \log L)$. Informer additionally employs self-attention distilling: at each encoder layer, a 1D convolution with stride $> 1$ halves the input sequence length, progressively reducing the effective $L$ across layers.
+Informer \cite{Informer2021} reduces self-attention complexity from $O(L^2)$ to $O(L \log L)$ via ProbSparse attention, which selects only the top-$u$ queries (where $u = c \cdot \ln L_Q$) with the highest sparsity scores---measured as $\max_j(\mathbf{q}_i \mathbf{k}_j^\top / \sqrt{d}) - \frac{1}{L_K}\sum_j \mathbf{q}_i \mathbf{k}_j^\top / \sqrt{d}$. Self-attention distilling further halves the sequence length at each encoder layer via strided 1D convolutions, progressively reducing the effective $L$.
 
 \subsubsection{Autoformer}
 
-Autoformer \cite{Autoformer2021} replaces point-wise self-attention entirely with an Auto-Correlation mechanism grounded in stochastic process theory. Rather than computing pairwise dot products between query and key vectors, Auto-Correlation computes the correlation between a query series $\mathbf{q}$ and a key series $\mathbf{k}$ at different lag values $\tau$ via the Fast Fourier Transform (FFT):
-
-\begin{equation}
-\mathcal{R}_{\mathbf{q},\mathbf{k}}(\tau) = \mathcal{F}^{-1}\big( \mathcal{F}(\mathbf{q}) \cdot \overline{\mathcal{F}(\mathbf{k})} \big)
-\end{equation}
-
-\noindent where $\mathcal{F}$ denotes the FFT, $\mathcal{F}^{-1}$ its inverse, and $\overline{\cdot}$ the complex conjugate. The top-$k$ lag values with the highest auto-correlation are selected as dominant periodicities. The final representation is aggregated via a time delay operation:
-
-\begin{equation}
-\text{Auto-Correlation}(\mathbf{q}, \mathbf{k}, \mathbf{v}) = \sum_{i=1}^{k} \text{Roll}(\mathbf{v}, \tau_i) \cdot \text{Softmax}(\mathcal{R}_{\mathbf{q},\mathbf{k}}(\tau_i))
-\end{equation}
-
-\noindent where $\text{Roll}(\cdot, \tau)$ shifts the sequence by $\tau$ positions. This mechanism achieves $O(L \log L)$ complexity through the FFT, while the progressive seasonal-trend decomposition block---integrated as an internal architectural unit rather than a preprocessing step---enables gradual extraction of long-term (tonic) and short-term (phasic) components. This decomposition aligns conceptually with EDA physiology, where tonic and phasic signals coexist.
+Autoformer \cite{Autoformer2021} replaces point-wise attention with an Auto-Correlation mechanism that discovers dominant periodicities via $\mathcal{R}_{\mathbf{q},\mathbf{k}}(\tau) = \mathcal{F}^{-1}(\mathcal{F}(\mathbf{q}) \cdot \overline{\mathcal{F}(\mathbf{k})})$, selecting the top-$k$ lags and aggregating via $\text{Roll}(\mathbf{v}, \tau_i)$ weighted by softmax-normalised correlations. A progressive seasonal-trend decomposition block, integrated as an internal architectural unit, gradually extracts tonic and phasic components---aligning conceptually with EDA physiology. Complexity is $O(L \log L)$ via the FFT.
 
 \subsubsection{FEDformer}
 
-FEDformer \cite{FEDformer2022} achieves $O(L)$ complexity---the only linear-complexity candidate in this comparison---by performing attention in the frequency domain. The Fourier-enhanced attention block randomly selects $M \ll L$ Fourier modes and computes attention exclusively over the selected frequency components:
-
-\begin{equation}
-\tilde{\mathbf{Q}} = \text{Select}(\mathcal{F}(\mathbf{Q}), M), \quad \tilde{\mathbf{K}} = \text{Select}(\mathcal{F}(\mathbf{K}), M)
-\end{equation}
-
-\begin{equation}
-\text{Attention}_{\text{freq}} = \mathcal{F}^{-1}\big( \text{Softmax}(\tilde{\mathbf{Q}} \tilde{\mathbf{K}}^\top) \cdot \mathcal{F}(\mathbf{V}) \big)
-\end{equation}
-
-FEDformer also incorporates a seasonal-trend decomposition block similar to Autoformer's, and employs a mixture-of-experts strategy that combines frequency-domain and time-domain representations. Operating on a sparse set of Fourier modes provides two advantages for EDA signals: (i) phasic SCR responses have characteristic frequency signatures that may be efficiently captured in the spectral domain, and (ii) the mode selection acts as an implicit denoising mechanism, attenuating high-frequency acquisition artefacts \cite{Tsirmpas2025}.
+FEDformer \cite{FEDformer2022} achieves $O(L)$ complexity by randomly selecting $M \ll L$ Fourier modes and computing attention exclusively in the frequency domain: $\text{Attention}_{\text{freq}} = \mathcal{F}^{-1}(\text{Softmax}(\tilde{\mathbf{Q}} \tilde{\mathbf{K}}^\top) \cdot \mathcal{F}(\mathbf{V}))$, with $\tilde{\mathbf{Q}}, \tilde{\mathbf{K}} = \text{Select}(\mathcal{F}(\mathbf{Q}/\mathbf{K}), M)$. A seasonal-trend decomposition block and a mixture-of-experts fusion of frequency and time representations complement the attention mechanism. The sparse Fourier mode selection provides implicit denoising, attenuating high-frequency acquisition artefacts in EDA signals \cite{Tsirmpas2025}.
 
 \subsubsection{DLinear}
 
-DLinear \cite{DLinear2023} represents the simplest model in the comparison and serves as a critical baseline. The architecture consists of three steps:
-
-\begin{enumerate}
-    \item \textbf{Decomposition:} The input $\mathbf{X} \in \mathbb{R}^{T \times C}$ is decomposed into a trend component $\mathbf{X}_t$ (computed via a moving average kernel of size $k$) and a residual (seasonal) component $\mathbf{X}_s = \mathbf{X} - \mathbf{X}_t$.
-    \item \textbf{Linear projection:} Independent single-layer linear networks are applied to each component: $\mathbf{\hat{y}}_t = \mathbf{W}_t \mathbf{X}_t + \mathbf{b}_t$ and $\mathbf{\hat{y}}_s = \mathbf{W}_s \mathbf{X}_s + \mathbf{b}_s$.
-    \item \textbf{Fusion:} The final output is obtained by summation: $\mathbf{\hat{y}} = \mathbf{\hat{y}}_t + \mathbf{\hat{y}}_s$, followed by a softmax classification layer.
-\end{enumerate}
-
-Despite its extreme simplicity---no attention, no convolutions, no recurrence---DLinear has demonstrated competitive or superior performance to state-of-the-art Transformers on multiple time-series forecasting benchmarks \cite{DLinear2023}. Its inclusion here tests a provocative hypothesis: given that EDA signals can be meaningfully decomposed into tonic and phasic components \cite{LongTermVariability}, a simple linear model may capture sufficient discriminative information without requiring attention mechanisms, convolutions, or any non-linear transformation beyond the final classification layer. If DLinear approaches the performance of Transformer-based architectures, this would have significant implications for the design of deployable EDA classifiers.
+DLinear \cite{DLinear2023} decomposes the input into trend ($\mathbf{X}_t$, moving average) and residual seasonal ($\mathbf{X}_s = \mathbf{X} - \mathbf{X}_t$) components, applies independent single-layer linear networks to each, and fuses their outputs via summation before a softmax classifier. With no attention, convolutions, or recurrence, DLinear provides the absolute efficiency baseline. Its inclusion tests whether the tonic-phasic decomposition---physiologically meaningful for EDA \cite{LongTermVariability}---captures sufficient discriminative information without non-linear temporal modelling.
 
 \subsubsection{Mamba (Bi-Mamba)}
 
-Mamba \cite{Mamba2023} introduces a fundamentally different paradigm through structured state space models (SSMs) with a selective scan mechanism. Unlike Transformers, which compute pairwise interactions between all time steps, SSMs model sequence dynamics through a continuous-time linear system:
-
-\begin{equation}
-h'(t) = \mathbf{A} h(t) + \mathbf{B} x(t), \quad y(t) = \mathbf{C} h(t) + \mathbf{D} x(t)
-\end{equation}
-
-\noindent where $h(t) \in \mathbb{R}^d$ is a latent state, $x(t)$ is the input at time $t$, and $\mathbf{A}, \mathbf{B}, \mathbf{C}, \mathbf{D}$ are learnable parameters. The key innovation of Mamba is making the SSM parameters \textit{input-dependent}: $\mathbf{B}_t = s_\mathbf{B}(x_t)$, $\mathbf{C}_t = s_\mathbf{C}(x_t)$, and $\Delta_t = \tau_\Delta(\text{Linear}(x_t))$, where $s_\mathbf{B}$, $s_\mathbf{C}$ are linear projections and $\tau_\Delta$ is a softplus activation. This \textit{selective} mechanism allows the model to adaptively propagate or forget information along the sequence based on content, addressing a fundamental weakness of prior SSMs on discrete modalities.
-
-The continuous system is discretised via the zero-order hold (ZOH) rule with step size $\Delta_t$:
-
-\begin{equation}
-\bar{\mathbf{A}} = \exp(\Delta_t \mathbf{A}), \quad \bar{\mathbf{B}} = (\Delta_t \mathbf{A})^{-1} (\exp(\Delta_t \mathbf{A}) - \mathbf{I}) \cdot \Delta_t \mathbf{B}_t
-\end{equation}
-
-\noindent yielding the recurrent formulation $h_k = \bar{\mathbf{A}} h_{k-1} + \bar{\mathbf{B}} x_k$, $y_k = \mathbf{C}_k h_k$. A hardware-aware parallel scan algorithm enables efficient training despite the recurrent formulation.
-
-For classification, we adopt a bidirectional SSM (BiSSM) configuration inspired by ECGMamba \cite{ECGMamba2024}: separate forward and backward Mamba blocks process the sequence in opposite directions, and their outputs are concatenated before the classification head. This bidirectional design ensures that each time step's representation incorporates both past and future physiological context, mirroring the global receptive field of self-attention while maintaining $O(L)$ complexity. Mamba is the most recent addition to our comparison and represents the emerging SSM paradigm, which has demonstrated competitive performance against Transformers on language modelling, genomics, and---as shown by ECGMamba---physiological signal classification.
+Mamba \cite{Mamba2023} models sequence dynamics through a continuous-time linear system $h'(t) = \mathbf{A} h(t) + \mathbf{B} x(t), y(t) = \mathbf{C} h(t)$ with input-dependent parameters $\mathbf{B}_t, \mathbf{C}_t, \Delta_t$, enabling content-based selective propagation or forgetting of information. Discretised via zero-order hold, the recurrent formulation $h_k = \bar{\mathbf{A}} h_{k-1} + \bar{\mathbf{B}} x_k$ achieves $O(L)$ complexity through a hardware-aware parallel scan algorithm. We adopt a bidirectional SSM configuration inspired by ECGMamba \cite{ECGMamba2024}---forward and backward Mamba blocks with concatenated outputs---ensuring each time step incorporates both past and future physiological context while maintaining linear complexity.
 
 \subsubsection{TimesNet}
 
-TimesNet \cite{TimesNet2023} transforms the 1D time series into a set of 2D tensors to capture both intra-period and inter-period temporal variations. The core operation, TimesBlock, proceeds in three steps:
-
-\begin{enumerate}
-    \item \textbf{Period discovery:} The Fast Fourier Transform (FFT) is applied to the input $\mathbf{X} \in \mathbb{R}^{T \times C}$ to identify dominant periodicities:
-    \begin{equation}
-    \mathbf{A} = \text{Avg}\left( \text{Amp}\left( \mathcal{F}(\mathbf{X}) \right) \right)
-    \end{equation}
-    where $\mathcal{F}$ is the FFT, $\text{Amp}(\cdot)$ computes the amplitude, and $\text{Avg}(\cdot)$ averages across channels. The top-$k$ frequencies with the highest amplitudes are selected, and their corresponding period lengths are computed as $p_i = \lfloor T / f_i \rfloor$.
-    
-    \item \textbf{1D$\to$2D reshaping:} For each discovered period $p_i$, the 1D sequence is folded into a 2D tensor $\mathbf{X}_i \in \mathbb{R}^{p_i \times f_i \times C}$, where $f_i = \lceil T / p_i \rceil$. Zero-padding is applied if $p_i \times f_i > T$. This transformation embeds intra-period variations into the columns and inter-period variations into the rows.
-    
-    \item \textbf{2D feature extraction:} A parameter-efficient Inception block applies 2D convolutional kernels of multiple scales ($1 \times 1$, $3 \times 3$, $5 \times 5$) to each $\mathbf{X}_i$, capturing both local morphological patterns and cross-period dependencies. The 2D outputs are reshaped back to 1D and aggregated via adaptive fusion.
-\end{enumerate}
-
-TimesNet achieves $O(L \log L)$ complexity through the FFT, comparable to Informer and Autoformer. Its relevance to EDA classification stems from the inherent multi-periodicity of phasic skin conductance responses: SCRs occur at characteristic intervals, and the 2D transformation explicitly models both the fine-grained morphology within each response (columns) and the recurrence patterns across responses (rows). The Inception blocks provide multi-scale convolutional processing without the quadratic cost of self-attention. TimesNet has established state-of-the-art results across five time series analysis tasks, including classification \cite{TimesNet2023}.
+TimesNet \cite{TimesNet2023} transforms 1D time series into 2D tensors by discovering dominant periods $p_i$ via FFT amplitude peaks, reshaping the sequence into $p_i \times f_i$ grids, and applying parameter-efficient Inception blocks with $1\times 1$, $3\times 3$, and $5\times 5$ 2D convolutional kernels. This embeds intra-period SCR morphology into columns and inter-period recurrence patterns into rows, achieving $O(L \log L)$ complexity through the FFT. The multi-scale 2D convolutions capture both fine-grained phasic waveform structure and response-to-response consistency patterns without quadratic attention cost.
 
 \subsubsection{ModernTCN}
 
-ModernTCN \cite{ModernTCN2024} represents a renaissance of convolutional architectures for time series, demonstrating that carefully modernised CNNs can match or exceed Transformer-based models. The architecture builds upon the Temporal Convolutional Network (TCN) framework with three key modernisations:
-
-\begin{enumerate}
-    \item \textbf{Depthwise separable convolutions (DWConv):} Each ModernTCN block employs a depthwise convolution followed by a pointwise ($1 \times 1$) convolution, substantially reducing parameter count compared to standard convolutions while preserving representational capacity. The block follows an inverted bottleneck structure: expansion $\to$ DWConv $\to$ Squeeze-and-Excitation $\to$ projection, mirroring the design principles of ConvNeXt.
-    
-    \item \textbf{Large kernels and patch-based processing:} Rather than cascading many small-kernel layers, ModernTCN uses fewer layers with larger kernel sizes (up to $k = 51$), providing a substantially larger effective receptive field (ERF). Input patching further reduces sequence length: the raw signal is divided into non-overlapping patches of length $P_s$, and each patch is linearly projected to dimension $D$.
-    
-    \item \textbf{Adjacent connection scheme:} Instead of the standard residual connection, ModernTCN employs an adjacent connection that concatenates the outputs of consecutive blocks before the final projection. This preserves multi-scale temporal features across different receptive field sizes.
-\end{enumerate}
-
-ModernTCN achieves $O(L)$ complexity with purely convolutional operations, making it theoretically as efficient as FEDformer, Mamba, and DLinear. Its inclusion provides a critical baseline for evaluating whether the efficiency mechanisms of Transformers and SSMs---attention, auto-correlation, and selective state spaces---offer measurable advantages over well-designed convolutions for physiological signal classification. This question is particularly relevant given that our prior work \cite{SanchezReolid2022} demonstrated that 1D-CNN and TCN, while outperformed by Transformers, achieved competitive performance, suggesting that the convolutional paradigm may not have been fully exploited in earlier comparisons.
+ModernTCN \cite{ModernTCN2024} modernises the convolutional paradigm with three innovations: depthwise separable convolutions with inverted bottlenecks and Squeeze-and-Excitation, large kernels (up to $k = 51$) providing substantially larger effective receptive fields than traditional TCNs, and an adjacent connection scheme that concatenates consecutive block outputs to preserve multi-scale features. With $O(L)$ complexity from purely convolutional operations, ModernTCN tests whether well-designed convolutions can compete with attention and state-space mechanisms for physiological signal classification \cite{Dauphin2017}.
 
 \subsection{Training and Hyperparameter Configuration}
 
@@ -796,31 +702,7 @@ The practical implication of this analysis is direct: for real-time wearable app
 
 \subsection{Statistical Significance}
 
-\begin{table}[t]
-\centering
-\caption{Pairwise Wilcoxon signed-rank test p-values on per-fold F1-scores (147 folds). Bold indicates statistical significance at $\alpha = 0.05$ (raw, uncorrected). The Bonferroni-Holm corrected threshold for 28 comparisons is $p_{\text{BH}} < 0.0018$; comparisons surviving both thresholds are annotated in Section~3.5.}
-\label{tab:pvalues}
-\small
-\begin{tabular}{lccccccc}
-\toprule
- & DLinear & ModernTCN & FEDformer & Informer & Autoformer & TimesNet & Mamba \\
-\midrule
-PatchTST   & \textbf{$<10^{-4}$} & \textbf{0.0003} & \textbf{0.0004} & \textbf{0.0012} & \textbf{0.0015} & \textbf{0.0028} & 0.048 \\
-Mamba      & \textbf{0.0002} & \textbf{0.0005} & \textbf{0.0008} & 0.021 & 0.032 & 0.085 & \\
-TimesNet   & \textbf{0.0003} & \textbf{0.0006} & 0.004 & 0.058 & 0.072 & & \\
-Autoformer & \textbf{0.0004} & 0.005 & 0.038 & 0.065 & & & \\
-Informer   & \textbf{0.0005} & 0.008 & 0.045 & & & & \\
-FEDformer  & \textbf{0.0008} & 0.032 & & & & & \\
-ModernTCN  & 0.002 & & & & & & \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:pvalues} presents pairwise Wilcoxon signed-rank tests. The primary hypothesis of interest is whether the performance differences between the top-tier architectures---PatchTST, Mamba, and TimesNet---are statistically significant. Mamba achieves F1 = 0.858, approaching PatchTST (F1 = 0.863) with a raw difference of only 0.005. This difference is statistically significant at the conventional $\alpha = 0.05$ level ($p = 0.048$) but does not survive the stringent Bonferroni-Holm correction for 28 pairwise comparisons ($p_{\text{BH}} < 0.0018$). Under the conventional threshold, this establishes a statistically detectable but practically small gap; under the corrected threshold, the difference is not significant, supporting the conclusion that Mamba achieves near-equivalent accuracy to PatchTST at substantially lower computational cost. We report both raw and corrected thresholds throughout to enable readers to apply their preferred multiplicity adjustment.
-
-A secondary hypothesis concerns the baseline architectures. Statistically significant differences between DLinear and all other architectures (all $p < 0.002$, Table~\ref{tab:pvalues}) confirm that non-trivial temporal modelling---whether through attention, state spaces, or convolutions---is necessary for competitive EDA classification.
-
-The Bonferroni-Holm procedure controls the family-wise error rate at $\alpha = 0.05$ across all 28 pairwise comparisons, yielding an adjusted threshold of $p_{\text{BH}} < 0.0018$. Under this correction, 18 of 28 comparisons remain significant, including all comparisons involving DLinear versus any other architecture, confirming the robustness of the paradigm hierarchy. Comparisons between architectures within the same paradigm family (e.g., Informer vs.\ Autoformer, $p = 0.065$; Autoformer vs.\ TimesNet, $p = 0.072$) do not survive correction, consistent with their shared computational mechanisms.
+Pairwise Wilcoxon signed-rank tests (Supplementary Material, Table~S2) reveal that Mamba achieves F1 = 0.858, approaching PatchTST (F1 = 0.863) with a difference of 0.005---statistically significant at the conventional $\alpha = 0.05$ level ($p = 0.048$) but not surviving the stringent Bonferroni-Holm correction for 28 comparisons ($p_{\text{BH}} < 0.0018$). Statistically significant differences between DLinear and all other architectures (all $p < 0.002$) confirm that non-trivial temporal modelling is necessary for competitive EDA classification. Under the Bonferroni-Holm correction, 18 of 28 comparisons remain significant, while comparisons within the same paradigm family (e.g., Informer vs.\ Autoformer, $p = 0.065$) do not survive correction, consistent with their shared computational mechanisms.
 
 \subsection{Interpretability Insights}
 
@@ -834,33 +716,7 @@ For Mamba, analysis of the discretised state transition matrices reveals that th
 
 Gradient-based saliency maps ($S = |\partial \hat{y} / \partial \mathbf{X}|$) reveal complementary contributions across the three input channels. $\Delta SCR$ contributes most strongly during SCR onset, encoding the rate of sympathetic activation, while $SCR$ contributes during the peak phase, encoding activation magnitude. $\Delta^2 SCR$ contributes during onset-to-peak transitions, capturing changes in the rate of activation.
 
-\subsection{Channel Ablation Analysis}
-
-To quantify the marginal contribution of derivative information, a channel ablation experiment was conducted under the identical LOSO framework, evaluating three input configurations: (i) SCR only, (ii) SCR + $\Delta SCR$, and (iii) SCR + $\Delta SCR$ + $\Delta^2 SCR$.
-
-\begin{table}[t]
-\centering
-\caption{Channel ablation results: F1-score under LOSO for three input configurations. Values represent mean across 147 folds. Percentage values in parentheses indicate the relative improvement over the SCR-only baseline.}
-\label{tab:channel_ablation}
-\begin{tabular}{lccc}
-\toprule
-Model & SCR only & SCR + $\Delta$SCR & SCR + $\Delta$SCR + $\Delta^2$SCR \\
-\midrule
-DLinear   & 0.778 & 0.792 (+1.8\%) & 0.800 (+2.8\%) \\
-ModernTCN & 0.805 & 0.819 (+1.7\%) & 0.827 (+2.7\%) \\
-FEDformer  & 0.816 & 0.829 (+1.6\%) & 0.836 (+2.5\%) \\
-Informer  & 0.827 & 0.839 (+1.5\%) & 0.845 (+2.2\%) \\
-Autoformer & 0.830 & 0.842 (+1.4\%) & 0.848 (+2.2\%) \\
-TimesNet  & 0.836 & 0.847 (+1.3\%) & 0.853 (+2.0\%) \\
-Mamba     & 0.842 & 0.853 (+1.3\%) & 0.858 (+1.9\%) \\
-PatchTST   & 0.848 & 0.858 (+1.2\%) & 0.863 (+1.8\%) \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:channel_ablation} reveals two consistent patterns. First, the inclusion of derivative channels yields incremental but systematic F1 improvements across all architectures. The first derivative ($\Delta SCR$) contributes the largest single gain (+1.2--1.8 pp across architectures), while the second derivative ($\Delta^2 SCR$) provides an additional smaller improvement (+0.5--1.0 pp). This pattern confirms that velocity and acceleration of sympathetic activation encode information complementary to the phasic amplitude alone.
-
-Second, the relative contribution of derivative information is inversely related to the architecture's temporal modelling capacity. Architectures with limited temporal modelling (DLinear, ModernTCN) benefit most from explicit derivative channels (+2.7--2.8\% total improvement), while architectures with adaptive global receptive fields (Mamba, PatchTST) show smaller relative gains (+1.8--1.9\%). This suggests that attention and state-space mechanisms partially learn temporal derivative information implicitly from the raw SCR signal, whereas fixed-receptive-field architectures rely more heavily on explicit derivative encoding. This finding has practical implications for input representation design: when deploying the most expressive architectures, the marginal benefit of derivative channels is modest; when deploying simpler models under tight resource constraints, derivative encoding provides a cost-effective accuracy improvement.
+A channel ablation experiment (Supplementary Material, Table~S1) further reveals that derivative channels provide the greatest relative benefit for architectures with limited temporal modelling capacity---DLinear and ModernTCN gain +2.7--2.8\% F1 from derivative inclusion---while attention and state-space mechanisms exhibit smaller relative gains (+1.8--1.9\%), suggesting they partially learn temporal derivative information implicitly. This finding has direct practical implications: when deploying simpler models under tight resource constraints, derivative encoding provides a cost-effective accuracy improvement.
 
 \subsection{Comparison with Prior Work}
 
