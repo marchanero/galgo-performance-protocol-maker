@@ -554,7 +554,7 @@ Training time per epoch follows the same hierarchy as inference time, with DLine
     xmode=log,
     log basis x={10},
     xmin=0.15, xmax=9,
-    ymin=0.70, ymax=0.90,
+    ymin=0.70, ymax=0.93,
     ytick={0.70,0.74,0.78,0.82,0.86,0.90},
     xlabel={Inference time $t_{\text{inf}}$ (ms, log scale)},
     ylabel={F1-score},
@@ -567,14 +567,14 @@ Training time per epoch follows the same hierarchy as inference time, with DLine
     legend style={font=\footnotesize, at={(0.02,0.02)}, anchor=south west, fill=white, fill opacity=0.8},
 ]
 % === Shaded deployment regions ===
-\fill[red2, opacity=0.3]  (axis cs:0.15,0.70) rectangle (axis cs:1.5,0.90);
-\fill[orange2, opacity=0.2] (axis cs:1.5,0.70)   rectangle (axis cs:4,0.90);
-\fill[blue2, opacity=0.12]  (axis cs:4,0.70)   rectangle (axis cs:9,0.90);
+\fill[red2, opacity=0.3]  (axis cs:0.15,0.70) rectangle (axis cs:1.5,0.93);
+\fill[orange2, opacity=0.2] (axis cs:1.5,0.70)   rectangle (axis cs:4,0.93);
+\fill[blue2, opacity=0.12]  (axis cs:4,0.70)   rectangle (axis cs:9,0.93);
 
 % Region labels (top of figure, clear of data)
-\node[font=\footnotesize\bfseries, text=red1]        at (axis cs:0.5,0.895)  {Wearable};
-\node[font=\footnotesize\bfseries, text=orange1]     at (axis cs:2.6,0.895)  {Mobile / Edge};
-\node[font=\footnotesize\bfseries, text=blue1]       at (axis cs:6.0,0.895)  {Cloud / Server};
+\node[font=\footnotesize\bfseries, text=red1]        at (axis cs:0.5,0.915)  {Wearable};
+\node[font=\footnotesize\bfseries, text=orange1]     at (axis cs:2.6,0.915)  {Mobile / Edge};
+\node[font=\footnotesize\bfseries, text=blue1]       at (axis cs:6.0,0.915)  {Cloud / Server};
 
 % === Data points (individual addplot per paradigm) ===
 % Red: DLinear (linear baseline)
