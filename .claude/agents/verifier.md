@@ -35,6 +35,14 @@ cd paper && latexmk main.tex 2>&1 | tail -30
 - Verify PDF generated
 - Note: `paper/latexmkrc` configures XeLaTeX, TEXINPUTS, BIBINPUTS
 
+### 1b. Bibliography DOI Completeness
+- Scan `paper/bibliography.bib` for all entries cited in `paper/main.tex`
+- Verify each cited entry has a `doi` field with a valid DOI
+- Flag cited entries missing DOIs
+- Priority for DOI sources: (1) publisher-assigned from Crossref, (2) arXiv DataCite (`10.48550/arXiv.XXXX.XXXXX`), (3) no DOI only for theses or in-press articles
+- Flag DOIs that appear invalid (malformed, unresolvable)
+- Tolerance: entries for recent preprints (last 6 months), theses, or institutional publications may legitimately lack DOIs
+
 ### 2. Script Execution
 ```bash
 Rscript scripts/R/FILENAME.R 2>&1 | tail -20

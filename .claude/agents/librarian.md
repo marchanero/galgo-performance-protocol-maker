@@ -86,6 +86,7 @@ Save to `explorations/literature/`:
 - [ ] Recent preprints (arXiv, last 6 months) checked for scooping risk
 - [ ] Citation chains followed backward from recent key papers
 - [ ] Citation chains followed forward from seminal papers
+- [ ] **DOI verification:** Every cited entry must include a verified DOI. Priority: (1) publisher-assigned DOI from Crossref/IEEE/ACM/Springer, (2) arXiv DataCite DOI (format: `10.48550/arXiv.XXXX.XXXXX`), (3) no DOI only for sources that genuinely lack one (preprints under review, institutional theses). Never invent or guess a DOI — verify via Crossref API (`https://api.crossref.org/works?query.title=TITLE&query.author=AUTHOR`) or arXiv ID lookup.
 
 ## What You Do NOT Do
 
