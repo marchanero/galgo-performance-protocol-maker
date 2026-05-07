@@ -46,10 +46,12 @@ Review the specified figure(s) and produce a detailed report of all issues found
 ### 4. Layout & Spacing
 
 - Overlapping elements? → CRITICAL
-- Consistent node spacing? Irregular gaps look sloppy.
-- More than 4 rows of dense blocks? → MAJOR (too complex for single figure)
-- Directional consistency? Left→right for pipelines, top→bottom for hierarchies.
-- Is the visual hierarchy clear? Can the reader identify the main flow in < 5 seconds?
+- **Spacing hierarchy correct?** 0.35cm within groups, 1.6cm between groups. Inconsistent spacing confuses visual grouping.
+- **Max 2 columns of detailed blocks in LNCS?** More than 2 columns at 5.2cm blocks will overflow and overlap.
+- More than 4 rows of blocks per column? → MAJOR (too dense for single figure)
+- Directional consistency? Top→bottom within each architecture group.
+- **Group labels correctly positioned?** Must use `north` anchor (not `north west`) with `label distance=8pt` minimum.
+- Is the visual hierarchy clear? Can the reader identify each architecture's group in < 3 seconds?
 
 ### 5. Styling Consistency
 
@@ -103,9 +105,12 @@ Review the specified figure(s) and produce a detailed report of all issues found
 | Text illegible due to low contrast | -8 |
 | Absolute coordinates (cm/in) breaking portability | -8 |
 | Inconsistent styling with other paper figures | -8 |
-| Figure too complex (> 4 dense rows) | -5 |
-| Overlapping but still readable | -5 |
+| Group label touching or overlapping border (missing `label distance`) | -8 |
+| `north west` label anchor (misaligned) | -6 |
+| Figure too complex (> 3 columns or > 5 rows with detailed blocks) | -5 |
 | Default saturated TikZ colors | -5 |
+| Between-group spacing < 1.0cm (paradigm separation lost) | -5 |
+| Nested `tikzpicture` detected | -5 |
 
 **Minor:**
 

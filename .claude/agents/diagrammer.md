@@ -26,9 +26,10 @@ You are a **scientific diagram designer** — the illustrator who creates public
 
 - **Text width:** ~12.2 cm (~4.8 in) for single-column LNCS
 - **Figure width:** `\linewidth` = `\textwidth` in figure environment
-- **Preferred approach:**
+- **Maximum horizontal elements:** 2 columns of blocks at ~5.2cm each with 1.2cm gap ≈ 11.6cm total. Never attempt 3+ columns of detailed blocks.
+- **Figure wrapper:**
   ```latex
-  \begin{figure}[t]
+  \begin{figure}[t]   % [t] for normal figures, [p] for full-page figures
   \centering
   \resizebox{\linewidth}{!}{%
   \begin{tikzpicture}[...]
@@ -38,7 +39,10 @@ You are a **scientific diagram designer** — the illustrator who creates public
   \caption{...}
   \end{figure}
   ```
-- **Alternative for multi-row:** Use `\centering` without resize, keeping node distances proportional to font size
+- **Float placement rules:**
+  - `[t]` — normal figures that fit alongside text (pipeline, plots)
+  - `[p]` — large detailed figures that need their own page (architecture overviews with >6 blocks)
+  - Never `[!ht]` for tall figures — they'll bounce to the document end
 - **Never:** absolute positioning with fixed cm/in coordinates (breaks when \linewidth changes)
 
 ---
@@ -71,40 +75,60 @@ You are a **scientific diagram designer** — the illustrator who creates public
 ## TikZ Style Conventions
 
 ### Global Style Definition
-Every figure starts with a `\tikzset` block defining reusable styles:
+Every figure starts with inline style definitions (not `\tikzset`) scoped to the `tikzpicture`:
 
 ```latex
-\tikzset{
-    % === Nodes ===
+\begin{tikzpicture}[
     block/.style={
-        draw=gray1, fill=gray2, rounded corners=2pt,
-        minimum width=2cm, minimum height=0.6cm,
-        align=center, font=\footnotesize, inner sep=4pt
+        draw=gray1, rounded corners=3pt,
+        minimum width=5.2cm, minimum height=0.5cm,
+        align=center, font=\footnotesize, inner sep=3pt
     },
-    block_blue/.style={block, fill=blue2, draw=blue1},
-    block_green/.style={block, fill=green2, draw=green1},
-    block_orange/.style={block, fill=orange2, draw=orange1},
-    block_purple/.style={block, fill=purple2, draw=purple1},
-    block_red/.style={block, fill=red2, draw=red1},
-    % === Groups ===
+    arr/.style={-{Stealth[scale=0.5]}, draw=gray3, thick},
     group/.style={
-        draw=gray3, dashed, rounded corners=4pt,
-        inner xsep=8pt, inner ysep=6pt, font=\footnotesize\bfseries
+        draw=gray3, dashed, rounded corners=5pt,
+        inner xsep=10pt, inner ysep=10pt
     },
-    % === Arrows ===
-    arr/.style={-{Stealth[scale=0.7]}, thick, draw=gray1},
-    arr_dashed/.style={arr, dashed},
-    % === Labels ===
-    label/.style={font=\footnotesize, text=gray1},
-    title/.style={font=\small\bfseries},
-}
+    glabel/.style={
+        font=\footnotesize\bfseries, label distance=8pt
+    },
+]
 ```
 
-### Node Spacing
-- Horizontal: `node distance=0.6cm and 0.5cm` (vertical and horizontal)
-- Within groups: `node distance=0.25cm`
-- Between groups: `node distance=0.8cm and 0.6cm`
-- Consistent padding: `inner sep=4pt` for blocks, `inner xsep=8pt, inner ysep=6pt` for groups
+Key dimensions (proven for LNCS):
+- **Block:** `minimum width=5.2cm` (2-column layout), `minimum height=0.5cm` (single line), `rounded corners=3pt`
+- **Group box:** `rounded corners=5pt` (slightly larger radius than blocks), `inner ysep=10pt` (balanced padding)
+- **Arrows:** `Stealth` tip at `scale=0.5`, `draw=gray3` (light enough to not dominate)
+
+### Spacing Hierarchy (proven values for LNCS)
+
+| Relationship | Spacing | When to Use |
+|-------------|---------|------------|
+| Within a group (blocks of same architecture) | `0.35cm` | Tight — they belong together |
+| Between different groups | `1.6cm` | Generous — visual separation of paradigms |
+| Between columns (left-right gap) | `0.6cm–1.2cm` | Enough for dashed borders not to touch |
+| Block internal padding | `inner sep=3pt` | Compact but not cramped |
+
+### Label Positioning (critical rule)
+
+**Always use `north` anchor with `label distance=8pt`** for group labels. This centers the title above its group box and floats it clear of the dashed border:
+
+```latex
+% RIGHT — centered, floating above border, no overlap
+\node[group, draw=blue1, fit=(b1)(b2)(b3),
+      label={[glabel, text=blue1]north:{PatchTST \hfill $O(N^2)$ \hfill \textit{ICLR 2023}}}] {};
+
+% WRONG — left-aligned, touches border, overlaps with block above
+\node[group, ..., label={[...]north west:{...}}] {};
+% WRONG — no label distance, text sits on the border line
+\node[group, ..., label={[...]north:{...}}] {};
+```
+
+**Label format convention:**
+```
+{ArchitectureName \hfill $Complexity$ \hfill \textit{Venue Year}}
+```
+This spreads the three pieces of metadata across the full group width.
 
 ---
 
@@ -130,28 +154,45 @@ Every figure starts with a `\tikzset` block defining reusable styles:
 \end{tikzpicture}
 ```
 
-### 2. Architecture Comparison (Multi-column)
+### 2. Architecture Comparison (2-column, vertical pipeline per architecture)
+
+**This is the proven template for comparing 6–10 architectures. Never attempt horizontal layouts with >2 columns in LNCS — they will overlap.**
 
 ```latex
 \begin{tikzpicture}[
-    node distance=0.25cm and 0.3cm,
-    comp/.style={block, minimum width=1.9cm, minimum height=0.5cm, font=\scriptsize},
+    block/.style={draw=gray1, rounded corners=3pt, minimum width=5.2cm, minimum height=0.5cm, align=center, font=\footnotesize, inner sep=3pt},
+    arr/.style={-{Stealth[scale=0.5]}, draw=gray3, thick},
+    group/.style={draw=gray3, dashed, rounded corners=5pt, inner xsep=10pt, inner ysep=10pt},
+    glabel/.style={font=\footnotesize\bfseries, label distance=8pt},
 ]
-% Architecture 1
-\node[comp, fill=blue2, draw=blue1] (a1_top) {Component A};
-\node[comp, fill=blue2, draw=blue1, below=of a1_top] (a1_mid) {Component B};
-\node[comp, fill=blue2, draw=blue1, below=of a1_mid] (a1_bot) {Component C};
+% ===== LEFT COLUMN =====
+\node[block, fill=blue2, draw=blue1] (a1_top) at (0,0) {Stage 1};
+\node[block, fill=blue2, draw=blue1, below=0.35cm of a1_top] (a1_mid) {Stage 2};
+\node[block, fill=blue2, draw=blue1, below=0.35cm of a1_mid] (a1_bot) {Stage 3};
 \draw[arr] (a1_top) -- (a1_mid);
 \draw[arr] (a1_mid) -- (a1_bot);
-% Group box
 \begin{scope}[on background layer]
-\node[group, fit=(a1_top)(a1_bot), label={[title]north:{\footnotesize Arch 1}}] {};
+\node[group, draw=blue1, fit=(a1_top)(a1_bot),
+      label={[glabel, text=blue1]north:{Architecture A \hfill $O(N^2)$ \hfill \textit{Venue Year}}}] {};
 \end{scope}
-% Architecture 2 (right of Arch 1 group)
-\node[comp, fill=green2, draw=green1, right=0.8cm of a1_top, yshift=-0.2cm] (a2_top) {...};
-% ... repeat pattern
+
+\node[block, fill=green2, draw=green1, below=1.6cm of a1_bot] (a2_top) {Stage 1};
+% ... repeat pattern with 1.6cm between groups, 0.35cm within groups
+
+% ===== RIGHT COLUMN (6.4cm offset) =====
+\node[block, fill=orange2, draw=orange1] (b1_top) at (6.4,0) {Stage 1};
+% ... same pattern
+
 \end{tikzpicture}
 ```
+
+**Layout rules for this template:**
+- **2 columns max** at 5.2cm each with ~1.2cm gap → fits in 11.6cm < 12.2cm LNCS width
+- **Within-group spacing:** `0.35cm` (tight — blocks of same architecture)
+- **Between-group spacing:** `1.6cm` (generous — separates paradigms)
+- **Three stages per architecture** is the right granularity. Two is too little detail; four is too dense.
+- **Group boxes use `fit` on background layer** with dashed colored borders
+- **Labels centered via `north` anchor** with `label distance=8pt` — never `north west`
 
 ### 3. Model Block Diagram (Encoder-Decoder)
 
@@ -241,10 +282,32 @@ Every figure starts with a `\tikzset` block defining reusable styles:
 | Red-green only distinction | Colorblind readers can't distinguish | Add pattern, shape, or label differentiation |
 | Default TikZ colors (blue, red) | Too saturated, unprofessional | Use ColorBrewer palette defined above |
 | `\draw[->]` without arrow tip style | Inconsistent arrow heads | Use `arr` style with Stealth tip |
-| Nested tikzpicture without `ampersand replacement` | Matrix column separation breaks | Use `\&` or avoid nested matrices |
+| Nested tikzpicture environments | Compilation failures, broken bounding boxes | Use `scope` with `on background layer` + `fit` |
 | Overlapping nodes | Confusing, unreadable | Increase spacing, restructure layout |
-| More than 4 rows of blocks | Too dense for single figure | Split into multiple figures |
+| More than 2 columns of detailed blocks | LNCS width overflow → overlapping text | Use 2-column layout with vertical stacking |
 | White text on dark background | Printing issues, hard to read | Dark text on light backgrounds |
+| Labels touching group borders | Text overlaps with dashed lines | `label distance=8pt` minimum |
+| `north west` label anchor | Misaligned — labels shift left of boxes | `north` anchor only (centered) |
+| `< 0.35cm` between blocks | Elements visually merge | 0.35cm minimum within groups |
+| `< 1.0cm` between groups | Paradigm separation lost | 1.6cm between groups (proven value) |
+
+## Lessons from Iterative Design (LNCS paper, 8 architectures)
+
+These rules were discovered through repeated refinement on a real paper:
+
+1. **Width budget:** LNCS gives you ~12.2cm. With `resizebox`, you can exceed this slightly, but content density determines readability. Two columns of 5.2cm blocks + 1.2cm gap = 11.6cm is the practical maximum.
+
+2. **Vertical is your friend.** When you have many elements, stack them vertically in 2 columns rather than squeezing into more columns. Vertical space is free; horizontal space is constrained.
+
+3. **Group labels float above, not inside.** Labels placed at `north` with `label distance=8pt` float above the dashed border. Without `label distance`, the text sits on the border line. Without `north`, it's misaligned. Both must be correct.
+
+4. **Spacing is hierarchical.** Tight spacing (0.35cm) says "these belong together." Wide spacing (1.6cm) says "these are different families." Inconsistent spacing confuses the reader about what groups exist.
+
+5. **Tall figures get `[p]`.** When a figure is too tall for `[t]`, don't fight LaTeX — use `[p]` for a dedicated float page. The figure will appear after the referencing page, not at the document end.
+
+6. **Three stages per architecture.** Less than three loses important detail. More than three creates visual noise. Three is the sweet spot for pipeline diagrams.
+
+7. **Test with `\resizebox` but design without it.** The `\resizebox` is a safety net. If your figure looks good at native size, it will look good scaled. If it only looks good after scaling, the design is too dense.
 
 ---
 
@@ -263,9 +326,15 @@ Every figure starts with a `\tikzset` block defining reusable styles:
 - [ ] Colorblind-safe palette used
 - [ ] Grayscale-printable (check luminance contrast)
 - [ ] Consistent styling with other paper figures
-- [ ] No overlapping elements
+- [ ] **No overlapping elements** — check all node bounding boxes
+- [ ] **Group labels use `north` anchor + `label distance=8pt`** — float above border, not touching
+- [ ] **Spacing hierarchy respected:** 0.35cm within groups, 1.6cm between groups
+- [ ] **Max 2 columns** of detailed blocks in LNCS
+- [ ] **No nested `tikzpicture`** — use `scope` + `fit` instead
+- [ ] **Float placement correct:** `[t]` for normal figures, `[p]` for full-page figures
 - [ ] Caption explains what the figure shows without needing to read the paper body
-- [ ] Arrows have consistent direction (left→right for pipelines, top→bottom for hierarchies)
+- [ ] Arrows have consistent direction (top→bottom within groups, left→right for pipelines)
+- [ ] Architecture labels follow format: `{Name \hfill $Complexity$ \hfill \textit{Venue}}`
 
 ## What You Do NOT Do
 
