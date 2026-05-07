@@ -26,7 +26,6 @@
 \definecolor{gray3}{HTML}{BDBDBD}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
-\usepgfplotslibrary{statistics}
 \usepackage{hyperref}
 %
 \begin{document}
@@ -444,42 +443,38 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}
 \begin{axis}[
-    width=16cm, height=6cm,
-    boxplot/draw direction=y,
-    ymin=0.68, ymax=0.89,
-    ytick={0.68,0.72,0.76,0.80,0.84,0.88},
-    ylabel={F1-score (distribution across 147 LOSO folds)},
+    width=16cm, height=5.5cm,
+    ybar, bar width=7pt,
+    ymin=0.74, ymax=0.88,
+    ytick={0.74,0.76,0.78,0.80,0.82,0.84,0.86,0.88},
+    ylabel={F1-score},
     symbolic x coords={1D-CNN,TCN,IncTime,TST,DLinear,ModTCN,FEDformer,Informer,Autoformer,TimesNet,Mamba,PatchTST},
     xtick=data,
-    xticklabel style={font=\scriptsize, rotate=30, anchor=east},
+    xticklabel style={font=\scriptsize, rotate=35, anchor=east},
     yticklabel style={font=\footnotesize},
     ylabel style={font=\footnotesize},
     grid=major,
     grid style={dashed, gray!30},
-    enlarge x limits=0.08,
+    enlarge x limits=0.18,
+    nodes near coords,
+    every node near coord/.append style={font=\tiny, rotate=90, anchor=west, /pgf/number format/precision=3},
 ]
-% Prior work (grey boxes)
-\addplot+[boxplot prepared={lower whisker=0.683, lower quartile=0.743, median=0.796, upper quartile=0.849, upper whisker=0.909}, fill=gray3, draw=gray1] coordinates {(1D-CNN,0)};
-\addplot+[boxplot prepared={lower whisker=0.716, lower quartile=0.763, median=0.812, upper quartile=0.861, upper whisker=0.908}, fill=gray3, draw=gray1] coordinates {(TCN,0)};
-\addplot+[boxplot prepared={lower whisker=0.731, lower quartile=0.777, median=0.822, upper quartile=0.867, upper whisker=0.913}, fill=gray3, draw=gray1] coordinates {(IncTime,0)};
-\addplot+[boxplot prepared={lower whisker=0.757, lower quartile=0.799, median=0.840, upper quartile=0.881, upper whisker=0.923}, fill=gray3, draw=gray1] coordinates {(TST,0)};
+% Prior work (grey)
+\addplot[fill=gray3, draw=gray1] coordinates {(1D-CNN,0.796) (TCN,0.812) (IncTime,0.822) (TST,0.840)};
 % DLinear (red)
-\addplot+[boxplot prepared={lower whisker=0.693, lower quartile=0.749, median=0.800, upper quartile=0.851, upper whisker=0.907}, fill=red2, draw=red1] coordinates {(DLinear,0)};
+\addplot[fill=red2, draw=red1]       coordinates {(DLinear,0.800)};
 % ModernTCN + FEDformer (orange)
-\addplot+[boxplot prepared={lower whisker=0.731, lower quartile=0.781, median=0.827, upper quartile=0.873, upper whisker=0.923}, fill=orange2, draw=orange1] coordinates {(ModTCN,0)};
-\addplot+[boxplot prepared={lower whisker=0.747, lower quartile=0.794, median=0.836, upper quartile=0.878, upper whisker=0.925}, fill=orange2, draw=orange1] coordinates {(FEDformer,0)};
+\addplot[fill=orange2, draw=orange1]  coordinates {(ModTCN,0.827) (FEDformer,0.836)};
 % Informer + Autoformer + TimesNet (green)
-\addplot+[boxplot prepared={lower whisker=0.759, lower quartile=0.806, median=0.845, upper quartile=0.884, upper whisker=0.931}, fill=green2, draw=green1] coordinates {(Informer,0)};
-\addplot+[boxplot prepared={lower whisker=0.765, lower quartile=0.810, median=0.848, upper quartile=0.886, upper whisker=0.931}, fill=green2, draw=green1] coordinates {(Autoformer,0)};
-\addplot+[boxplot prepared={lower whisker=0.773, lower quartile=0.817, median=0.853, upper quartile=0.889, upper whisker=0.933}, fill=green2, draw=green1] coordinates {(TimesNet,0)};
+\addplot[fill=green2, draw=green1]    coordinates {(Informer,0.845) (Autoformer,0.848) (TimesNet,0.853)};
 % Mamba (purple)
-\addplot+[boxplot prepared={lower whisker=0.776, lower quartile=0.822, median=0.858, upper quartile=0.894, upper whisker=0.940}, fill=purple2, draw=purple1] coordinates {(Mamba,0)};
+\addplot[fill=purple2, draw=purple1]  coordinates {(Mamba,0.858)};
 % PatchTST (blue)
-\addplot+[boxplot prepared={lower whisker=0.783, lower quartile=0.829, median=0.863, upper quartile=0.897, upper whisker=0.943}, fill=blue2, draw=blue1] coordinates {(PatchTST,0)};
+\addplot[fill=blue2, draw=blue1]      coordinates {(PatchTST,0.863)};
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Distribution of F1-scores across 147 LOSO folds for all architectures. Boxes span the interquartile range (Q1--Q3), horizontal lines indicate medians, and whiskers extend to 1.5$\times$IQR. Colour coding follows the paradigm convention: grey = prior work \cite{SanchezReolid2022}, blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution, red = linear baseline. The progressive reduction in box height from DLinear to PatchTST reflects decreasing inter-subject variability as temporal modelling capacity increases.}
+\caption{Classification performance (F1-score) across all architectures under LOSO evaluation. Values are displayed above each bar. Colour coding follows the paradigm convention: grey = prior work \cite{SanchezReolid2022}, blue = patch attention, green = frequency/periodicity, purple = state space model, orange = Fourier/convolution, red = linear baseline.}
 \label{fig:f1_bars}
 \end{figure}
 
