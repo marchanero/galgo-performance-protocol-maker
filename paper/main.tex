@@ -444,7 +444,6 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
 \begin{tikzpicture}
 \begin{axis}[
     width=16cm, height=5.5cm,
-    ybar, bar width=8pt,
     ymin=0.74, ymax=0.88,
     ytick={0.74,0.76,0.78,0.80,0.82,0.84,0.86,0.88},
     ylabel={F1-score},
@@ -456,21 +455,33 @@ PatchTST   & 0.873 $\pm$ 0.044 & 0.867 $\pm$ 0.048 & 0.858 $\pm$ 0.050 & 0.863 $
     grid=major,
     grid style={dashed, gray!30},
     xmin=-0.8, xmax=11.8,
-    nodes near coords,
-    every node near coord/.append style={font=\tiny, rotate=90, anchor=west},
 ]
-% Prior work (grey)
-\addplot[fill=gray3, draw=gray1] coordinates {(0,0.796) (1,0.812) (2,0.822) (3,0.840)};
-% DLinear (red)
-\addplot[fill=red2, draw=red1]       coordinates {(4,0.800)};
-% ModernTCN + FEDformer (orange)
-\addplot[fill=orange2, draw=orange1]  coordinates {(5,0.827) (6,0.836)};
-% Informer + Autoformer + TimesNet (green)
-\addplot[fill=green2, draw=green1]    coordinates {(7,0.845) (8,0.848) (9,0.853)};
-% Mamba (purple)
-\addplot[fill=purple2, draw=purple1]  coordinates {(10,0.858)};
-% PatchTST (blue)
-\addplot[fill=blue2, draw=blue1]      coordinates {(11,0.863)};
+% Draw each bar individually with \draw — perfect alignment guaranteed
+\draw[fill=gray3, draw=gray1]    (axis cs:-0.35,0) rectangle (axis cs:0.35,0.796);
+\draw[fill=gray3, draw=gray1]    (axis cs:0.65,0)  rectangle (axis cs:1.35,0.812);
+\draw[fill=gray3, draw=gray1]    (axis cs:1.65,0)  rectangle (axis cs:2.35,0.822);
+\draw[fill=gray3, draw=gray1]    (axis cs:2.65,0)  rectangle (axis cs:3.35,0.840);
+\draw[fill=red2, draw=red1]      (axis cs:3.65,0)  rectangle (axis cs:4.35,0.800);
+\draw[fill=orange2, draw=orange1] (axis cs:4.65,0) rectangle (axis cs:5.35,0.827);
+\draw[fill=orange2, draw=orange1] (axis cs:5.65,0) rectangle (axis cs:6.35,0.836);
+\draw[fill=green2, draw=green1]   (axis cs:6.65,0) rectangle (axis cs:7.35,0.845);
+\draw[fill=green2, draw=green1]   (axis cs:7.65,0) rectangle (axis cs:8.35,0.848);
+\draw[fill=green2, draw=green1]   (axis cs:8.65,0) rectangle (axis cs:9.35,0.853);
+\draw[fill=purple2, draw=purple1] (axis cs:9.65,0) rectangle (axis cs:10.35,0.858);
+\draw[fill=blue2, draw=blue1]     (axis cs:10.65,0) rectangle (axis cs:11.35,0.863);
+% Value labels on top of each bar
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:0,0.800)    {0.796};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:1,0.816)    {0.812};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:2,0.826)    {0.822};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:3,0.844)    {0.840};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:4,0.804)    {0.800};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:5,0.831)    {0.827};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:6,0.840)    {0.836};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:7,0.849)    {0.845};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:8,0.852)    {0.848};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:9,0.857)    {0.853};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:10,0.862)   {0.858};
+\node[font=\tiny, rotate=90, anchor=west] at (axis cs:11,0.867)   {0.863};
 \end{axis}
 \end{tikzpicture}%
 }
