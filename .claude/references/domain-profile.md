@@ -85,6 +85,29 @@ All agents read this file to calibrate their field-specific behavior.
 - **Reproducibility:** Report seeds, hyperparameter search space, optimal configs, epochs to convergence (mean ± std across folds)
 - **Overleaf sync:** Use `git subtree push --prefix=paper overleaf main` — NEVER force push (breaks sync). If rebasing, use manual clone + copy + normal push.
 
+## DOI Verification Protocol
+
+**Two distinct DOI registries exist — use the correct one for each:**
+
+| Registry | DOI prefix examples | Verification |
+|----------|-------------------|-------------|
+| **Crossref** | `10.1016/*`, `10.1109/*`, `10.3390/*`, `10.1111/*`, `10.1007/*`, `10.1142/*` | `https://api.crossref.org/works/DOI` |
+| **DataCite (arXiv)** | `10.48550/arXiv.*` | `https://doi.org/DOI` (HEAD request → 302) or `https://export.arxiv.org/api/query?id_list=ARXIVID` |
+
+**⚠️ arXiv DOIs (10.48550/arXiv.*) will return 404 from Crossref API. This is NORMAL — they use DataCite, not Crossref. Verify them via doi.org HTTP redirect instead.**
+
+```bash
+# Check arXiv DOI resolves correctly:
+curl -sI "https://doi.org/10.48550/arXiv.2312.00752" | head -1
+# → HTTP/2 302  (redirect = OK)
+```
+
+**When checking DOIs, always:**
+1. Check DOI prefix to determine which registry to query
+2. For Crossref DOIs: verify title matches via API
+3. For arXiv DOIs: verify HTTP redirect + arXiv API title match
+4. Flag only truly broken DOIs (wrong paper, no redirect, 404 on doi.org)
+
 ---
 
 ## BSPC Journal Calibration (Key Lessons)
