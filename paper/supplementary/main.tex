@@ -59,18 +59,18 @@ Table~\ref{tab:s2_wilcoxon} presents the complete matrix of pairwise Wilcoxon si
 \toprule
  & DLinear & ModernTCN & FEDformer & Informer & Autoformer & TimesNet & Mamba \\
 \midrule
-PatchTST   & \textbf{$<10^{-4}$} & \textbf{0.0003} & \textbf{0.0004} & \textbf{0.0012} & \textbf{0.0015} & \textbf{0.0028} & 0.048 \\
-Mamba      & \textbf{0.0002} & \textbf{0.0005} & \textbf{0.0008} & 0.021 & 0.032 & 0.085 & \\
-TimesNet   & \textbf{0.0003} & \textbf{0.0006} & 0.004 & 0.058 & 0.072 & & \\
-Autoformer & \textbf{0.0004} & 0.005 & 0.038 & 0.065 & & & \\
-Informer   & \textbf{0.0005} & 0.008 & 0.045 & & & & \\
-FEDformer  & \textbf{0.0008} & 0.032 & & & & & \\
-ModernTCN  & 0.002 & & & & & & \\
+PatchTST   & \textbf{$<10^{-4}$} & \textbf{0.0003} & \textbf{0.0004} & \textbf{0.0012} & \textbf{0.0015} & \textbf{0.0028} & \textbf{0.048} \\
+Mamba      & \textbf{0.0002} & \textbf{0.0005} & \textbf{0.0008} & \textbf{0.021} & \textbf{0.032} & 0.085 & \\
+TimesNet   & \textbf{0.0003} & \textbf{0.0006} & \textbf{0.004} & 0.058 & 0.072 & & \\
+Autoformer & \textbf{0.0004} & \textbf{0.005} & \textbf{0.038} & 0.065 & & & \\
+Informer   & \textbf{0.0005} & \textbf{0.008} & \textbf{0.045} & & & & \\
+FEDformer  & \textbf{0.0008} & \textbf{0.032} & & & & & \\
+ModernTCN  & \textbf{0.002} & & & & & & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Under the conventional $\alpha = 0.05$ threshold, 22 of 28 comparisons are statistically significant. The most notable result is the PatchTST--Mamba comparison ($p = 0.048$), which is significant at the conventional level but does not survive the stringent Bonferroni-Holm correction ($p_{\text{BH}} < 0.0018$). Under the corrected threshold, 18 of 28 comparisons remain significant. Comparisons between architectures within the same paradigm family (Informer vs.\ Autoformer, $p = 0.065$; Autoformer vs.\ TimesNet, $p = 0.072$; Mamba vs.\ TimesNet, $p = 0.085$) do not survive either threshold, consistent with their shared computational mechanisms and similar performance levels.
+Under the conventional $\alpha = 0.05$ threshold, 24 of 28 comparisons are statistically significant. The most notable result is the PatchTST--Mamba comparison ($p = 0.048$), which is significant at the conventional level but does not survive the stringent Bonferroni-Holm correction ($p_{\text{BH}} < 0.0018$). Under the corrected threshold, 13 of 28 comparisons remain significant. Comparisons between architectures within the same paradigm family (Informer vs.\ Autoformer, $p = 0.065$; Autoformer vs.\ TimesNet, $p = 0.072$; Mamba vs.\ TimesNet, $p = 0.085$) do not survive either threshold, consistent with their shared computational mechanisms and similar performance levels.
 
 % ======================================================
 \section*{Table S3: Per-Class Performance}
