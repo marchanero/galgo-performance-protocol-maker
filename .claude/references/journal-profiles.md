@@ -114,6 +114,23 @@ Each profile includes a **Referee pool** that weights which dispositions the edi
 **Typical concerns:** "Is the signal processing methodology novel or a straightforward application?" "Physiological motivation for the approach?" "Comparison against traditional signal processing methods?"
 **Referee pool:** ARCHITECTURE (high), CREDIBILITY (high), REPRODUCIBILITY (medium), SKEPTIC (medium), BASELINE (low), THEORY (low)
 
+**Critical Pet Peeves (BSPC-specific):**
+- **Missing classical baselines:** Papers benchmarking DL architectures against only other DL architectures will be flagged. Include handcrafted feature extraction + SVM/RF as reference point. Even retrospective baselines are better than none.
+- **"Wearable/mobile/cloud" deployment claims from GPU benchmarks:** BSPC reviewers will reject deployment tier labels based on workstation GPU latency. Use GPU-relative language (low/mid/high-latency GPU) unless benchmarks include actual embedded hardware.
+- **Preprocessing without physiological justification:** Every parameter (FIR cutoff, Gaussian sigma, decomposition method) must be linked to EDA signal characteristics or SNS physiology. Cite SPR2012EDA guidelines.
+
+**Constructive Pet Peeves (BSPC reviewers reward):**
+- **Thorough preprocessing documentation:** Explicitly justify CDA vs. cvxEDA vs. Ledalab. Mention artifact susceptibility (cite Hossain2022BSPC).
+- **Honest limitations:** Distinguish lab validation from clinical deployment. Acknowledge single-dataset constraint, LOSO Wilcoxon independence violation, GPU-relative thresholds.
+- **BSPC journal awareness:** Cite 5-8 relevant BSPC papers in introduction. Shows the paper belongs in this venue, not a pure ML journal.
+- **Multiple efficiency dimensions:** Parameters, FLOPs, inference time, memory, training time — BSPC values practical deployability.
+
+**Self-Citation Guidelines for BSPC:**
+- Keep below ~35% of total cite instances
+- Avoid duplicate cites to same paper in same sentence
+- Use dataset paper for protocol citations, comparison paper for architecture context
+- BSPC papers by the same author group count toward the 5-8 venue-awareness target
+
 ### IEEE Sensors Journal
 **Focus:** Sensor design, sensor signal processing, sensor systems and applications
 **Bar:** Contribution to sensing technology — from hardware to algorithms. Application-oriented with demonstrated sensor-level innovation.

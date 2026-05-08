@@ -120,7 +120,7 @@ Output organization: by-script
 | Paper | `paper/main.tex` | draft | 8 architectures, Results & Discussion drafted |
 | Reference | `master_supporting_docs/supporting_papers/reference_paper.tex` | complete | Prior work: 5 architectures for EDA |
 | Bibliography | `paper/bibliography.bib` | populated | 46 references (EDA, transformers, SSM) |
-| Overleaf sync | `github.com/marchanero/eda-efficient-transformers` | active | Paper-only repo synced with Overleaf |
+| Overleaf sync | `github.com/marchanero/BSPC-eda-efficient-transformers` | active | Paper-only repo synced with Overleaf via manual clone+push (no force) |
 | Data | `data/` | pending | EDA signals from 147 participants |
 | Scripts | `scripts/` | pending | Training/evaluation pipeline |
 | Figures | `paper/main.tex` (TikZ) | 2 figures | Pipeline + architecture overview |

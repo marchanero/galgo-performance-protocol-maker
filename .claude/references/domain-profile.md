@@ -1,173 +1,152 @@
 # Domain Profile
 
 <!--
-HOW TO USE: Fill this in manually OR let /discover (interactive interview) generate it.
+HOW TO USE: Calibrated for Roberto Sánchez-Reolid's research group (UCLM — I3A / TSI).
 All agents read this file to calibrate their field-specific behavior.
-Delete sections that don't apply. Add sections specific to your field.
-If no field is specified, agents default to applied economics.
 -->
 
 ## Field
 
-**Primary:** Affective Computing / Biomedical Engineering
-**Adjacent subfields:** Time-Series Deep Learning, Physiological Signal Processing, Human-Computer Interaction (HCI), Pattern Recognition, Wearable Computing, Health Informatics
+**Primary:** Affective Computing / Biomedical Engineering / Time-Series Deep Learning
+**Adjacent subfields:** Physiological Signal Processing (EDA), Wearable Computing, Health Informatics, Pattern Recognition, State Space Models, Efficient Transformers
 **Engineering domain:** Computer Engineering / ICT / Artificial Intelligence
+
+## Research Group Context
+
+- **Institution:** Universidad de Castilla-La Mancha (UCLM) — I3A / TSI
+- **Core dataset:** 147 healthy participants (aged 18–44), controlled laboratory protocol (audiovisual stimuli: calm vs. stress), EDA at 4 Hz, 40-second effective windows after trimming 4s onset + 3s offset from 47s stimuli
+- **Gold standard protocol:** Leave-One-Subject-Out (LOSO), 147 folds — test subject fully excluded from training, validation, AND normalization
+- **Typical input:** SCR + ΔSCR + Δ²SCR (3 channels, T = 4n, 4 Hz)
+- **Core architecture papers:** Deep-SVM (IJNS 2020), 1D-CNN (BSPC 2022), 5-architecture comparison (reference paper), current 8-architecture paper
+- **Self-citation sensitivity:** Keep below ~35% of total cite instances. Remove duplicate cites in same sentence, avoid generic "as in prior work" without specific claim. Use `sanchez2020deep` for dataset protocol, `SanchezReolid2022` for architecture comparison context.
 
 ---
 
 ## Target Journals (ranked by tier)
 
-<!-- The Orchestrator uses this for journal selection. The Librarian prioritizes these in searches. -->
-
 | Tier | Journals |
 |------|----------|
-| Top-tier AI/ML | IEEE TPAMI, JMLR, Neural Networks, Nature Machine Intelligence, IJCV |
-| Top-tier CS/AI | NeurIPS, ICML, ICLR, CVPR, AAAI, IJCAI |
-| Top-tier Affective Computing | IEEE TAC (Transactions on Affective Computing), ACII (Affective Computing and Intelligent Interaction) |
-| Top-tier Biomedical | IEEE TBME (Transactions on Biomedical Engineering), IEEE JBHI, Physiological Measurement, Biomedical Signal Processing and Control |
-| Strong field | IEEE Sensors Journal, Expert Systems with Applications, ACM Computing Surveys, Information Fusion |
-| Specialty | Sensors, IEEE Access, Frontiers in Neuroscience, Biomedical Engineering Online |
+| Top-tier Affective Computing | IEEE TAC (Transactions on Affective Computing) |
+| Top-tier Biomedical Signal Processing | BSPC (Biomedical Signal Processing and Control), IEEE TBME, IEEE JBHI |
+| Strong field | IEEE Sensors Journal, Physiological Measurement, Expert Systems with Applications |
+| Specialty / Outreach | Sensors, IEEE Access, Frontiers in Neuroscience |
 
 ---
 
 ## Common Data Sources
 
-<!-- The Explorer prioritizes these. The explorer-critic knows their quirks. -->
-
 | Dataset | Type | Access | Notes |
 |---------|------|--------|-------|
-| WESAD (Wearable Stress and Affect Detection) | Multimodal physiological | Public | 15 subjects, EDA+ECG+EMG, binary labels |
-| CASE (Continuously Annotated Signals of Emotion) | Physiological + annotations | Public | 30 subjects, continuous annotations |
-| DEAP (Database for Emotion Analysis) | EEG + peripheral signals | Public | 32 subjects, music video stimuli |
-| AMIGOS | Multimodal physiological | Public | 40 subjects, short/long videos |
-| RECOLA | Multimodal + annotations | Public | 46 subjects, collaborative task |
-| CLAS (Cognitive Load, Affect, and Stress) | Physiological signals | Public | 60 subjects, multimodal |
-| PMEmo | Physiological signals + music | Public | 457 subjects, music emotion |
-| K-EmoCon | Multimodal + annotations | Public | 32 subjects, debate tasks |
-| Custom/Proprietary EDA datasets | EDA signals | Restricted | Institutional ethics approval needed |
+| UCLM custom (147 subjects) | EDA only | Institutional | Primary dataset. 147 participants, calm/stress, 4 Hz, 40s windows. LOSO protocol. |
+| WESAD | Multimodal | Public | 15 subjects, EDA+ECG+EMG, binary stress labels. Good for cross-dataset validation. |
+| CASE | Physiological | Public | 30 subjects, continuous annotations |
+| DEAP | EEG+peripheral | Public | 32 subjects, music video stimuli |
+| AMIGOS | Multimodal | Public | 40 subjects, short/long videos |
+
+## Author's Own Published Work (Self-Citation Pool)
+
+| Key | Paper | Journal | Year | Use for |
+|-----|-------|---------|------|---------|
+| `sanchez2020deep` | Deep SVM for stress from EDA | Int. J. Neural Systems | 2020 | Dataset protocol, classical baseline (F1 0.80-0.83) |
+| `sanchez2022one` | 1D-CNN for EDA arousal | BSPC | 2022 | 1D-CNN baseline, derivative channels justification |
+| `SanchezReolid2022` | 5-architecture comparison (1D-CNN, TCN, InceptionTime, TST, PatchTST) | — | 2022 | Reference paper. Prior DL baselines, LOSO protocol, architecture comparison context |
 
 ---
 
 ## Common Methodological Approaches
 
-<!-- The Strategist considers these first. The strategist-critic knows field-specific threats. -->
-
 | Approach | Typical Application | Key Concern to Address |
 |----------|-------------------|------------------------|
-| Lightweight / Efficient Transformers | EDA time-series classification | Model efficiency vs. accuracy trade-off, parameter count, inference latency |
-| Convolutional Neural Networks (1D-CNN) | Temporal feature extraction from EDA | Receptive field size, temporal resolution |
-| LSTM / BiLSTM | Sequential modeling of physiological signals | Vanishing gradients, training stability |
-| Hybrid CNN-Transformer | Multiscale feature extraction | Component balance, overfitting |
-| Transfer Learning / Pretraining | Cross-subject / cross-dataset generalization | Domain shift, fine-tuning strategy |
-| Self-Supervised Learning | Pretraining on unlabeled physiological data | Pretext task design, representation quality |
-| Ablation Studies | Isolating contribution of each architectural component | Controlled comparisons, statistical significance |
-| k-Fold Cross-Validation (LOSO) | Subject-independent evaluation | Data leakage, proper stratification |
+| Efficient Transformers (Informer, Autoformer, FEDformer, PatchTST) | EDA time-series classification | O(N²) vs O(L log L) vs O(L) complexity; attention interpretability |
+| State Space Models (Mamba/Bi-Mamba) | Physiological sequence modeling | Competitive accuracy at O(L) complexity; content-dependent gating |
+| Modernised Convolutions (ModernTCN) | Temporal feature extraction | Large kernels, inverted bottlenecks vs. attention mechanisms |
+| Linear Baselines (DLinear) | Efficiency floor | Trend-seasonal decomposition matches 1D-CNN — confirms non-linear temporal modeling necessity |
+| Handcrafted Features + SVM/RF | Classical signal processing baseline | Anchors DL gains; expected by BSPC reviewers |
+| Ablation Studies (channel, window length) | Isolating component contributions | Derivative channels; minimal temporal interval |
+| LOSO Cross-Validation | Subject-independent evaluation | Z-score within-fold only; same-subject windows preserved together |
+| Pareto Frontier Analysis | Accuracy-efficiency trade-off | 5 efficiency metrics: params, FLOPs, t_inf, M_peak, t_train |
 
 ---
 
 ## Field Conventions
 
-<!-- The Coder and Writer follow these. The writer-critic checks for them. -->
+- **EDA preprocessing:** FIR low-pass + Gaussian smoothing + CDA decomposition (cite cvxEDA [Greco2016] and Ledalab [Benedek2010] as alternatives)
+- **Derivative channels:** ΔSCR (velocity) and Δ²SCR (acceleration) computed from phasic SCR
+- **SPR Guidelines:** Always cite SPR2012EDA for methodological choices
+- **LOSO is gold standard:** Within-subject splits artificially inflate performance in EDA
+- **Metrics:** F1, Acc, Prec, Rec, AUC — report mean ± std across 147 LOSO folds
+- **Efficiency is primary:** params (M), FLOPs (M), t_inf (ms), M_peak (MB), t_train (s/epoch)
+- **Statistical tests:** Wilcoxon signed-rank on per-fold F1; Bonferroni-Holm correction for 28 pairwise comparisons. **Caveat:** LOSO violates independence assumption — state that p-values are "descriptive indicators of effect consistency"
+- **Deployment tiers:** Use GPU-relative language (low/mid/high-latency GPU), not wearable/mobile/cloud unless benchmarked on actual embedded hardware
+- **Classical baseline:** Handcrafted SCR features + SVM is expected at BSPC; report even if retrospective
+- **Self-citations:** Keep to ~35% max; don't cite same paper twice in same sentence; use `sanchez2020deep` for dataset protocol, not `SanchezReolid2022`
+- **Table formatting:** booktabs, threeparttable for footnotes. Bold = best per metric (verify numbers match bolding!)
+- **Figures:** TikZ with ColorBrewer colorblind-safe palette. 6-figure typical count.
+- **Reproducibility:** Report seeds, hyperparameter search space, optimal configs, epochs to convergence (mean ± std across folds)
+- **Overleaf sync:** Use `git subtree push --prefix=paper overleaf main` — NEVER force push (breaks sync). If rebasing, use manual clone + copy + normal push.
 
-- EDA signal preprocessing: 4Hz Butterworth low-pass filter, decomposition into tonic (SCL) and phasic (SCR) components (cvxEDA or Ledalab)
-- Standard train/validation/test splits; report performance on held-out test set
-- Leave-One-Subject-Out (LOSO) cross-validation as the gold standard for generalization
-- Report F1-score, accuracy, and AUC-ROC as primary metrics; include confusion matrices
-- Statistical significance testing between models: paired t-test or Wilcoxon signed-rank over folds
-- Model efficiency metrics: parameter count (M), FLOPs, inference time (ms/sample), memory footprint (MB)
-- Always discuss computational complexity vs. accuracy trade-off
-- Reproducibility: report random seeds, hyperparameter search spaces, and training details
-- Ablation studies to isolate contributions of each architectural component
+---
+
+## BSPC Journal Calibration (Key Lessons)
+
+- **Classical signal processing baseline is mandatory** — handcrafted EDA features + SVM/RF anchors DL gains. Without it, paper reads as ML benchmark, not biomedical signal processing.
+- **Preprocessing must be physiologically justified** — why FIR at 4 Hz? Why Gaussian σ? Why CDA over cvxEDA/Ledalab?
+- **Cite BSPC papers in introduction** — aim for 5-8 BSPC journal references in related work. Shows venue awareness.
+- **Artifact handling** — EDA is noise-sensitive. At minimum, acknowledge limitation. Stronger: inject synthetic noise experiment.
+- **Deployment claims** — GPU benchmarks ≠ wearable deployment. Use honest GPU-relative language.
+- **Interpretability** — Qualitative observations are fine IF labeled as qualitative. Don't promise "quantification" in Methods then deliver narrative in Results.
+- **Paradigm/color consistency** — If figures group by complexity class, captions must say so (not "by paradigm"). Count must be consistent across abstract, intro, figures.
+
+## BSPC Referee Pet Peeves
+
+| Critical (they scrutinize) | Constructive (they reward) |
+|---------------------------|---------------------------|
+| Missing classical signal processing baselines | Thorough preprocessing documentation with physiological justification |
+| Deployment claims without embedded hardware evidence | Honest limitations and GPU-relative language |
+| "First"/"novel" claims without literature verification | Self-citation restraint + BSPC journal references |
+| "Significantly better" without stats or with violated test assumptions | Pareto frontier analysis with multiple efficiency dimensions |
 
 ---
 
 ## Notation Conventions
 
-<!-- The Writer and writer-critic enforce these. -->
-
 | Symbol | Meaning | Anti-pattern |
 |--------|---------|-------------|
-| X ∈ R^(T×D) | Input EDA time-series with T timesteps and D features | Avoid X without dimensions |
-| y | Class label (arousal level: low/high) | Don't use generic "target" |
-| f_θ(x) | Model prediction with parameters θ | Avoid ambiguous notation |
-| N | Number of subjects / samples | Don't use lowercase n |
-| L | Number of classes | Distinguish from Loss L |
-| Acc, F1, AUC | Performance metrics | Always define at first use |
-| #params, FLOPs, t_inf | Efficiency metrics | Always report with units |
+| X ∈ R^(T×C) | Input with T timesteps and C channels | Avoid X without dimensions |
+| T = 4n | Timesteps for n-second window at 4 Hz | Don't forget factor |
+| C = 3 | Channels: SCR, ΔSCR, Δ²SCR | |
+| N_params | Parameter count (millions) | Always with units |
+| t_inf | Inference time (ms) | Batch size = 1 |
+| M_peak | Peak GPU memory (MB) | |
+| p_BH | Bonferroni-Holm corrected threshold | For 28 pairwise comparisons |
 
 ---
 
 ## Seminal References
 
-<!-- The Librarian ensures these are cited when relevant. The strategist-critic knows their methods. -->
-
 | Paper | Why It Matters |
 |-------|---------------|
-| Vaswani et al. (2017) "Attention Is All You Need" | Original Transformer architecture — foundation for all variants |
-| Dosovitskiy et al. (2021) "An Image is Worth 16×16 Words" | Vision Transformer (ViT) — adapted to time series patch-based approaches |
-| Wang et al. (2023) "Time Series Transformer" | Transformer adaptations for time-series classification |
-| Schmidt et al. (2018) "WESAD dataset" | Gold-standard benchmark for wearable stress detection |
-| Boucsein (2012) "Electrodermal Activity" | Definitive reference for EDA measurement and interpretation |
-| Posada-Quintero & Chon (2020) "EDA-based emotion recognition" | Recent survey of EDA signal processing for affective computing |
-| Picard et al. (2001) "Toward Machine Emotional Intelligence" | Foundational work on affective computing |
-| Liu et al. (2021) "Swin Transformer" / "Efficient Transformers Survey" | Lightweight/efficient transformer design principles |
-
----
-
-## Theoretical Foundational References
-
-<!-- The Theorist and theorist-critic default to these anchors when building or reviewing a theory section.
-     Only needed if the paper has a formal theory section (convergence proofs, generalization bounds,
-     complexity analysis, or formal architecture properties).
-     Leave empty to fall back to the generic ML theory defaults. -->
-
-| Topic | Anchor references |
-|-------|------------------|
-| Attention complexity analysis | Vaswani et al. (2017); Tay et al. (2022) "Efficient Transformers: A Survey" |
-| Generalization bounds for deep learning | Bartlett et al. (2017); Neyshabur et al. (2018) |
-| Time-series representation learning | Franceschi et al. (2019); Tonekaboni et al. (2021) |
-| PAC-Bayesian bounds | McAllester (1999); Dziugaite & Roy (2017) |
-
----
-
-## Paper Author Team
-
-<!-- Used by the theorist-critic to calibrate respect. If the authors are themselves among the reference
-     literature on a topic, the critic avoids lecturing them on their own contributions.
-     List author surnames + the topics they are foundational on. -->
-
-| Author | Foundational on |
-|--------|----------------|
-| [e.g., Vaswani] | [Self-attention, Transformer architecture] |
-
----
-
-## Field-Specific Referee Concerns
-
-<!-- The domain-referee and methods-referee watch for these. -->
-
-- "Are you comparing against proper baselines (SOTA methods from the last 2-3 years)?"
-- "Is LOSO cross-validation used? Within-subject splits artificially inflate performance."
-- "Are you reporting both accuracy AND per-class metrics? Imbalanced datasets are common in affective computing."
-- "Model efficiency metrics: parameter count, FLOPs, and inference latency must be reported."
-- "Is the EDA preprocessing pipeline described with enough detail to reproduce?"
-- "Ablation studies: which components actually contribute to the performance gain?"
-- "Are statistical significance tests performed between competing models?"
-- "Domain shift / cross-dataset generalization: does your model transfer to other datasets?"
-- "Is the physiological/behavioral interpretation of results discussed, or are you just reporting numbers?"
-- "Reproducibility: are hyperparameters, seeds, and training details fully specified?"
+| Boucsein (2012) "Electrodermal Activity" | Definitive EDA reference |
+| Greco et al. (2016) "cvxEDA" (IEEE TBME) | Standard EDA decomposition method |
+| Benedek & Kaernbach (2010) "Ledalab" (J. Neurosci. Meth.) | Alternative EDA decomposition |
+| SPR Ad Hoc Committee (2012) "Publication recommendations for EDA" | Methodological guidelines for EDA |
+| Posada-Quintero & Chon (2020) "EDA innovations" (Sensors) | Recent EDA signal processing survey |
+| Schmidt et al. (2018) "WESAD" | Gold-standard wearable stress benchmark |
+| Vaswani et al. (2017) "Attention Is All You Need" | Original Transformer |
+| Wen et al. (2023) "Transformers in Time Series: A Survey" | Time-series Transformer taxonomy |
+| Tay et al. (2022) "Efficient Transformers: A Survey" | Efficiency mechanisms |
+| Mamba (Gu & Dao 2023) | Selective state space models |
+| PatchTST (Nie et al. 2023, ICLR) | Patch-based time-series Transformer |
 
 ---
 
 ## Quality Tolerance Thresholds
 
-<!-- Customize for your domain's standards. Used by quality.md. -->
-
 | Quantity | Tolerance | Rationale |
 |----------|-----------|-----------|
-| Classification accuracy | ±0.5 pp | Validation set variability across 5-fold CV |
-| F1-score | ±0.5 pp | Same as accuracy |
-| AUC-ROC | ±0.005 | Standard AUC reporting precision |
-| Parameter count | ±1K params | Exact counting, not approximate |
-| Inference time | ±0.1 ms | Hardware variability across runs |
-| FLOPs | ±1K | Model complexity measurement precision |
+| Classification accuracy | ±0.5 pp | LOSO fold variability across 147 subjects |
+| F1-score | ±0.5 pp | Same |
+| AUC-ROC | ±0.005 | Standard reporting precision |
+| Parameter count | ±0.1 M | Rounding for readability |
+| Inference time | ±0.1 ms | Hardware variability |
+| FLOPs | ±1 M | thop library estimation tolerance |
