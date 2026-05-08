@@ -4,14 +4,14 @@
 
 % ---- EDA / Affective Computing / Physiological Signals ----
 @article{sanchez2020deep,
-  author    = {S\'{a}nchez-Reolid, Roberto and Garc\'{i}a, Arturo S. and Vicente-Querol, Miguel A. and Fern\'{a}ndez-Aguilar, Luz and L\'{o}pez, Mar\'{i}a T. and Fern\'{a}ndez-Caballero, Antonio and Gonz\'{a}lez, Pascual},
-  title     = {Artificial neural networks to assess emotional states from brain-computer interface},
-  journal   = {Electronics},
-  volume    = {7},
-  number    = {12},
-  pages     = {384},
-  year      = {2018},
-  doi       = {10.3390/electronics7120384}
+  author    = {S\'{a}nchez-Reolid, Roberto and Mart\'{i}nez-Rodrigo, Arturo and L\'{o}pez, Mar\'{i}a T. and Fern\'{a}ndez-Caballero, Antonio},
+  title     = {Deep support vector machines for the identification of stress condition from electrodermal activity},
+  journal   = {International Journal of Neural Systems},
+  volume    = {30},
+  number    = {7},
+  pages     = {2050031},
+  year      = {2020},
+  doi       = {10.1142/S0129065720500318}
 }
 
 @article{sanchez2022one,
@@ -40,7 +40,6 @@
   title     = {Electrodermal activity as a biomarker of emotional arousal: {A} systematic review},
   journal   = {IEEE Reviews in Biomedical Engineering},
   year      = {2024},
-  doi       = {10.1109/RBME.2024.XXXXXXX}
 }
 
 @article{Meijer2023,
@@ -491,5 +490,99 @@
   author    = {Loshchilov, Ilya and Hutter, Frank},
   title     = {Decoupled weight decay regularization},
   booktitle = {Proceedings of the International Conference on Learning Representations (ICLR)},
-  year      = {2019}
+  year      = {2019},
+  doi       = {10.48550/arXiv.1711.05101}
+}
+
+% ---- BSPC-specific references ----
+@article{Hossain2022BSPC,
+  author    = {Hossain, Md-Billal and Posada-Quintero, Hugo F. and Kong, Youngsun and McNaboe, Riley and Chon, Ki H.},
+  title     = {Automatic motion artifact detection in electrodermal activity data using machine learning},
+  journal   = {Biomedical Signal Processing and Control},
+  volume    = {74},
+  pages     = {103483},
+  year      = {2022},
+  doi       = {10.1016/j.bspc.2022.103483}
+}
+
+@article{Kasnesis2025BSPC,
+  author    = {Kasnesis, Panagiotis and Chatzigeorgiou, Charalampos and Feidakis, Michalis and Patrikakis, Charalampos},
+  title     = {{TranSenseFusers}: {A} temporal {CNN}-{Transformer} neural network family for explainable {PPG}-based stress detection},
+  journal   = {Biomedical Signal Processing and Control},
+  volume    = {101},
+  pages     = {107449},
+  year      = {2025},
+  doi       = {10.1016/j.bspc.2025.107449}
+}
+
+@article{Lee2025BSPC,
+  author    = {Lee, Hyungchan and Kim, Juhyun and Han, Byoungwoo and Park, Sung Min and Chang, Joon-Hyuk},
+  title     = {Developing an explainable deep neural network for stress detection using biosignals and human-engineered features},
+  journal   = {Biomedical Signal Processing and Control},
+  volume    = {100},
+  pages     = {106936},
+  year      = {2025},
+  doi       = {10.1016/j.bspc.2024.106936}
+}
+
+@article{Yaseen2026BSPC,
+  author    = {Yaseen, E. S. and \c{S}ahin, S.},
+  title     = {Masked signal modeling with self-supervised transformers for stress and affect detection using wearable biosignals},
+  journal   = {Biomedical Signal Processing and Control},
+  volume    = {103},
+  pages     = {107575},
+  year      = {2026},
+  doi       = {10.1016/j.bspc.2025.107575}
+}
+
+% ---- Classical EDA signal processing references ----
+@article{Greco2016,
+  author    = {Greco, Alberto and Valenza, Gaetano and Lanata, Antonio and Scilingo, Enzo Pasquale and Citi, Luca},
+  title     = {{cvxEDA}: {A} convex optimization approach to electrodermal activity processing},
+  journal   = {IEEE Transactions on Biomedical Engineering},
+  volume    = {63},
+  number    = {4},
+  pages     = {797--804},
+  year      = {2016},
+  doi       = {10.1109/TBME.2015.2474131}
+}
+
+@article{Benedek2010,
+  author    = {Benedek, Mathias and Kaernbach, Christian},
+  title     = {A continuous measure of phasic electrodermal activity},
+  journal   = {Journal of Neuroscience Methods},
+  volume    = {190},
+  number    = {1},
+  pages     = {80--91},
+  year      = {2010},
+  doi       = {10.1016/j.jneumeth.2010.04.028}
+}
+
+@article{Bach2010,
+  author    = {Bach, Dominik R. and Flandin, Guillaume and Friston, Karl J. and Dolan, Raymond J.},
+  title     = {Modelling event-related skin conductance responses},
+  journal   = {International Journal of Psychophysiology},
+  volume    = {75},
+  number    = {3},
+  pages     = {349--356},
+  year      = {2010},
+  doi       = {10.1016/j.ijpsycho.2010.01.005}
+}
+
+@article{SPR2012EDA,
+  author    = {{Society for Psychophysiological Research Ad Hoc Committee on Electrodermal Measures}},
+  title     = {Publication recommendations for electrodermal measurements},
+  journal   = {Psychophysiology},
+  volume    = {49},
+  number    = {8},
+  pages     = {1017--1034},
+  year      = {2012},
+  doi       = {10.1111/j.1469-8986.2012.01384.x}
+}
+
+@techreport{Braithwaite2013,
+  author    = {Braithwaite, Jason J. and Watson, Derrick G. and Jones, Robert and Rowe, Mickey},
+  title     = {A guide for analysing electrodermal activity ({EDA}) \& skin conductance responses ({SCRs}) for psychological experiments},
+  institution = {University of Birmingham},
+  year      = {2013}
 }
