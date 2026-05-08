@@ -150,3 +150,29 @@ All agents read this file to calibrate their field-specific behavior.
 | Parameter count | ±0.1 M | Rounding for readability |
 | Inference time | ±0.1 ms | Hardware variability |
 | FLOPs | ±1 M | thop library estimation tolerance |
+
+---
+
+## Paper Author Team (from ORCID/Crossref)
+
+**Primary author:** Roberto Sánchez-Reolid (ORCID: `0000-0003-4455-370X`)
+- **Affiliation:** UCLM — I3A / Dpto. Sistemas Informáticos
+- **Total publications:** 21 (2018–2026), 5 as first author
+- **Core lines:** Affective computing (EDA), physiological signal processing (EEG, fNIRS), deep learning time-series, computer vision (defect classification), neuroarchitecture, XR, speech emotion
+
+**Key co-authors:**
+| Author | ORCID | Research line |
+|--------|-------|---------------|
+| Antonio Fernández-Caballero | `0000-0002-8211-0398` | Affective computing, ambient intelligence |
+| Daniel Sánchez-Reolid | `0000-0003-3612-1261` | EEG, emotion recognition, BCI |
+| Francisco López de la Rosa | — | Computer vision, CNN, defect detection |
+| José L. Gómez-Sirvent | — | Neuroarchitecture, XR, emotion recognition |
+| Arturo Martínez-Rodrigo | — | Digital health, physiological signals |
+
+**EDA papers (same 147-subject dataset):**
+| Year | Title | Journal | Bib key | First author? |
+|------|-------|---------|---------|---------------|
+| 2020 | Deep SVM for stress from EDA | Int. J. Neural Systems | `sanchez2020deep` | ✅ |
+| 2022 | 1D-CNN for EDA arousal | BSPC | `sanchez2022one` | ✅ |
+| 2022 | ML for stress from EDA (scoping review) | Sensors | `SanchezReolid2022` | ✅ |
+| 2025 | Efficient architectures for EDA (current) | (this paper) | — | ✅ |
