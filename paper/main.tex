@@ -187,7 +187,7 @@ To analyse the minimal temporal interval required for reliable arousal classific
 
 \subsection{Efficient and Modern Architectures}
 
-Eight architectures were selected to represent five distinct efficiency paradigms in time-series modelling (Table~\ref{tab:architectures}). For all Transformer-based architectures, the original forecasting head was replaced with a global average pooling operation over the encoded sequence followed by a linear classification layer. DLinear, which does not employ an encoder-decoder structure, was adapted by feeding the decomposed representations into a linear classification head.
+Eight architectures were selected to represent five distinct efficiency paradigms in time-series modelling (Table~\ref{tab:architectures}). For all Transformer-based architectures, the original forecasting head was replaced with a global average pooling operation over the encoded sequence followed by a linear classification layer. DLinear, which does not employ an encoder-decoder structure, was adapted by feeding the decomposed representations into a linear classification head. Throughout the figures, colour coding follows computational complexity class ($O(N^2)$, $O(L \log L)$, $O(L)$) rather than mechanistic paradigm, to facilitate cross-paradigm comparison of the accuracy-efficiency trade-off. Informer, while mechanistically a sparse-attention model, shares the $O(L \log L)$ complexity class with the frequency-domain architectures and is therefore grouped with them under the green colour in all figures.
 
 \begin{table}[!ht]
 \centering
@@ -340,7 +340,7 @@ ModernTCN \cite{ModernTCN2024} modernises the convolutional paradigm with three 
 
 \subsection{Training and Hyperparameter Configuration}
 
-All models were trained end-to-end using the AdamW optimiser \cite{Loschilov2019} with cross-entropy loss on a single NVIDIA GeForce RTX 4080 GPU (16 GB GDDR6X, Ada Lovelace). All experiments used a fixed random seed (42) for reproducibility. Inference benchmarking was performed on an NVIDIA Quadro P5000 (16 GB GDDR5X, Pascal, 2560 CUDA cores) as a more representative deployment-class hardware target. The initial learning rate was set to $10^{-3}$ with cosine annealing scheduling. Mini-batch size was 32. Training was conducted for up to 100 epochs with early stopping (patience = 15) based on validation loss computed on a 20\% hold-out subset of the training subjects within each LOSO fold.
+All models were trained end-to-end using the AdamW optimiser \cite{Loschilov2019} with cross-entropy loss on a single NVIDIA GeForce RTX 4080 GPU (16 GB GDDR6X, Ada Lovelace). All experiments used a single random seed (42) for parameter initialisation and data ordering. PyTorch deterministic algorithms were not enabled due to CUDA performance constraints. Consequently, the per-fold standard deviations reported in Section~3.1 may partially reflect seed-dependent weight initialisation in addition to inter-subject variability---a limitation discussed in Section~3.8. Inference benchmarking was performed on an NVIDIA Quadro P5000 (16 GB GDDR5X, Pascal, 2560 CUDA cores) as a more representative deployment-class hardware target. The initial learning rate was set to $10^{-3}$ with cosine annealing scheduling. Mini-batch size was 32. Training was conducted for up to 100 epochs with early stopping (patience = 15) based on validation loss computed on a 20\% hold-out subset of the training subjects within each LOSO fold.
 
 Regularisation included dropout ($p \in [0.1, 0.3]$), weight decay ($\lambda = 10^{-4}$), and gradient clipping (maximum norm = 1.0). Hyperparameters were tuned using grid search with identical trial budgets (64 configurations per architecture) across all architectures. For each LOSO fold, the optimal configuration was selected based on validation F1-score computed on a 20\% hold-out subset of the training subjects within that fold, ensuring no test-subject information influenced hyperparameter selection. Table~\ref{tab:hyperparams} summarises the search space.
 
@@ -581,9 +581,9 @@ Training time per epoch follows the same hierarchy (Supplementary Material, Tabl
 \fill[blue2, opacity=0.12]  (axis cs:4,0.70)   rectangle (axis cs:9,0.93);
 
 % Region labels (top of figure, clear of data)
-\node[font=\footnotesize\bfseries, text=red1]        at (axis cs:0.5,0.915)  {Low-latency GPU};
-\node[font=\footnotesize\bfseries, text=orange1]     at (axis cs:2.6,0.915)  {Mid-latency GPU};
-\node[font=\footnotesize\bfseries, text=blue1]       at (axis cs:6.0,0.915)  {High-latency GPU};
+\node[font=\footnotesize\bfseries, text=red1]        at (axis cs:0.5,0.915)  {Tier 1~($\leq 1.5$\,ms)};
+\node[font=\footnotesize\bfseries, text=orange1]     at (axis cs:2.6,0.915)  {Tier 2~(1.5--4\,ms)};
+\node[font=\footnotesize\bfseries, text=blue1]       at (axis cs:6.0,0.915)  {Tier 3~($\geq 4$\,ms)};
 
 % === Data points (individual addplot per paradigm) ===
 % Red: DLinear (linear baseline)
@@ -615,13 +615,13 @@ Training time per epoch follows the same hierarchy (Supplementary Material, Tabl
 \end{axis}
 \end{tikzpicture}%
 }
-\caption{Accuracy-efficiency Pareto frontier across the eight evaluated architectures. The dashed line connects Pareto-optimal architectures (non-dominated in both accuracy and latency). Shaded regions correspond to three ordinal latency tiers measured on the Quadro P5000: low-latency GPU ($t_{\text{inf}} \leq 1.5$ ms), mid-latency GPU ($1.5 < t_{\text{inf}} < 4$ ms), and high-latency GPU ($t_{\text{inf}} \geq 4$ ms). Absolute latency on embedded hardware will differ substantially; these tiers serve as relative rankings, not deployment classifications.}
+\caption{Accuracy-efficiency Pareto frontier across the eight evaluated architectures. The dashed line connects Pareto-optimal architectures (non-dominated in both accuracy and latency). Shaded regions correspond to three ordinal latency tiers measured on the Quadro P5000: Tier~1 ($t_{\text{inf}} \leq 1.5$\,ms), Tier~2 ($1.5 < t_{\text{inf}} < 4$\,ms), and Tier~3 ($t_{\text{inf}} \geq 4$\,ms). Absolute latency on embedded hardware will differ substantially; these tiers serve as GPU-relative rankings, not deployment classifications.}
 \label{fig:pareto}
 \end{figure}
 
 Figure~\ref{fig:pareto} presents the central contribution of this work: the joint characterisation of predictive performance and computational cost across eight architectures spanning five paradigms. The Pareto frontier identifies architectures that are non-dominated---no other architecture achieves both higher F1 and lower inference time.
 
-Three deployment scenarios are delineated by inference time thresholds measured on the Quadro P5000. These thresholds are GPU-relative and should be interpreted as ordinal latency tiers rather than absolute deployment classifications; absolute latency on target embedded hardware (e.g., ARM Cortex-M, mobile SoCs) will differ substantially. The low-latency GPU tier ($t_{\text{inf}} \leq 1.5$ ms) identifies the most efficient architectures: DLinear (0.3 ms), ModernTCN (1.2 ms), and Mamba (1.5 ms), with Mamba achieving the highest accuracy (F1 = 0.858) within this tier---a compelling result for latency-constrained scenarios. The mid-latency tier ($1.5 < t_{\text{inf}} < 4$ ms) represents moderate GPU latency: FEDformer, TimesNet, and Informer occupy this region. The high-latency tier ($t_{\text{inf}} \geq 4$ ms) prioritises predictive accuracy, with Autoformer and PatchTST achieving the highest overall F1 (0.863) at 5.4 ms.
+Three deployment scenarios are delineated by inference time thresholds measured on the Quadro P5000. These thresholds are GPU-relative and should be interpreted as ordinal latency tiers rather than absolute deployment classifications; absolute latency on target embedded hardware (e.g., ARM Cortex-M, mobile SoCs) will differ substantially. Tier~1 ($t_{\text{inf}} \leq 1.5$\,ms) identifies the most efficient architectures: DLinear (0.3 ms), ModernTCN (1.2 ms), and Mamba (1.5 ms), with Mamba achieving the highest accuracy (F1 = 0.858) within this tier---a compelling result for latency-constrained scenarios. Tier~2 ($1.5 < t_{\text{inf}} < 4$\,ms) represents moderate GPU latency: FEDformer, TimesNet, and Informer occupy this region. Tier~3 ($t_{\text{inf}} \geq 4$\,ms) prioritises predictive accuracy, with Autoformer and PatchTST achieving the highest overall F1 (0.863) at 5.4 ms.
 
 The shape of the Pareto frontier reveals a clear diminishing returns pattern: substantial accuracy gains are achieved from DLinear (F1 = 0.800 at 0.3 ms) to Mamba (F1 = 0.858 at 1.5 ms), with minimal further improvement to PatchTST (F1 = 0.863 at 5.4 ms). The 0.005 F1 difference between Mamba and PatchTST reaches the conventional $\alpha = 0.05$ threshold ($p = 0.048$) but does not survive the Bonferroni-Holm correction for 28 comparisons (Supplementary Material, Table~S2), while Mamba requires 3.6$\times$ less inference time. As discussed in Section~3.8, p-values from LOSO-based comparisons should be interpreted as descriptive indicators of effect consistency. This has direct implications: for wearable and edge deployment, the marginal accuracy gain of PatchTST over Mamba does not justify the 3.6$\times$ additional latency cost.
 

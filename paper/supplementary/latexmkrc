@@ -1,0 +1,7 @@
+# latexmkrc — Supplementary material build configuration
+$pdf_mode = 5;
+$postscript_mode = $dvi_mode = 0;
+ensure_path('TEXINPUTS', '../preambles//');
+ensure_path('BIBINPUTS', '..//;.//');
+ensure_path('BSTINPUTS', '..//;.//');
+$xelatex = 'xelatex -interaction=nonstopmode %O %S';

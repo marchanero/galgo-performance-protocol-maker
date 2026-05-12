@@ -4,7 +4,6 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{booktabs}
-\usepackage{multirow}
 \usepackage{hyperref}
 
 \begin{document}
@@ -106,11 +105,11 @@ Table~\ref{tab:s4_training} reports training time per epoch, epochs to convergen
 
 \begin{table}[ht]
 \centering
-\caption{Training time and convergence metrics on RTX 4080.}
+\caption{Training time and convergence metrics on RTX 4080. Epochs reported are means across 147 LOSO folds.}
 \label{tab:s4_training}
 \begin{tabular}{lccc}
 \toprule
-Model & $t_{\text{train}}$ (s/epoch) & Epochs to converge & Total training (h) \\
+Model & $t_{\text{train}}$ (s/epoch) & Epochs (mean) & Total training (h) \\
 \midrule
 DLinear   & 1.2  & 32  & 0.6  \\
 ModernTCN & 8.5  & 45  & 6.4  \\
