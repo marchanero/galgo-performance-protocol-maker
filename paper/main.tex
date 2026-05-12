@@ -428,7 +428,7 @@ Table~\ref{tab:overall} presents the subject-independent LOSO classification per
 
 \begin{table}[!ht]
 \centering
-\caption{Overall LOSO performance comparison (mean $\pm$ std across 147 folds). Bold indicates best performance per metric.}
+\caption{Overall LOSO performance (mean $\pm$ std across 147 folds). Bold = best per metric.}
 \label{tab:overall}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lccccc}
@@ -454,10 +454,9 @@ PatchTST   & \textbf{0.873 $\pm$ 0.044} & \textbf{0.867 $\pm$ 0.048} & \textbf{0
 \end{tabular}%
 }
 \begin{tablenotes}\small
-\item[$\dagger$] Results reproduced from our prior work \cite{SanchezReolid2022} for direct comparison. The PatchTST F1 in this study (0.863) exceeds the value reported therein (0.852) due to the expanded hyperparameter search space (64 configurations per architecture vs.\ 24 in the original study) and the inclusion of $\Delta^2 SCR$ as an additional input channel.
-\item[$\ddagger$] Classical signal processing baseline from \cite{sanchez2020deep}: handcrafted EDA features (time-domain, frequency-domain, and morphological) extracted from the phasic SCR signal, with SVM classification under subject-independent evaluation on the identical dataset. The reported F1 represents the range of 0.80--0.83 across varying window lengths; for comparison at the 40\,s window, a representative value is shown. Per-fold standard deviations are not available for this retrospective comparison.
-\item[*] Metric not reported in the original study; only F1 values are available for the classical baseline.
-\item[a] Representative value at 40\,s window (see $\ddagger$ above).
+\item[$\dagger$] Results from companion work \cite{SanchezReolid2022}. The higher PatchTST F1 here (0.863 vs.\ 0.852) reflects the expanded search space (64 vs.\ 24 configurations) and the inclusion of $\Delta^2 SCR$.
+\item[$\ddagger$] Classical baseline from \cite{sanchez2020deep}: handcrafted SCR features + SVM, same dataset. F1 range 0.80--0.83 across window lengths; per-fold std not available.
+\item[*] Only F1 reported in the original study.
 \end{tablenotes}
 \end{table}
 
