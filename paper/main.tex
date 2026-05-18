@@ -1,13 +1,13 @@
-\documentclass[runningheads]{llncs}
-%
+\documentclass[preprint,12pt]{elsarticle}
+
 \usepackage[T1]{fontenc}
-\usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{threeparttable}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.multipart, fit, backgrounds, calc, chains}
+\usepackage{lineno}
 
 % ColorBrewer-inspired colorblind-safe palette for figures
 \definecolor{blue1}{HTML}{3182BD}
@@ -26,38 +26,72 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepackage{hyperref}
-%
+
+\journal{Biomedical Signal Processing and Control}
+
 \begin{document}
-%
-\title{Efficient Transformer Architectures for\\Electrodermal Activity-based Arousal Classification}
-%
-\titlerunning{Efficient Transformers for EDA-based Arousal Classification}
-%
-\author{
-Roberto S\'{a}nchez-Reolid\inst{1,2}\orcidID{0000-0003-4455-370X} \and
-Francisco Javier Celdr\'{a}n\inst{1}\orcidID{0009-0000-2699-219X} \and
-Daniel S\'{a}nchez-Reolid\inst{3}\orcidID{0000-0003-3612-1261} \and
-Antonio Fern\'{a}ndez-Caballero\inst{1,3,4}\orcidID{0000-0002-8211-0398}
-}
-\authorrunning{R. S\'{a}nchez-Reolid et al.}
-%
-\institute{
-Instituto de Investigaci\'{o}n en Inform\'{a}tica de Albacete (I3A), \\Universidad de Castilla-La Mancha, Albacete, Spain
-\and
-Departamento de Tecnolog\'{i}as y Sistemas de Informaci\'{o}n, \\Universidad de Castilla-La Mancha, Talavera de la Reina, Spain\\
-\email{roberto.sanchez@uclm.es}
-\and
-Departamento de Sistemas Inform\'{a}ticos, Universidad de Castilla-La Mancha, Albacete, Spain
-\and
-Biomedical Research Networking Centre in Mental Health, Madrid, Spain
-}
-%
-\maketitle
-%
+
+\begin{frontmatter}
+
+\title{Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification}
+
+\author[1,2]{Roberto S\'{a}nchez-Reolid\corref{cor1}\fnref{fn1}}
+\ead{roberto.sanchez@uclm.es}
+
+\author[1]{Francisco Javier Celdr\'{a}n\fnref{fn2}}
+
+\author[3]{Daniel S\'{a}nchez-Reolid\fnref{fn3}}
+
+\author[1,3,4]{Antonio Fern\'{a}ndez-Caballero\fnref{fn4}}
+
+\fntext[fn1]{ORCID: 0000-0003-4455-370X}
+\fntext[fn2]{ORCID: 0009-0000-2699-219X}
+\fntext[fn3]{ORCID: 0000-0003-3612-1261}
+\fntext[fn4]{ORCID: 0000-0002-8211-0398}
+
+\cortext[cor1]{Corresponding author}
+
+\affiliation[1]{organization={Instituto de Investigaci\'{o}n en Inform\'{a}tica de Albacete (I3A), Universidad de Castilla-La Mancha},
+	addressline={Campus Universitario s/n},
+	city={Albacete},
+	postcode={02071},
+	country={Spain}}
+
+\affiliation[2]{organization={Departamento de Tecnolog\'{i}as y Sistemas de Informaci\'{o}n, Universidad de Castilla-La Mancha},
+	addressline={Avda. Real F\'{a}brica de Sedas s/n},
+	city={Talavera de la Reina},
+	postcode={45600},
+	country={Spain}}
+
+\affiliation[3]{organization={Departamento de Sistemas Inform\'{a}ticos, Universidad de Castilla-La Mancha},
+	addressline={Campus Universitario s/n},
+	city={Albacete},
+	postcode={02071},
+	country={Spain}}
+
+\affiliation[4]{organization={Biomedical Research Networking Centre in Mental Health (CIBERSAM), Instituto de Salud Carlos III},
+	city={Madrid},
+	country={Spain}}
+
 \begin{abstract}
-Electrodermal Activity (EDA) is a non-invasive biomarker of sympathetic arousal increasingly used in wearable affective computing. While Transformer-based architectures outperform convolutional baselines for subject-independent arousal classification, their computational cost limits deployment on latency-sensitive platforms. This work presents, to our knowledge, the first systematic comparison of eight efficient and modern architectures spanning five paradigms---patch-based attention, sparse attention, frequency-domain modelling, state space models, and modernised convolutions---for binary arousal classification from EDA signals under strict Leave-One-Subject-Out (LOSO) validation with 147 participants. Beyond predictive accuracy, we introduce five complementary computational efficiency metrics (parameter count, FLOPs, inference time, memory footprint, and training time) as primary evaluation dimensions, enabling explicit characterisation of the accuracy-efficiency Pareto frontier. The key finding is that Mamba, a selective state space model, achieves F1 = 0.858 at 1.5 ms inference time, approaching PatchTST accuracy (F1 = 0.863 vs.\ 0.858, an F1 difference that does not survive Bonferroni-Holm correction for multiple comparisons) with 3.6$\times$ lower latency and 66\% fewer parameters. Channel ablation analysis further suggests that derivative channels provide greatest benefit for simpler architectures, while the additional temporal context from derivatives is partially redundant with representations learned by attention and state-space mechanisms. A classical signal processing baseline (handcrafted EDA features with SVM) achieved F1 $\approx$ 0.81 on the same dataset \cite{sanchez2020deep}, anchoring the deep learning performance gains and confirming that architectures with global temporal modelling provide an approximately 5 percentage point improvement (Mamba: +4.8 pp, PatchTST: +5.3 pp) over both classical and simple learned baselines. These results provide practical guidance for selecting arousal classifiers under specific computational constraints. While these findings are based on a single 147-participant laboratory dataset, the consistency across LOSO folds supports their reliability; cross-dataset validation remains necessary to confirm generalisability to ambulatory settings.
-\keywords{Electrodermal Activity, Arousal Classification, Efficient Architectures, State Space Models, Affective Computing, Edge Deployment}
+Electrodermal Activity (EDA) is a non-invasive biomarker of sympathetic arousal increasingly used in wearable affective computing. While Transformer-based architectures outperform convolutional baselines for subject-independent arousal classification, their computational cost limits deployment on latency-sensitive platforms. This work presents a systematic comparison of eight efficient and modern architectures spanning five paradigms---patch-based attention, sparse attention, frequency-domain modelling, state space models, and modernised convolutions---for binary arousal classification from EDA signals under strict Leave-One-Subject-Out (LOSO) validation with 147 participants. Beyond predictive accuracy, we introduce five complementary computational efficiency metrics (parameter count, FLOPs, inference time, memory footprint, and training time) as primary evaluation dimensions, enabling explicit characterisation of the accuracy-efficiency Pareto frontier. The key finding is that Mamba, a selective state space model, achieves F1 = 0.858 at 1.5 ms inference time, approaching PatchTST accuracy (F1 = 0.863 vs.\ 0.858, an F1 difference that does not survive Bonferroni-Holm correction) with 3.6$\times$ lower latency and 66\% fewer parameters. Channel ablation analysis further suggests that derivative channels provide greatest benefit for simpler architectures, while the additional temporal context from derivatives is partially redundant with representations learned by attention and state-space mechanisms. A classical signal processing baseline (handcrafted EDA features with SVM) achieved F1 approximately 0.81 on the same dataset, anchoring the deep learning performance gains and confirming that architectures with global temporal modelling provide an approximately 5 percentage point improvement over both classical and simple learned baselines. These results provide practical guidance for selecting arousal classifiers under specific computational constraints. While these findings are based on a single 147-participant laboratory dataset, the consistency across LOSO folds supports their reliability; cross-dataset validation remains necessary to confirm generalisability to ambulatory settings.
 \end{abstract}
+
+\begin{highlights}
+\item Mamba achieves F1 = 0.858 at 1.5 ms, approaching PatchTST with 3.6$\times$ lower latency
+\item Eight architectures spanning five paradigms compared under strict LOSO validation
+\item Accuracy-efficiency Pareto frontier with five complementary computational metrics
+\item State space models match attention-based methods on physiological time-series
+\item Derivative channels most beneficial for simpler architectures; attention learns similar context
+\end{highlights}
+
+\begin{keyword}
+Electrodermal Activity \sep Arousal Classification \sep Efficient Architectures \sep State Space Models \sep Affective Computing \sep Edge Deployment
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
 %
 % ======================================================
 \section{Introduction}
@@ -784,19 +818,25 @@ The comparison between attention-based, state-space-based, and convolution-based
 Future work will explore three directions. First, self-supervised pre-training strategies---such as masked signal modeling for physiological data \cite{MTECG2023,Yaseen2026BSPC}---tailored to the most promising architectures identified here may improve performance on limited physiological datasets by leveraging unlabelled data. Second, multi-modal integration with complementary biosignals such as heart rate variability and electrocardiogram \cite{Oliver2025WESAD} may enrich the information available to lightweight classifiers without substantially increasing computational cost. Third, deployment-oriented optimisation through quantisation, pruning, and knowledge distillation \cite{Mukhopadhyay2024} applied to the Pareto-optimal architectures will further narrow the gap between laboratory performance and wearable deployment, enabling real-time, on-device arousal classification for mental health monitoring, stress detection, and adaptive human-computer interaction.
 
 % ---- Bibliography ----
-\subsection*{Author Contributions}
-\textbf{Roberto S\'{a}nchez-Reolid:} Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Writing---original draft. \textbf{Francisco Javier Celdr\'{a}n:} Validation, Investigation, Writing---review \& editing. \textbf{Daniel S\'{a}nchez-Reolid:} Methodology, Software, Validation, Formal analysis, Data curation, Writing---review \& editing. \textbf{Antonio Fern\'{a}ndez-Caballero:} Supervision, Project administration, Funding acquisition, Writing---review \& editing. All authors have read and approved the final version of the manuscript.
+\bibliographystyle{elsarticle-num}
+\bibliography{bibliography}
 
-\vspace{6pt}
-\noindent\textbf{Funding:} Grant PID2023-149753OB-C21 funded by Spanish MICIU/AEI/10.13039/ 501100011033/ERDF, EU. Grant 2025-GRIN-38441 funded by Universidad de Castilla-La Mancha and by "ERDF A way of making Europe". This work has also been partially supported by CIBERSAM, Instituto de Salud Carlos III, Ministerio de Ciencia, Innovación y Universidades.
+\section*{Author Contributions}
+\raggedright
+\textbf{Roberto S\'{a}nchez-Reolid:} Conceptualization, Methodology, Software, Formal analysis, Investigation, Data curation, Writing---original draft.\\[2pt]
+\textbf{Francisco Javier Celdr\'{a}n:} Validation, Investigation, Writing---review \& editing.\\[2pt]
+\textbf{Daniel S\'{a}nchez-Reolid:} Methodology, Software, Validation, Formal analysis, Data curation, Writing---review \& editing.\\[2pt]
+\textbf{Antonio Fern\'{a}ndez-Caballero:} Supervision, Project administration, Funding acquisition, Writing---review \& editing.\\[6pt]
+All authors have read and approved the final version of the manuscript.
 
-\vspace{6pt}
-\noindent\textbf{Data Availability:} The dataset analysed during the current study is not publicly available due to institutional privacy constraints. Implementation code will be made available upon acceptance.
+\section*{Funding}
+\raggedright
+Grant PID2023-149753OB-C21 funded by Spanish MICIU/AEI/10.13039/501100011033/ERDF, EU. Grant 2025-GRIN-38441 funded by Universidad de Castilla-La Mancha and by ``ERDF A way of making Europe''. This work has also been partially supported by CIBERSAM, Instituto de Salud Carlos III, Ministerio de Ciencia, Innovaci\'{o}n y Universidades.
 
-\vspace{6pt}
-\noindent\textbf{Declarations:} The authors declare no competing interests.
+\section*{Data Availability}
+The dataset analysed during the current study is not publicly available due to institutional privacy constraints. Implementation code will be made available upon acceptance.
 
-\bibliographystyle{splncs04}
-\bibliography{bibliography.bib}
-%
+\section*{Declaration of Competing Interests}
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
 \end{document}
