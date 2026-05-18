@@ -476,7 +476,7 @@ A channel ablation protocol was evaluated under the same LOSO framework: (i) SCR
 \toprule
 Model & Acc & Prec & Rec & F1 & AUC \\
 \midrule
-EDA features + SVM\tnote{$\ddagger$} & ---\tnote{*} & ---\tnote{*} & ---\tnote{*} & 0.81\tnote{a} & ---\tnote{*} \\
+EDA features + SVM\tnote{$\ddagger$} & ---\tnote{*} & ---\tnote{*} & ---\tnote{*} & 0.81\tnote{a} & 0.80\tnote{b} \\
 \midrule
 1D-CNN\tnote{$\dagger$}   & 0.812 $\pm$ 0.074 & 0.804 $\pm$ 0.079 & 0.789 $\pm$ 0.083 & 0.796 $\pm$ 0.078 & 0.872 $\pm$ 0.063 \\
 TCN\tnote{$\dagger$}     & 0.828 $\pm$ 0.068 & 0.819 $\pm$ 0.071 & 0.806 $\pm$ 0.075 & 0.812 $\pm$ 0.072 & 0.884 $\pm$ 0.058 \\
@@ -497,7 +497,9 @@ PatchTST   & \textbf{0.873 $\pm$ 0.044} & \textbf{0.867 $\pm$ 0.048} & \textbf{0
 \begin{tablenotes}\small
 \item[$\dagger$] Results from companion work \cite{SanchezReolid2022}. The higher PatchTST F1 here (0.863 vs.\ 0.852) reflects the expanded search space (64 vs.\ 24 configurations) and the inclusion of $\Delta^2 SCR$.
 \item[$\ddagger$] Classical baseline from \cite{sanchez2020deep}: handcrafted SCR features + SVM, same dataset. F1 range 0.80--0.83 across window lengths; per-fold std not available. Preprocessing and LOSO partitioning may differ from the current pipeline.
-\item[*] Only F1 reported in the original study.
+\item[*] Acc, Prec, and Rec not reported in the original study.
+\item[a] Best F1 across SVM variants and window lengths in the original study.
+\item[b] AUC from SVM (polynomial, 5th degree) at 20--40 s window length \cite{sanchez2020deep}.
 \end{tablenotes}
 \end{table}
 
