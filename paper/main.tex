@@ -228,9 +228,10 @@ Eight architectures were selected to represent five distinct efficiency paradigm
 
 \begin{table}[!ht]
 \centering
-\caption{Overview of evaluated architectures and their efficiency mechanisms. $L$ denotes input sequence length, $N$ denotes the number of patches after tokenisation ($N \ll L$), and $M$ denotes the number of selected Fourier modes ($M \ll L$).}
+\caption{Overview of architectures and their efficiency mechanisms. $L$: input sequence length, $N$: number of patches ($N \ll L$), $M$: selected Fourier modes ($M \ll L$).}
 \label{tab:architectures}
 \small
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{lccc}
 \toprule
 Architecture & Core Mechanism & Complexity & Venue \\
@@ -244,7 +245,8 @@ Mamba      & Selective state space model (BiSSM) & $O(L)$ & arXiv 2023 \\
 ModernTCN  & Modernised depthwise convolutions & $O(L)$ & ICLR 2024 \\
 DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \begin{figure}[p]
@@ -539,7 +541,7 @@ PatchTST   & \textbf{0.873 $\pm$ 0.044} & \textbf{0.867 $\pm$ 0.048} & \textbf{0
 
 Several patterns emerge from Table~\ref{tab:overall} and Figure~\ref{fig:f1_bars}. First, the results reveal a clear paradigm hierarchy: state space models (Mamba) and patch-based attention (PatchTST) occupy the top tier, followed by frequency-domain Transformers (TimesNet, Autoformer) and sparse attention (Informer), with linear decomposition (DLinear) providing the lower bound. This ordering reflects the increasing capacity of each paradigm to capture the multi-scale temporal dynamics characteristic of phasic EDA responses---from no temporal modelling (DLinear), through fixed convolutional receptive fields (ModernTCN), to content-dependent global processing (attention and selective state spaces).
 
-Second, the efficiency-oriented architectures narrow the performance gap relative to PatchTST compared to the convolutional baselines from prior work. Mamba's selective state space mechanism---which adaptively propagates or filters information based on input content---approaches PatchTST accuracy while maintaining $O(L)$ complexity. This represents a practical advance: The original Mamba evaluation reported 5$\times$ inference throughput for Mamba compared to equivalently-sized Transformers \cite{Mamba2023}, directly addressing the deployment constraints that motivate this work.
+Second, the efficiency-oriented architectures narrow the performance gap relative to PatchTST compared to the convolutional baselines from prior work. Mamba's selective state space mechanism---which adaptively propagates or filters information based on input content---approaches PatchTST accuracy while maintaining $O(L)$ complexity. The original Mamba evaluation reported 5$\times$ inference throughput for Mamba compared to equivalently-sized Transformers \cite{Mamba2023}, directly addressing the deployment constraints that motivate this work.
 
 Third, the standard deviations across folds provide a direct measure of robustness to inter-subject variability. Architectures with adaptive temporal weighting (attention-based and SSM-based) exhibit lower fold-wise variability than those with fixed receptive fields (ModernTCN, DLinear), a pattern of practical significance: lower variability implies more reliable performance across diverse user populations.
 
@@ -684,7 +686,7 @@ Training time per epoch follows the same hierarchy (Supplementary Material, Tabl
 
 Figure~\ref{fig:pareto} presents the central contribution of this work: the joint characterisation of predictive performance and computational cost across eight architectures spanning five paradigms. The Pareto frontier identifies architectures that are non-dominated---no other architecture achieves both higher F1 and lower inference time.
 
-Three deployment scenarios are delineated by inference time thresholds measured on the Quadro P5000. These thresholds are GPU-relative and should be interpreted as ordinal latency categories rather than absolute deployment classifications; absolute latency on target embedded hardware (e.g., ARM Cortex-M, mobile SoCs) will differ substantially. The Wearable category ($t_{\text{inf}} \leq 1.5$\,ms) identifies the most efficient architectures: DLinear (0.3 ms), ModernTCN (1.2 ms), and Mamba (1.5 ms), with Mamba achieving the highest accuracy (F1 = 0.858) within this category---a compelling result for latency-constrained scenarios. The Edge category ($1.5 < t_{\text{inf}} < 4$\,ms) represents moderate GPU latency: FEDformer, TimesNet, and Informer occupy this region. The Server category ($t_{\text{inf}} \geq 4$\,ms) prioritises predictive accuracy, with Autoformer and PatchTST achieving the highest overall F1 (0.863) at 5.4 ms.
+Three deployment scenarios are delineated by inference time thresholds measured on the Quadro P5000. These thresholds are GPU-relative and should be interpreted as ordinal latency categories rather than absolute deployment classifications; absolute latency on target embedded hardware (e.g., ARM Cortex-M, mobile SoCs) will differ substantially. The Wearable category ($t_{\text{inf}} \leq 1.5$\,ms) identifies the most efficient architectures: DLinear (0.3 ms), ModernTCN (1.2 ms), and Mamba (1.5 ms), with Mamba achieving the highest accuracy (F1 = 0.858) within this latency band. The Edge category ($1.5 < t_{\text{inf}} < 4$\,ms) represents moderate GPU latency: FEDformer, TimesNet, and Informer occupy this region. The Server category ($t_{\text{inf}} \geq 4$\,ms) prioritises predictive accuracy, with Autoformer and PatchTST achieving the highest overall F1 (0.863) at 5.4 ms.
 
 The shape of the Pareto frontier reveals a clear diminishing returns pattern: substantial accuracy gains are achieved from DLinear (F1 = 0.800 at 0.3 ms) to Mamba (F1 = 0.858 at 1.5 ms), with minimal further improvement to PatchTST (F1 = 0.863 at 5.4 ms). The 0.005 F1 difference between Mamba and PatchTST is smaller than the per-fold standard deviation (0.05) and does not survive the Bonferroni-Holm correction for 28 comparisons (Supplementary Material, Table~S2), while Mamba requires 3.6$\times$ lower inference time. As discussed in Section~3.8, p-values from LOSO-based comparisons should be interpreted as descriptive indicators of effect consistency. This has direct implications: for wearable and edge deployment, the marginal accuracy gain of PatchTST over Mamba does not justify the 3.6$\times$ additional latency cost.
 
@@ -800,7 +802,7 @@ The results provide a clear affirmative. Mamba achieves F1 = 0.858 at 1.5 ms inf
 
 A finding emerges from the comparison of the simplest architectures. DLinear achieves F1 = 0.800, nearly identical to the 1D-CNN baseline from prior work (F1 = 0.796) and the classical EDA feature-engineering approach with SVM (F1 $\approx$ 0.81; \cite{sanchez2020deep}). This parity suggests that handcrafted feature extraction, linear decomposition of tonic and phasic components, and local convolutional feature extraction all converge to a similar performance ceiling (F1 $\approx$ 0.80), bounded by the intrinsic discriminative information available in local EDA signal segments. However, all three are substantially outperformed by architectures with global or adaptive temporal modelling (Mamba, PatchTST: F1 $\approx$ 0.86), indicating that the key driver of performance is not the specific computational primitive (handcrafted features vs.\ convolution vs.\ linear) but the capacity to model temporal dependencies across the full observation window.
 
-ModernTCN achieves F1 = 0.827, representing a meaningful improvement over the TCN baseline from prior work (F1 = 0.812, $\Delta = 1.5\%$) This validates the hypothesis that improved convolutional design---larger kernels, depthwise separable convolutions, and inverted bottlenecks---can close part of the gap between traditional CNNs and attention-based architectures, consistent with ModernTCN's results on general time-series benchmarks \cite{ModernTCN2024}. However, the remaining gap to the best Transformer and SSM architectures (3--4\% F1) indicates that convolutions alone, even when modernised, do not fully replicate the benefits of content-dependent temporal weighting.
+ModernTCN achieves F1 = 0.827, an improvement over the TCN baseline from prior work (F1 = 0.812, $\Delta = 1.5\%$). This validates the hypothesis that improved convolutional design---larger kernels, depthwise separable convolutions, and inverted bottlenecks---can close part of the gap between traditional CNNs and attention-based architectures, consistent with ModernTCN's results on general time-series benchmarks \cite{ModernTCN2024}. However, the remaining gap to the best Transformer and SSM architectures (3--4\% F1) indicates that convolutions alone, even when modernised, do not fully replicate the benefits of content-dependent temporal weighting.
 
 \subsection{Limitations and Generalizability}
 
@@ -827,7 +829,7 @@ The dataset is not publicly released due to institutional privacy constraints; i
 
 This study presented a systematic equal-budget comparison of efficient and modern architectures---spanning Transformers, state space models, and improved convolutions---for subject-independent arousal classification from Electrodermal Activity. Eight architectures across five efficiency paradigms were evaluated under a strict Leave-One-Subject-Out validation framework using EDA signals from 147 participants. The key finding is that Mamba---a selective state space model---achieves near-PatchTST performance (F1 = 0.858 vs.\ 0.863) at 3.6$\times$ lower latency and with 66\% fewer parameters, placing it on the Pareto frontier as the most accurate architecture within the Wearable category. By jointly evaluating classification performance and computational cost across five complementary efficiency metrics, this work provides an explicit characterisation of the accuracy-efficiency trade-off for EDA classification, directly informing architecture selection under specific deployment constraints.
 
-The inclusion of computational efficiency as a primary evaluation metric reflects a pragmatic recognition that the translational value of affective computing research depends not only on laboratory accuracy but on deployability in real-world, resource-constrained settings. The accuracy-efficiency Pareto frontier directly informs architecture selection under specific deployment constraints---wearable, mobile, or cloud---moving beyond the common practice of reporting accuracy in isolation.
+The inclusion of computational efficiency as a primary evaluation metric reflects a pragmatic recognition: translational value in affective computing depends not only on laboratory accuracy but on deployability in real-world, resource-constrained settings. The accuracy-efficiency Pareto frontier directly informs architecture selection under deployment constraints---wearable, mobile, or cloud---moving beyond reporting accuracy in isolation.
 
 The comparison between attention-based, state-space-based, and convolution-based paradigms further contributes to the broader methodological discussion on the necessity of architectural complexity for physiological time-series classification. The inclusion of DLinear and ModernTCN as critical baselines provides empirical evidence on whether complex temporal modelling mechanisms yield measurable benefits for EDA signals beyond what simple linear decomposition or well-designed convolutions can achieve.
 
