@@ -47,7 +47,7 @@ Second, the relative contribution of derivative information is inversely related
 % ======================================================
 \section*{Table S2: Pairwise Statistical Significance}
 
-Table~\ref{tab:s2_wilcoxon} presents the complete matrix of pairwise Wilcoxon signed-rank test p-values on per-fold F1-scores (147 folds). Bold values indicate statistical significance at the conventional $\alpha = 0.05$ level (raw, uncorrected). The Bonferroni-Holm corrected threshold for the 28 comparisons is $p_{\text{BH}} < 0.0018$.
+Table~\ref{tab:s2_wilcoxon} presents the complete matrix of pairwise Wilcoxon signed-rank test p-values on per-fold F1-scores (147 folds). Bold values indicate raw $p < 0.05$ (uncorrected). The Bonferroni-Holm corrected threshold for the 28 comparisons is $p_{\text{BH}} < 0.0018$. As discussed in the main text (Section~3.8), LOSO folds share 146/147 training subjects, violating the independence assumption of the Wilcoxon test; these p-values should therefore be interpreted as descriptive indicators of effect consistency rather than exact inferential statistics.
 
 \begin{table}[ht]
 \centering
@@ -69,7 +69,7 @@ ModernTCN  & \textbf{0.002} & & & & & & \\
 \end{tabular}
 \end{table}
 
-Under the conventional $\alpha = 0.05$ threshold, 24 of 28 comparisons are statistically significant. The most notable result is the PatchTST--Mamba comparison ($p = 0.048$), which is significant at the conventional level but does not survive the stringent Bonferroni-Holm correction ($p_{\text{BH}} < 0.0018$). Under the corrected threshold, 13 of 28 comparisons remain significant. Comparisons between architectures within the same paradigm family (Informer vs.\ Autoformer, $p = 0.065$; Autoformer vs.\ TimesNet, $p = 0.072$; Mamba vs.\ TimesNet, $p = 0.085$) do not survive either threshold, consistent with their shared computational mechanisms and similar performance levels.
+At the raw $p < 0.05$ level, 24 of 28 comparisons yield $p$ below this threshold. The PatchTST--Mamba comparison ($p = 0.048$) falls below the raw threshold but does not survive the Bonferroni-Holm correction ($p_{\text{BH}} < 0.0018$). Under the corrected threshold, 13 of 28 comparisons survive. Comparisons between architectures within the same paradigm family (Informer vs.\ Autoformer, $p = 0.065$; Autoformer vs.\ TimesNet, $p = 0.072$; Mamba vs.\ TimesNet, $p = 0.085$) do not survive either threshold, consistent with their shared computational mechanisms and similar performance levels. As noted in Section~3.8 of the main text, these p-values are descriptive indicators due to dependence across LOSO folds.
 
 % ======================================================
 \section*{Table S3: Per-Class Performance}
