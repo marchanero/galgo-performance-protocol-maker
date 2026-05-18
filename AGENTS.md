@@ -48,9 +48,11 @@
 ├── paper/                       # LaTeX manuscript (source of truth)
 │   ├── main.tex                 # Primary paper file
 │   ├── bibliography.bib         # Project bibliography
-│   ├── sections/ figures/ tables/
-│   ├── talks/ quarto/ preambles/
-│   └── replication/ supplementary/
+│   ├── sections/ figures/
+│   ├── preambles/
+│   └── supplementary/
+│   # Removed but documented for future use:
+│   #   tables/ talks/ quarto/ replication/
 ├── data/                        # raw/ and cleaned/
 ├── scripts/                     # Python (primary), R, Julia
 ├── quality_reports/             # Plans, logs, reviews, scores
