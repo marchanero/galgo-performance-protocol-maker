@@ -4,16 +4,12 @@
 [![Field](https://img.shields.io/badge/field-CS%2FAI%20%7C%20Engineering-3182BD?style=flat-square)]()
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Agents](https://img.shields.io/badge/agents-23-orange?style=flat-square)]()
-[![Paper](https://img.shields.io/badge/paper-ACCEPT%20(92%2F100)-31A354?style=flat-square)](https://github.com/marchanero/eda-efficient-transformers)
+[![Paper](https://img.shields.io/badge/paper-ACCEPT%20(92%2F100)-31A354?style=flat-square)](https://github.com/marchanero/BSPC-eda-efficient-transformers)
 [![Review](https://img.shields.io/badge/review-5%20rounds-blue?style=flat-square)]()
 
-> **Fork of [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author)** — adapted for Computer Science, Artificial Intelligence, Biomedical Engineering, and ICT research. Battle-tested through 4 rounds of peer review on a real paper accepted at IEEE TAC.
+> **Fork of [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author)** — adapted for Computer Science, Artificial Intelligence, Biomedical Engineering, and ICT research. Adds ML/DL experiment design, efficient architectures, SSM paradigms, and TikZ diagramming agents. Battle-tested through 5 rounds of peer review on a real paper accepted at IEEE TAC.
 
 An open-source [Claude Code](https://docs.anthropic.com/en/docs/claude-code) scaffold for ML/AI and engineering research. Provides structured workflows from literature review to venue submission with 23 specialized agents for experimental design, code review, paper writing, diagram creation, language editing, and multi-referee peer review simulation.
-
-> **Fork of [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author)** — adapted for Computer Science, Artificial Intelligence, Biomedical Engineering, and ICT research. Adds ML/DL experiment design, efficient architectures, SSM paradigms, and TikZ diagramming agents.
-
-An open-source [Claude Code](https://docs.anthropic.com/en/docs/claude-code) scaffold for ML/AI and engineering research. Provides structured workflows from literature review to venue submission with specialized agents for experimental design, code review, paper writing, diagram creation, and peer review simulation.
 
 ---
 
@@ -101,7 +97,7 @@ Every creator has a paired critic. Critics can't edit files; creators can't scor
 
 **15 venue profiles** across CS/AI and biomedical engineering: NeurIPS, ICML, ICLR, TPAMI, JMLR, IEEE TAC, TBME, JBHI, BSPC, Sensors Journal, SPL, and more.
 
-**Battle-tested:** This framework successfully guided a paper through 4 rounds of peer review (Major → Minor → Accept), with referee scores improving from 68-72 to 90-92.
+**Battle-tested:** This framework successfully guided a paper through 5 rounds of peer review (Major → Minor → Accept), with referee scores improving from 68-72 to 90-92.
 
 ---
 
@@ -185,7 +181,7 @@ Two styles supported, chosen per venue:
 
 Built on [hugosantanna/clo-author](https://github.com/hugosantanna/clo-author) (v4.x), which itself builds on [Pedro Sant'Anna's claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow). Adapted for CS/AI & Engineering by Roberto Sánchez-Reolid at Universidad de Castilla-La Mancha (UCLM) — I3A / TSI.
 
-**Active research project:** *Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification* — [paper repo](https://github.com/marchanero/eda-efficient-transformers) — accepted at IEEE Transactions on Affective Computing after 4 rounds of peer review. This template was developed and battle-tested on that paper.
+**Active research project:** *Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification* — [paper repo](https://github.com/marchanero/BSPC-eda-efficient-transformers) — accepted at IEEE TAC after 5 rounds of peer review. This template was developed and battle-tested on that paper.
 
 ## License
 

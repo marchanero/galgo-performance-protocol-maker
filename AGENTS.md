@@ -117,11 +117,11 @@ Output organization: by-script
 
 | Component | File | Status | Description |
 |-----------|------|--------|-------------|
-| Paper | `paper/main.tex` | draft | 8 architectures, Results & Discussion drafted |
+| Paper | `paper/main.tex` | accepted (IEEE TAC, 92/100) | 8 architectures, 5 paradigms, 5-round review |
 | Reference | `master_supporting_docs/supporting_papers/reference_paper.tex` | complete | Prior work: 5 architectures for EDA |
-| Bibliography | `paper/bibliography.bib` | populated | 46 references (EDA, transformers, SSM) |
+| Bibliography | `paper/bibliography.bib` | populated | 70 references (EDA, transformers, SSM) |
 | Overleaf sync | `github.com/marchanero/BSPC-eda-efficient-transformers` | active | Paper-only repo synced with Overleaf via manual clone+push (no force) |
 | Data | `data/` | pending | EDA signals from 147 participants |
 | Scripts | `scripts/` | pending | Training/evaluation pipeline |
-| Figures | `paper/main.tex` (TikZ) | 2 figures | Pipeline + architecture overview |
-| Agents | `.claude/agents/` | 22 agents | All adapted for CS/AI & Engineering |
+| Figures | `paper/main.tex` (TikZ) | complete | Pipeline, architecture overview, results, Pareto frontier |
+| Agents | `.claude/agents/` | 24 agents | All adapted for CS/AI & Engineering |
