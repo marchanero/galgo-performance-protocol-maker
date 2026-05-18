@@ -112,7 +112,7 @@ Several deep learning approaches have been proposed for EDA-based affect recogni
 
 Within BSPC, joint analysis of multidomain skin conductance features has been applied to psychological stress identification \cite{Zhao2023BSPC}, wrist-worn EDA sensors have enabled autonomic sleep staging \cite{Anusha2022BSPC}, and multimodal physiological approaches have been proposed for emotion recognition \cite{Ramadan2024BSPC}. Recent BSPC contributions further include CNN-Transformer hybrid architectures for stress detection from photoplethysmography signals \cite{Kasnesis2025BSPC} and explainable deep neural networks combining biosignals with human-engineered features for stress classification \cite{Lee2025BSPC}. The broader literature includes systematic architecture comparisons for EEG \cite{IsmailFawaz2019} and ECG \cite{ECGMamba2024,Meng2022}, but a methodologically rigorous comparison under strict Leave-One-Subject-Out (LOSO)---which prevents the subject-level data leakage known to inflate performance in physiological signal classification \cite{Azad2025}---remains absent for EDA-based arousal classification.
 
-In prior work \cite{SanchezReolid2022}, we compared five architectures (1D-CNN, TCN, InceptionTime, TST, PatchTST) under LOSO with 147 participants. Transformer-based models consistently outperformed convolutional baselines, with PatchTST achieving the best performance (F1 = 0.852, AUC = 0.912) and attention mechanisms concentrating on physiologically meaningful SCR onset and rising phases. However, despite patch-based tokenisation reducing the effective sequence length, PatchTST retains $O(N^2)$ self-attention complexity, and its latency and memory consumption on a 40-second EDA window ($T = 160$ at 4 Hz) may exceed the constraints of low-power wearable processors. This practical limitation motivates investigation of substantially more efficient architectures.
+In prior work \cite{SanchezReolid2022}, we compared five architectures (1D-CNN, TCN, InceptionTime, TST, PatchTST) under LOSO with 147 participants. Transformer-based models consistently outperformed convolutional baselines, with PatchTST achieving the best performance (F1 = 0.852, AUC = 0.912) and attention mechanisms concentrating on physiologically meaningful SCR onset and rising phases. However, despite patch-based tokenisation reducing the effective sequence length, PatchTST retains $O(N^2)$ self-attention complexity, and its latency and memory consumption on a 40-second EDA window ($L = 160$ at 4 Hz) may exceed the constraints of low-power wearable processors. This practical limitation motivates investigation of substantially more efficient architectures.
 
 The time-series community has developed efficient Transformer variants with sub-quadratic or linear complexity \cite{Wen2023,Tay2022}: Informer uses ProbSparse attention \cite{Informer2021}, Autoformer replaces attention with FFT-based Auto-Correlation and progressive decomposition \cite{Autoformer2021}, FEDformer operates via Fourier-enhanced attention on randomly selected frequency modes \cite{FEDformer2022}, and TimesNet transforms 1D series into 2D tensors via FFT-discovered periods for Inception-based 2D convolution \cite{TimesNet2023}. DLinear demonstrated that simple trend-seasonal decomposition with linear layers can outperform sophisticated Transformers on forecasting benchmarks \cite{DLinear2023,IsmailFawaz2019}. Beyond Transformers, Mamba introduced selective state space models (SSMs) where parameters are input-dependent, achieving competitive performance on language and genomics \cite{Mamba2023} and showing promise for physiological signals via bidirectional architectures \cite{ECGMamba2024}. ModernTCN extended the convolutional paradigm with large depthwise kernels and inverted bottlenecks, matching Transformer performance while maintaining convolutional efficiency \cite{ModernTCN2024,Dauphin2017}.
 
@@ -142,7 +142,7 @@ Only the phasic component $SCR(t)$ was retained for modelling, as it directly re
 Each temporal window of length $n$ seconds was thus represented as:
 
 \begin{equation}
-\mathbf{X} \in \mathbb{R}^{T \times C}, \quad T = 4n,\; C = 3
+\mathbf{X} \in \mathbb{R}^{L \times C}, \quad L = 4n,\; C = 3
 \end{equation}
 
 \noindent where $C = 3$ corresponds to the channels $(SCR, \Delta SCR, \Delta^2 SCR)$.
@@ -179,7 +179,7 @@ To analyse the minimal temporal interval required for reliable arousal classific
 \draw[arr] (deriv) -- (window);
 \draw[arr] (window) -- (norm);
 \node[lab, above=0.1cm of raw] {\textbf{Preprocessing}};
-\node[lab, above=0.1cm of norm, text=blue1] {$\mathbf{X} \in \mathbb{R}^{T \times 3}$};
+\node[lab, above=0.1cm of norm, text=blue1] {$\mathbf{X} \in \mathbb{R}^{L \times 3}$};
 
 % === Row 1: Attention O(N²) ===
 \node[proc_green, below=1.0cm of raw, minimum width=1.4cm] (p1) {PatchTST};
@@ -362,7 +362,7 @@ DLinear    & Trend-seasonal linear decomposition & $O(L)$ & AAAI 2023 \\
 
 \subsubsection{PatchTST}
 
-PatchTST \cite{PatchTST2023} segments each channel into non-overlapping patches of length $P$ and projects them to dimension $D$, reducing the effective sequence length from $T$ to $N = \lfloor (T-P)/S \rfloor + 1$. Channel-independent encoding preserves per-channel morphology, and a standard Transformer encoder with self-attention ($O(N^2)$) is applied to the patch sequence. A global average pooling operation aggregates the encoder output before the linear classification head. Given 4 Hz sampling, patch lengths $P \in \{4, 8, 16\}$ correspond to physiological windows of 1--4 seconds. PatchTST serves as the top-performing baseline from prior work.
+PatchTST \cite{PatchTST2023} segments each channel into non-overlapping patches of length $P$ and projects them to dimension $D$, reducing the effective sequence length from $L$ to $N = \lfloor (L-P)/S \rfloor + 1$. Channel-independent encoding preserves per-channel morphology, and a standard Transformer encoder with self-attention ($O(N^2)$) is applied to the patch sequence. A global average pooling operation aggregates the encoder output before the linear classification head. Given 4 Hz sampling, patch lengths $P \in \{4, 8, 16\}$ correspond to physiological windows of 1--4 seconds. PatchTST serves as the top-performing baseline from prior work.
 
 \subsubsection{Informer}
 
@@ -455,7 +455,7 @@ Standard classification metrics were computed for each fold and averaged across 
 
 \subsubsection{Computational Efficiency Metrics}
 
-Four complementary efficiency metrics were recorded for each architecture under identical input conditions (40-second window, $T = 160$, $C = 3$, batch size = 1 for single-inference metrics):
+Four complementary efficiency metrics were recorded for each architecture under identical input conditions (40-second window, $L = 160$, $C = 3$, batch size = 1 for single-inference metrics):
 
 \begin{itemize}
     \item \textbf{Parameter count ($N_{\text{params}}$):} Total number of trainable parameters (millions). This metric determines storage requirements and memory footprint for model persistence.
@@ -561,7 +561,7 @@ Second, the efficiency-oriented architectures narrow the performance gap relativ
 
 Third, the standard deviations across folds provide a direct measure of robustness to inter-subject variability. Architectures with adaptive temporal weighting (attention-based and SSM-based) exhibit lower fold-wise variability than those with fixed receptive fields (ModernTCN, DLinear), a pattern of practical significance: lower variability implies more reliable performance across diverse user populations.
 
-DLinear achieves F1 = 0.800, comparable to the 1D-CNN baseline from prior work (0.796). This parity indicates that simple linear decomposition of tonic and phasic components captures a similar level of discriminative information from EDA signals as local convolutional feature extraction. Importantly, the classical signal processing pipeline---handcrafted EDA features (SCR amplitude, rise time, AUC, NS-SCR frequency) with an SVM classifier evaluated on the same dataset under a subject-independent protocol in prior work \cite{sanchez2020deep}---achieved F1 in the range of 0.80--0.83 (see \cref{tab:overall}, $\ddagger$). Although the exact preprocessing and LOSO partitioning may differ between studies, this convergence suggests that handcrafted features, linear decomposition, and local convolutions extract comparable levels of discriminative information from EDA signals, and that the key driver of performance improvement is not the specific computational primitive but the capacity to model temporal dependencies across the full observation window, as demonstrated by the F1 gap of approximately 0.05--0.06 between this classical/DLinear tier and the best Transformer/SSM architectures (Mamba: +0.048, PatchTST: +0.053).
+DLinear achieves F1 = 0.800, comparable to the 1D-CNN baseline from prior work (0.796). This parity indicates that simple linear decomposition of tonic and phasic components captures a similar level of discriminative information from EDA signals as local convolutional feature extraction. Importantly, the classical signal processing pipeline---handcrafted EDA features (SCR amplitude, rise time, AUC, NS-SCR frequency) with an SVM classifier evaluated on the same dataset under a subject-independent protocol in prior work \cite{sanchez2020deep}---achieved F1 in the range of 0.80--0.83 (see \cref{tab:overall}, $\ddagger$). Although the exact preprocessing and LOSO partitioning may differ between studies, this convergence suggests that handcrafted features, linear decomposition, and local convolutions extract comparable levels of discriminative information from EDA signals, and that the key driver of performance improvement is not the specific computational primitive but the capacity to model temporal dependencies across the full observation window, as demonstrated by the F1 gap of approximately 0.06 between this classical/DLinear tier and the best Transformer/SSM architectures (Mamba: +0.058, PatchTST: +0.063).
 
 \subsection{Computational Efficiency}
 
@@ -569,7 +569,7 @@ DLinear achieves F1 = 0.800, comparable to the 1D-CNN baseline from prior work (
 
 \begin{table}[!ht]
 \centering
-\caption{Computational efficiency metrics under identical input conditions ($T = 160$, $C = 3$, batch size = 1). All measurements use the optimal hyperparameter configuration. Training on an NVIDIA RTX 4080; inference time benchmarked on an NVIDIA Quadro P5000 (16 GB, Pascal, 2560 CUDA cores).}
+\caption{Computational efficiency metrics under identical input conditions ($L = 160$, $C = 3$, batch size = 1). All measurements use the optimal hyperparameter configuration. Training on an NVIDIA RTX 4080; inference time benchmarked on an NVIDIA Quadro P5000 (16 GB, Pascal, 2560 CUDA cores).}
 \label{tab:efficiency}
 \small
 \resizebox{\linewidth}{!}{%
@@ -629,7 +629,7 @@ The efficiency hierarchy stratifies by theoretical complexity class. The four $O
 
 The three $O(L \log L)$ architectures---Informer, Autoformer, and TimesNet---occupy an intermediate tier. TimesNet is the most parameter-efficient of this group (2.05 M) due to its Inception blocks, which share convolutional kernels across the 2D temporal representation, while Autoformer's progressive decomposition blocks incur additional memory overhead (3.84 M, 85 MB peak). Informer's self-attention distilling mechanism progressively reduces sequence length across encoder layers, partially offsetting the $O(L \log L)$ complexity in deeper configurations.
 
-PatchTST, as the only $O(N^2)$ architecture, incurs the highest computational cost across all five metrics. However, the effective sequence length $N$ is substantially smaller than the raw length $T = 160$, meaning the quadratic term operates over a drastically reduced dimension. The practical inference cost of PatchTST (5.4 ms) is therefore closer to the $O(L \log L)$ tier than theoretical $O(N^2)$ suggests.
+PatchTST, as the only $O(N^2)$ architecture, incurs the highest computational cost across all five metrics. However, the effective sequence length $N$ is substantially smaller than the raw length $L = 160$, meaning the quadratic term operates over a drastically reduced dimension. The practical inference cost of PatchTST (5.4 ms) is therefore closer to the $O(L \log L)$ tier than theoretical $O(N^2)$ suggests.
 
 Training time per epoch follows the same hierarchy (Supplementary Material, Table~S4), with DLinear completing an epoch in 1.2 s on the RTX 4080---approximately 35$\times$ faster than PatchTST (42.8 s/epoch). This difference has practical implications for the experimental workflow: hyperparameter tuning of PatchTST across 64 grid configurations and 147 LOSO folds requires approximately 100 GPU-hours, while the equivalent search for DLinear completes in under 3 GPU-hours. For practitioners iterating on architecture design, this 35$\times$ training speed difference substantially impacts development velocity.
 
@@ -818,7 +818,7 @@ The results provide a clear affirmative. Mamba achieves F1 = 0.858 at 1.5 ms inf
 
 A finding emerges from the comparison of the simplest architectures. DLinear achieves F1 = 0.800, nearly identical to the 1D-CNN baseline from prior work (F1 = 0.796) and the classical EDA feature-engineering approach with SVM (F1 $\approx$ 0.81; \cite{sanchez2020deep}). This parity suggests that handcrafted feature extraction, linear decomposition of tonic and phasic components, and local convolutional feature extraction all converge to a similar performance ceiling (F1 $\approx$ 0.80), bounded by the intrinsic discriminative information available in local EDA signal segments. However, all three are substantially outperformed by architectures with global or adaptive temporal modelling (Mamba, PatchTST: F1 $\approx$ 0.86), indicating that the key driver of performance is not the specific computational primitive (handcrafted features vs.\ convolution vs.\ linear) but the capacity to model temporal dependencies across the full observation window.
 
-ModernTCN achieves F1 = 0.827, an improvement over the TCN baseline from prior work (F1 = 0.812; +1.5 percentage points). This validates the hypothesis that improved convolutional design---larger kernels, depthwise separable convolutions, and inverted bottlenecks---can close part of the gap between traditional CNNs and attention-based architectures, consistent with ModernTCN's results on general time-series benchmarks \cite{ModernTCN2024}. However, the remaining gap to the best Transformer and SSM architectures (3--4\% F1) indicates that convolutions alone, even when modernised, do not fully replicate the benefits of content-dependent temporal weighting.
+ModernTCN achieves F1 = 0.827, an improvement over the TCN baseline from prior work (F1 = 0.812; +1.5 percentage points). This validates the hypothesis that improved convolutional design---larger kernels, depthwise separable convolutions, and inverted bottlenecks---can close part of the gap between traditional CNNs and attention-based architectures, consistent with ModernTCN's results on general time-series benchmarks \cite{ModernTCN2024}. However, the remaining gap to the best Transformer and SSM architectures (3--4 percentage points) indicates that convolutions alone, even when modernised, do not fully replicate the benefits of content-dependent temporal weighting.
 
 \subsection{Limitations and Generalizability}
 
