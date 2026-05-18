@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Efficient and Modern Architectures for EDA-based Arousal Classification
+A Comparative Study of Emerging Architectures for EDA-based Arousal Classification
 ======================================================================
 
 Main entry point for the complete experimental pipeline:

@@ -9,7 +9,7 @@
   See .claude/references/journal-profiles.md for venue profiles.
 -->
 
-**Project:** Efficient and Modern Architectures for Electrodermal Activity-based Arousal Classification
+**Project:** A Comparative Study of Emerging Architectures for EDA-based Arousal Classification
 **Institution:** Universidad de Castilla-La Mancha (UCLM) — I3A / TSI
 **Field:** Affective Computing / Biomedical Engineering / Time-Series Deep Learning
 **Branch:** main
