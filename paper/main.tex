@@ -116,7 +116,7 @@ In our prior work~\cite{sanchez2022one}, we compared five architectures (1D-CNN,
 
 The time-series community has developed efficient Transformer variants with sub-quadratic or linear complexity~\cite{Wen2023,Tay2022}: Informer uses ProbSparse attention~\cite{Informer2021}, Autoformer replaces attention with FFT-based Auto-Correlation and progressive decomposition~\cite{Autoformer2021}, FEDformer operates via Fourier-enhanced attention on randomly selected frequency modes~\cite{FEDformer2022}, and TimesNet transforms 1D series into 2D tensors via FFT-discovered periods for Inception-based 2D convolution~\cite{TimesNet2023}. DLinear demonstrated that simple trend-seasonal decomposition with linear layers can outperform sophisticated Transformers on forecasting benchmarks~\cite{DLinear2023,IsmailFawaz2019}. Beyond Transformers, Mamba introduced selective state space models (SSMs) where parameters are input-dependent, achieving competitive performance on language and genomics~\cite{Mamba2023} and showing promise for physiological signals via bidirectional architectures~\cite{ECGMamba2024}. ModernTCN extended the convolutional paradigm with large depthwise kernels and inverted bottlenecks, matching Transformer performance while maintaining convolutional efficiency~\cite{ModernTCN2024,Dauphin2017}.
 
-Despite these advances, no systematic evaluation spanning these paradigms exists for physiological signal classification under rigorous subject-independent protocols. This gap is significant because EDA signals exhibit inter-subject variability, non-stationarity, and structured phasic responses. These signal characteristics may interact differently with each efficiency mechanism compared to the forecasting benchmarks on which these architectures were originally developed~\cite{Wen2023}. Furthermore, the SSM and modernised convolution paradigms have not been benchmarked against Transformer-based methods in physiological classification, leaving practitioners without evidence to guide paradigm selection.
+Despite these advances, no systematic evaluation spanning these paradigms exists for physiological signal classification under rigorous subject-independent protocols. This gap is significant because EDA signals exhibit inter-subject variability, non-stationarity, and structured phasic responses. These signal characteristics may interact differently with each efficiency mechanism compared to the forecasting benchmarks on which these architectures were originally developed~\cite{Wen2023}. Beyond this, the SSM and modernised convolution paradigms have not been benchmarked against Transformer-based methods in physiological classification, leaving practitioners without evidence to guide paradigm selection.
 
 This work addresses this gap through a systematic equal-budget comparison of eight architectures spanning five paradigms and a linear baseline: PatchTST (patch-based attention), Informer (sparse attention), Autoformer, TimesNet, and FEDformer (frequency-domain), Mamba (selective state space model), ModernTCN (modernised convolution), and DLinear as a linear baseline. All architectures are evaluated on the identical 147-participant dataset and LOSO protocol. Computational efficiency --parameter count, FLOPs, inference time, memory, and training time-- is elevated to a primary evaluation dimension alongside classification metrics. The contributions are: (i)~a systematic accuracy-efficiency comparison of Transformers, SSMs, and modernised convolutions for EDA under LOSO; (ii)~explicit characterisation of the Pareto frontier, directly informing architecture selection under deployment constraints; (iii)~inclusion of DLinear and ModernTCN as critical baselines testing whether complex temporal mechanisms provide measurable benefit for EDA; and (iv)~physiologically-grounded insights into how each efficiency paradigm interacts with phasic EDA dynamics.
 
@@ -164,7 +164,7 @@ Figure~\ref{fig:pipeline} describes the overall experimental pipeline, encompass
         \node[lab, above=0.1cm of norm, text=blue1] {$\mathbf{X} \in \mathbb{R}^{L \times 3}$};
         
         % === Row 1: Attention O(N²) ===
-        \node[proc_green, below=1.0cm of raw, minimum width=1.4cm] (p1) {PatchTST};
+        \node[proc_blue, below=1.0cm of raw, minimum width=1.4cm] (p1) {PatchTST};
         % === Row 1: O(L log L) ===
         \node[proc_green, right=0.2cm of p1, minimum width=1.4cm] (i1) {Informer};
         \node[proc_green, right=0.2cm of i1, minimum width=1.4cm] (a1) {Autoformer};
@@ -209,7 +209,7 @@ Figure~\ref{fig:pipeline} describes the overall experimental pipeline, encompass
         \draw[arr_gray] (perf.south) -- ++(0,-0.2) -| (eff.north);
         \end{tikzpicture}%
         }
-    \caption{Overall experimental pipeline. \textbf{Top:} EDA signal preprocessing and input construction. \textbf{Middle:} eight architectures grouped by computational complexity class. \textbf{Bottom:} binary classification output and joint evaluation of predictive performance and resource consumption. Color coding: blue = preprocessing, green = $O(L \log L)$, orange = $O(L)$, red = linear baseline, purple = evaluation.}
+    \caption{Overall experimental pipeline. \textbf{Top:} EDA signal preprocessing and input construction. \textbf{Middle:} eight architectures grouped by computational complexity class. \textbf{Bottom:} binary classification output and joint evaluation of predictive performance and resource consumption. Color coding: blue = preprocessing and $O(N^2)$ patch attention, green = $O(L \log L)$, orange = $O(L)$, red = linear baseline, purple = evaluation.}
     \label{fig:pipeline}
 \end{figure}
 
@@ -223,7 +223,7 @@ Each participant completed multiple trials in both calm and stress conditions, p
 
 \subsection{EDA signal processing and input representation}
 
-Raw skin conductance signals were preprocessed following the pipeline established in our prior work~\cite{sanchez2020deep}. A low-pass FIR filter (cut-off frequency: 3.5 Hz, stop-band: 4 Hz) was applied to prevent aliasing, followed by Gaussian smoothing to attenuate acquisition noise. Continuous Decomposition Analysis (CDA), a non-negative deconvolution method, was used to decompose the signal into tonic skin conductance level ($SCL$) and phasic skin conductance response ($SCR$)~\cite{Dawson2017,Braithwaite2013,Benedek2010}:
+Raw skin conductance signals were preprocessed following the pipeline established in our prior work~\cite{sanchez2020deep}. A low-pass FIR filter (cut-off frequency: 3.5 Hz, stop-band: 4 Hz) was applied to prevent aliasing, followed by Gaussian smoothing ($\sigma = 0.5$~s) to attenuate acquisition noise. Continuous Decomposition Analysis (CDA), a non-negative deconvolution method applied independently to each subject's continuous recording, was used to decompose the signal into tonic skin conductance level ($SCL$) and phasic skin conductance response ($SCR$)~\cite{Dawson2017,Braithwaite2013,Benedek2010}:
 
 \begin{equation}
     SC(t) = SCL(t) + SCR(t)
@@ -433,7 +433,7 @@ ModernTCN~\cite{ModernTCN2024} reformulates the convolutional paradigm with thre
 
 \subsection{Training and hyperparameter configuration}
 
-All models were trained end-to-end using the AdamW optimiser~\cite{Loschilov2019} with cross-entropy loss on a single NVIDIA GeForce RTX 4080 GPU (16 GB GDDR6X, Ada Lovelace). All experiments used a single random seed (42) for parameter initialisation and data ordering. PyTorch deterministic algorithms were not enabled due to CUDA performance constraints. Training data was shuffled at each epoch within each fold. Consequently, the per-fold standard deviations reported in Section~\ref{subsec:performance} may partially reflect seed-dependent weight initialisation in addition to inter-subject variability --a limitation discussed in Section~\ref{subsec:limitations}. The validation split (80/20 within the training subjects of each fold) was generated independently per fold, ensuring that no subject was permanently excluded from testing. Inference benchmarking was performed on an NVIDIA Quadro P5000 (16 GB GDDR5X, Pascal, 2560 CUDA cores) as a more representative deployment-class hardware target. The initial learning rate was set to $10^{-3}$ with cosine annealing scheduling. Mini-batch size was 32. Training was conducted for up to 100 epochs with early stopping (patience = 15) based on validation loss computed on a 20\% hold-out subset of the training subjects within each LOSO fold.
+All models were trained end-to-end using the AdamW optimiser~\cite{Loschilov2019} with cross-entropy loss on a single NVIDIA GeForce RTX 4080 GPU (16 GB GDDR6X, Ada Lovelace). All experiments used a single random seed (42) for parameter initialisation and data ordering. PyTorch deterministic algorithms were not enabled due to CUDA performance constraints. Training data was shuffled at each epoch within each fold. Consequently, the per-fold standard deviations reported in Section~\ref{subsec:performance} may partially reflect seed-dependent weight initialisation in addition to inter-subject variability --a limitation discussed in Section~\ref{subsec:limitations}. The validation split (80/20 within the training subjects of each fold, stratified by class) was generated independently per fold, so that no subject was permanently excluded from testing. Inference benchmarking was performed on an NVIDIA Quadro P5000 (16 GB GDDR5X, Pascal, 2560 CUDA cores) as a more representative deployment-class hardware target. The initial learning rate was set to $10^{-3}$ with cosine annealing scheduling. Mini-batch size was 32. Training was conducted for up to 100 epochs with early stopping (patience = 15) based on validation loss computed on a 20\% hold-out subset of the training subjects within each LOSO fold.
 
 Regularisation included dropout ($p \in [0.1, 0.3]$), weight decay ($\lambda = 10^{-4}$), and gradient clipping (maximum norm = 1.0). Hyperparameters were tuned by randomly sampling 64 configurations per architecture from the search grids shown in Table~\ref{tab:hyperparams}, providing an equal computational budget across architectures despite differing grid cardinalities. For each LOSO fold, the optimal configuration was selected based on validation F1-score computed on a 20\% hold-out subset of the training subjects within that fold, ensuring no test-subject information influenced hyperparameter selection. Table~\ref{tab:hyperparams} summarises the search space.
 
@@ -477,7 +477,7 @@ Standard classification metrics were computed for each fold and averaged across 
 
 \subsubsection{Computational efficiency metrics}
 
-Four complementary efficiency metrics were recorded for each architecture under identical input conditions (40-second window, $L = 160$, $C = 3$, batch size = 1 for single-inference metrics):
+Five complementary efficiency metrics were recorded for each architecture under identical input conditions (40-second window, $L = 160$, $C = 3$, batch size = 1 for single-inference metrics):
 
 \begin{itemize}
     \item \textbf{Parameter count ($N_{\text{params}}$):} Total number of trainable parameters (millions). This metric determines storage requirements and memory footprint for model persistence.
@@ -491,7 +491,7 @@ Four complementary efficiency metrics were recorded for each architecture under 
     \item \textbf{Training time ($t_{\text{train}}$):} Total wall-clock time per epoch in seconds, averaged over all LOSO folds, measured on an NVIDIA RTX 4080. This metric captures the computational cost of model development and hyperparameter tuning, complementing the deployment-focused inference metrics.
 \end{itemize}
 
-All four metrics were measured with the optimal hyperparameter configuration for each architecture (selected via grid search on the classification F1-score) to ensure that efficiency comparisons reflect the configurations that practitioners would actually deploy.
+All five metrics were measured with the optimal hyperparameter configuration for each architecture --selected as the configuration achieving the highest average validation F1 across all 147 folds-- to ensure that efficiency comparisons reflect the configurations that practitioners would actually deploy.
 
 
 \subsubsection{Interpretability analysis}
@@ -596,7 +596,7 @@ DLinear achieves F1 = 0.800, comparable to the 1D-CNN baseline from prior work (
 
 \subsection{Computational efficiency}
 
-Table~\ref{tab:efficiency} and Fig.~\ref{fig:efficiency_bars} report the four complementary efficiency metrics for each architecture. These metrics jointly characterise the resource consumption profile that determines deployability on resource-constrained platforms.
+Table~\ref{tab:efficiency} and Fig.~\ref{fig:efficiency_bars} report the five complementary efficiency metrics for each architecture. These metrics jointly characterise the resource consumption profile that determines deployability on resource-constrained platforms.
 
 \begin{table}[!ht]
     \centering
@@ -743,6 +743,7 @@ The identification of Pareto-optimal architectures under different resource budg
 
 
 \subsection{Minimal temporal interval behaviour}
+\label{subsec:window_length}
 
 Fig.~\ref{fig:f1_window_length} analyses the minimal temporal interval required for reliable arousal classification. Two key patterns emerge. First, all architectures exhibit rapid performance improvement as window length increases from 1 to approximately 10--15 seconds, corresponding to the temporal span needed to capture a complete SCR waveform (onset, rising phase, peak, and partial recovery). Performance plateaus beyond 15--20 seconds, consistent with the physiological observation that individual SCRs rarely exceed 10--12 seconds in duration~\cite{LongTermVariability}.
 
@@ -833,6 +834,7 @@ Pairwise Wilcoxon signed-rank tests (Supplementary Material, Table~S2) provide d
 
 
 \subsection{Interpretability insights}
+\label{subsec:interpretability}
 
 Beyond aggregate performance metrics, we examine whether the learned representations align with established physiological knowledge of sympathetic activation dynamics.
 
@@ -851,7 +853,7 @@ A channel ablation experiment (Supplementary Material, Table~S1) further reveals
 
 Contextualising the present results against our prior evaluation of five deep architectures~\cite{sanchez2022one} --which established PatchTST (F1 $=$ 0.852) as the best-performing model among 1D-CNN (0.796), TCN (0.812), InceptionTime (0.822), and TST (0.840)-- provides empirical answers to the central question motivating this work: Can emerging architectures approach or exceed PatchTST accuracy at substantially lower computational cost?
 
-The results provide a clear affirmative. Mamba achieves F1 = 0.858 at 1.5 ms inference time on the Quadro P5000, compared to PatchTST's F1 = 0.863 at 5.4 ms --a 0.005 F1 difference (smaller than the per-fold standard deviation of 0.05 and not surviving Bonferroni-Holm correction; see Section~\ref{subsec:limitations}) that represents a 3.6$\times$ reduction in latency and a 66\% reduction in parameter count (1.52 M vs.\ 4.52 M). For wearable and edge deployment scenarios where latency and memory are primary constraints, Mamba provides near-equivalent accuracy at a fraction of the computational cost, confirming that the selective state space paradigm can match attention-based methods on physiological time-series classification.
+The results provide a clear affirmative. Mamba achieves F1 = 0.858 at 1.5 ms inference time on the Quadro P5000, compared to PatchTST's F1 = 0.863 at 5.4 ms --a 0.005 F1 difference (smaller than the per-fold standard deviations of 0.051 and 0.053 for PatchTST and Mamba, respectively, and not surviving Bonferroni-Holm correction; see Section~\ref{subsec:limitations}) that represents a 3.6$\times$ reduction in latency and a 66\% reduction in parameter count (1.52 M vs.\ 4.52 M). For wearable and edge deployment scenarios where latency and memory are primary constraints, Mamba provides equivalent accuracy (the 0.005 F1 difference is within per-fold variability) at a fraction of the computational cost, confirming that the selective state space paradigm can match attention-based methods on physiological time-series classification.
 
 A finding emerges from the comparison of the simplest architectures. DLinear achieves F1 = 0.800, nearly identical to the 1D-CNN baseline from prior work (F1 = 0.796) and the classical EDA feature-engineering approach with SVM (F1 $\approx$ 0.81;~\cite{sanchez2020deep}). This parity suggests that handcrafted feature extraction, linear decomposition of tonic and phasic components, and local convolutional feature extraction all converge to a similar performance ceiling (F1 $\approx$ 0.80), bounded by the intrinsic discriminative information available in local EDA signal segments. However, all three are substantially outperformed by architectures with global or adaptive temporal modelling (Mamba, PatchTST: F1 $\approx$ 0.86), indicating that the key driver of performance is not the specific computational primitive (handcrafted features vs.\ convolution vs.\ linear) but the capacity to model temporal dependencies across the full observation window.
 
@@ -871,13 +873,17 @@ Inference time was measured on a single GPU (Quadro P5000); absolute latency wil
 
 A single random seed (42) was used throughout (PyTorch deterministic mode disabled). The narrow margin between PatchTST and Mamba ($\Delta$F1 = 0.005) approaches the limit of reliable differentiation under a single seed.
 
+The interpretability analysis is qualitative throughout (visual inspection of attention weights, saliency maps, and state transition matrices). No quantitative interpretability metrics (e.g., attention entropy, perturbation-based faithfulness) are reported, so the physiological interpretations offered in Section~\ref{subsec:interpretability} should be regarded as descriptive observations rather than quantitative evidence.
+
+The window-length analysis (Section~\ref{subsec:window_length}) used overlapping sliding windows, which produce multiple training examples per trial sharing the same class label. While this is standard practice in physiological time-series classification, it inflates the effective sample size without adding independent discriminative information between windows; the reported F1 values for shorter windows reflect this expanded training set.
+
 The Wilcoxon test assumes independent folds, which LOSO violates (training sets share 146/147 subjects). P-values are therefore descriptive indicators of effect consistency; raw and Bonferroni-Holm corrected thresholds are reported alongside effect sizes.
 
 FLOPs estimated via \texttt{thop} may not capture operator fusion, framework optimisations, or Mamba's custom parallel scan kernel. Inference time measurements provide a complementary hardware-grounded metric.
 
 Ambulatory EDA is susceptible to motion artefacts and electrode noise~\cite{Hossain2022BSPC}, which controlled laboratory conditions minimise. Inter-subject variability in electrodermal responsivity~\cite{LongTermVariability} may affect rankings across more heterogeneous populations; a proportion of participants may be electrodermal low-responders~\cite{LongTermVariability}, for whom arousal classification is inherently more difficult. Repeated-trial protocols may induce SCR habituation, introducing systematic amplitude variation across trials that is not explicitly modelled. Ambient temperature and humidity, which influence EDA through thermoregulatory sweating~\cite{SPR2012EDA}, were not recorded; while controlled laboratory conditions likely constrained environmental variability, this remains an unmeasured confound. Robustness to signal quality degradation, demographic variability, and environmental factors has not been assessed.
 
-The dataset is not publicly released due to institutional privacy constraints; implementation code will be provided upon acceptance. Full reproducibility requires public data release or independent replication.
+Implementation code will be provided upon acceptance.
 
 
 % ======================================================
