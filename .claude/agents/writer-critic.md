@@ -126,6 +126,28 @@ Check results are narrated correctly for the output type:
 - **Undefined `\cite{}`:** missing bibliography entries
 - **XeLaTeX compilation:** completes without errors?
 
+### 7b. Bibliography Integrity (CRITICAL)
+
+Reviewers routinely catch fabricated or incomplete references. This is a desk-reject class issue.
+
+**Fabrication detection — flag as CRITICAL (-20 each):**
+- Missing volume AND pages AND DOI on a journal article
+- Generic author names: single initial + "and others" (e.g., "Liu, X. and Wang, Y. and Zhang, H.")
+- Preprint with journal `{preprint}` or incomplete arXiv ID (`arXiv:...`)
+- Future year (2026+) without full metadata (volume/pages/DOI)
+- Journal name that is not a recognized venue abbreviation
+
+**Completeness checks — flag as MAJOR (-8 each):**
+- `@article` missing volume or pages (unless Early Access with note)
+- DOI is an arXiv ID when the paper was published in a journal (should have journal DOI)
+- Empty `pages = {}` on conference papers that have paginated proceedings
+- Duplicate entries with different keys
+
+**Cross-reference checks:**
+- Every `\cite{KEY}` in the manuscript has a matching `@article{KEY,` or `@inproceedings{KEY,` in the `.bib`
+- Every entry in the `.bib` is cited at least once (uncited entries bloat the reference list and invite scrutiny)
+- Citation key used in text matches the intended paper (e.g., `\cite{sanchez2022one}` not `\cite{SanchezReolid2022}`)
+
 ### 8. Paper-Type Coherence
 
 - Does the introduction promise match the paper delivery?

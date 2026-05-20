@@ -121,6 +121,86 @@ for r in results['nodoi']: print(f'  {r}')
 - Entries without DOI: flag as warnings; acceptable for recent preprints (<6 months), theses, or in-press articles
 - DOIs resolving to wrong paper title: flag as **BLOCKING error** — DOI is incorrect
 
+### 1c. Bibliography Fabrication & Integrity Check
+
+Reviewers at top venues (IEEE TAC, BSPC, Elsevier journals) routinely detect fabricated references. This check prevents desk rejection.
+
+**Run these checks on `paper/bibliography.bib`:**
+
+```bash
+# 1. Detect fabricated patterns: missing volume AND pages AND doi
+python3 -c "
+import re
+with open('paper/bibliography.bib') as f:
+    content = f.read()
+entries = re.split(r'\n@', content)
+entries = ['@' + e if i > 0 else e for i, e in enumerate(entries)]
+fabricated = []
+for e in entries:
+    key = re.search(r'@\w+\{([^,]+)', e)
+    if not key: continue
+    k = key.group(1).strip()
+    is_article = bool(re.search(r'@article\{', e))
+    has_vol = bool(re.search(r'volume\s*=', e, re.IGNORECASE))
+    has_pages = bool(re.search(r'pages\s*=', e, re.IGNORECASE))
+    has_doi = bool(re.search(r'doi\s*=', e, re.IGNORECASE))
+    is_arxiv = bool(re.search(r'arXiv', e))
+    is_book = bool(re.search(r'@book\{|@incollection\{|@techreport\{|@misc\{|@mastersthesis\{', e))
+    if is_article and not is_arxiv and not is_book:
+        if not has_vol and not has_pages and not has_doi:
+            fabricated.append(f'FABRICATED: {k} (no volume, pages, or DOI)')
+        elif not has_vol and not has_pages:
+            fabricated.append(f'MISSING: {k} (no volume or pages)')
+    # Check for generic single-initial authors
+    author_match = re.search(r'author\s*=\s*\{(.+?)\}', e, re.DOTALL)
+    if author_match:
+        authors = author_match.group(1)
+        if re.search(r'^\w\.\s+and\s+others', authors):
+            fabricated.append(f'SUSPICIOUS: {k} (single initial + \"and others\")')
+for f in fabricated:
+    print(f)
+print(f'\\nTotal flagged: {len(fabricated)}')
+"
+```
+
+**Fabrication red flags — FAIL if any present:**
+| Pattern | Example | Severity |
+|---------|---------|----------|
+| Journal article with no volume, pages, OR DOI | `year={2025}` only | BLOCKING |
+| Generic authors: single initial + "and others" | `author={Liu, X. and others}` | BLOCKING |
+| Journal = `{preprint}` or incomplete arXiv ID | `arXiv preprint arXiv:...` | BLOCKING |
+| Future year (2026+) without full metadata | `year={2026}` only | BLOCKING |
+
+**Integrity checks — WARN:**
+| Pattern | Severity |
+|---------|----------|
+| `@article` with empty `pages={}` | MAJOR |
+| DOI is arXiv when paper published in journal | MAJOR |
+| Duplicate entries (same title, different key) | MAJOR |
+| Uncited entries in `.bib` (bib has keys not in `\cite{}`) | MINOR |
+
+### 1d. Manuscript Red-Comment & Figure Audit
+
+**Red comments (`\textcolor{red}`):**
+```bash
+grep -n 'textcolor{red}' paper/main.tex
+```
+Any active `\textcolor{red}{...}` in the manuscript is a **BLOCKING FAIL**. Comments must be resolved or commented out with `%` before submission.
+
+**Unreferenced figures:**
+```bash
+# Check every \label{fig:NAME} has at least one \ref{fig:NAME}
+python3 -c "
+import re
+with open('paper/main.tex') as f: t = f.read()
+labels = re.findall(r'\\\\label\{fig:([^}]+)\}', t)
+for l in labels:
+    if f'\\\\ref{{fig:{l}}}' not in t and f'\\\\cref{{fig:{l}}}' not in t:
+        print(f'UNREFERENCED: fig:{l}')
+"
+```
+Any figure without a `\ref` in the text is a **BLOCKING FAIL**.
+
 ### 2. Script Execution
 ```bash
 Rscript scripts/R/FILENAME.R 2>&1 | tail -20

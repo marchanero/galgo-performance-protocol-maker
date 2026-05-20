@@ -32,6 +32,18 @@ These are non-negotiable. Every agent checks against them. Violations are deduct
 
 **INV-13.** R/Python/Julia scripts export bare `tabular` environments — no `\begin{table}`, `\caption{}`, or notes. The paper's `main.tex` wraps them.
 
+## Bibliography
+
+**INV-22.** Every bibliography entry must be cited in the manuscript. Zero orphan entries in the `.bib` file. Every `\cite{KEY}` must have a matching entry.
+
+**INV-23.** Every journal article must have at minimum: author, title, journal, year. Volume, pages, and DOI are required unless the article is Early Access or in-press (must include `note = {Early Access}` or `note = {In press}`).
+
+**INV-24.** No fabricated references. Red flags: single-initial generic authors ("X. and others"), journal = `{preprint}` or incomplete arXiv ID, future year (2026+) without full metadata, missing volume AND pages AND DOI on a journal article.
+
+**INV-25.** Every `\textcolor{red}{...}` comment in the manuscript must be resolved (replaced with final text) or commented out with `%` before submission. Active red comments in the compiled PDF are a submission blocker.
+
+**INV-26.** Every figure with `\label{fig:NAME}` must have at least one `\ref{fig:NAME}` or `\cref{fig:NAME}` in the body text.
+
 ## Code
 
 **INV-14.** `set.seed()` (or language equivalent) called exactly once, at the top of the main script, if any stochastic element exists.
@@ -58,8 +70,8 @@ These are non-negotiable. Every agent checks against them. Violations are deduct
 
 | Agent | Checks | Action on Violation |
 |-------|--------|-------------------|
-| **writer-critic** | INV-1 through INV-13 | Deduct per scoring rubric |
+| **writer-critic** | INV-1 through INV-13, INV-22 through INV-26 | Deduct per scoring rubric |
 | **coder-critic** | INV-13 through INV-19 | Deduct per scoring rubric |
 | **storyteller-critic** | INV-20, INV-21 | Deduct per scoring rubric |
-| **verifier** | INV-9, INV-10, INV-14, INV-15, INV-16, INV-19 | FAIL if present |
+| **verifier** | INV-9, INV-10, INV-14, INV-15, INV-16, INV-19, INV-22 through INV-26 | FAIL if present |
 | **lint hook** | INV-14, INV-15, INV-16, INV-19 | Advisory warning |
