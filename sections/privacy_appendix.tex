@@ -1,0 +1,53 @@
+% =====================================================================
+% Multimedia Appendix (JRP-style): operational details of the
+% privacy-by-design pipeline, written so that a referee can verify each
+% privacy claim against an explicit operational artefact rather than
+% against rhetoric.
+% =====================================================================
+
+\phantomsection
+\section*{Multimedia Appendix --- Operational Privacy-by-Design Pipeline}\label{sec:appendix-privacy}
+
+This appendix documents the operational artefacts that enforce the privacy guarantees claimed in the main text. The artefacts are released, alongside the analysis code, in the companion repository (\texttt{[GITHUB URL --- PENDING]}); this appendix summarises them at the level of detail a reviewer needs to verify that the privacy claims are auditable rather than aspirational. The arrangement is also documented in the Records of Processing Activities and Data Protection Impact Assessment filed with the UCLM Data Protection Officer.
+
+\subsection*{A. 72-hour video deletion governance}
+
+Raw classroom video is processed exclusively on the institutional UCLM server to extract body-pose features. The deletion of the raw video file is performed by a server-side script that runs every six hours and applies the rule \emph{delete any video file whose feature-extraction timestamp is older than 72 hours}. The script:
+
+\begin{enumerate}[label=A.\arabic*., leftmargin=*, itemsep=2pt]
+  \item locates raw video files in the protected ingest directory;
+  \item reads, for each file, the feature-extraction completion timestamp from the per-session manifest;
+  \item if the timestamp is older than the 72-hour threshold, computes the SHA-256 hash of the file before deletion (the \emph{deletion-attestation hash}), records the hash in the governance log together with the file path, the session identifier and the operator identifier of the cron schedule, then unlinks the file;
+  \item if the timestamp is missing or malformed, refuses to delete and writes an alert to the governance log.
+\end{enumerate}
+
+The governance log is append-only and is mirrored to a second institutional server for resilience. The log structure (one JSON line per deletion event) is documented in the companion repository.
+
+\subsection*{B. Audio-disable configuration on the Reolink camera}
+
+The Reolink Elite Wi-Fi 4K camera is configured to disable the audio capture pipeline at the device-level configuration. The relevant settings are: \texttt{Audio.Enable=0} and \texttt{Audio.Record=0}, applied through the camera's administrative interface during deployment and verified on the per-session pre-recording checklist. The camera's configuration file (sanitised of credentials) is released in the companion repository. As part of the per-session checklist, the operator verifies that the audio channel returns no payload by inspecting the network traffic from the camera through a packet-capture rule on the institutional VPN. The Records of Processing Activities filed with the UCLM Data Protection Officer record the audio-disable configuration as a binding technical and organisational measure.
+
+\subsection*{C. Pseudonymisation key management}
+
+Each participant is assigned a 16-byte opaque identifier generated at the start of the consent campaign. The correspondence table between identifiers and personally identifying information is stored as an encrypted file on a dedicated workstation, accessible only to the principal investigator. The encryption is symmetric (AES-256-GCM); the key is managed in the institutional password manager and is duplicated, under sealed-envelope custody, with the UCLM Data Protection Officer for continuity purposes (loss of the principal investigator's access). Decryption events are logged on the workstation's audit trail and are reviewed quarterly. No copy of the correspondence table exists on the institutional UCLM server or on any cloud storage; raw biometric files do not embed personally identifying metadata.
+
+\subsection*{D. Institutional server access and transport encryption}
+
+The institutional UCLM server hosting the raw EEG, EmotiBit and ambient traces is inside the UCLM administrative network and is reachable from instrumented edge nodes only through the institutional VPN with mutual-TLS authentication. Access from outside the UCLM network requires VPN credentials and multi-factor authentication. Per-user access events are logged centrally by the UCLM IT services for at least the duration of the project plus the legally mandated retention period. Application-level access to the raw-traces directory is restricted to the research team's institutional accounts; the operating-system permissions are documented in the companion repository.
+
+\subsection*{E. Withdrawal-driven deletion}
+
+When a participant or their parent/guardian withdraws from the study, the principal investigator triggers a one-shot deletion run that:
+
+\begin{enumerate}[label=E.\arabic*., leftmargin=*, itemsep=2pt]
+  \item identifies all per-session manifests carrying the withdrawing participant's pseudonymous identifier;
+  \item for each session, locates the corresponding raw EEG, EmotiBit and per-window aggregated feature files;
+  \item computes the SHA-256 hash of each file before deletion and records the hash in the governance log together with the withdrawal date and the withdrawal-event identifier;
+  \item removes the participant's row from the pseudonymisation correspondence table and re-encrypts the table under a new symmetric key, retiring the previous key under sealed-envelope custody.
+\end{enumerate}
+
+The deletion run is verified by the data manager and countersigned by the principal investigator before the withdrawal request is closed.
+
+\subsection*{F. Independent audit}
+
+Before any subsequent compendium article submits to peer review on the basis of the corpus produced under this protocol, the team commits to a one-time independent audit of the privacy pipeline by the UCLM Data Protection Officer. The audit's scope is: (i) inspection of the 72-hour deletion script and the governance log; (ii) inspection of the audio-disable configuration on the camera and the corresponding packet-capture evidence; (iii) inspection of the pseudonymisation key-management protocol and the access-log review trail; (iv) inspection of the withdrawal-driven deletion procedure and at least one withdrawal-event simulation. The audit report is filed alongside the protocol's Records of Processing Activities; a non-confidential summary is released in the companion repository.

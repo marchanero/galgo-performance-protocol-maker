@@ -1,0 +1,30 @@
+% =====================================================================
+% JMIR Research Protocols — Data Availability Statement.
+% Tiered-access regime consistent with CEIS-UCLM approval and GDPR Article 9
+% for special-category data of minors.
+% =====================================================================
+
+\phantomsection
+\section*{Data Availability}\label{sec:data-availability}
+
+The data and code supporting this protocol are released under a tiered access model that reflects the special-category nature of the underlying biometric recordings of minors and the data-protection guarantees of the CEIS-UCLM-approved protocol.
+
+\subsection*{Openly released}
+
+The analysis code (feature-extraction and synchronisation pipeline, statistical-analysis scripts, figure-generation code) is openly released on GitHub at \texttt{[GITHUB URL --- PENDING]} under an OSI-approved permissive licence and archived at the same revision on Zenodo with a citable DOI (\texttt{[REPOSITORY DOI --- PENDING]}). Anonymised aggregated features per 5-minute window and per modality are deposited alongside the code, together with the session-level metadata (anonymised manifests, dates of session windows without time of day, subject category, group identifier, modality availability flags). Released features are at the aggregation level only; no individual-level sample-rate signal trace is released.
+
+\subsection*{Restricted access (raw signal traces)}
+
+Raw EEG, EmotiBit and ambient time-series traces remain on the UCLM institutional server under the data-governance regime described in \Cref{subsec:ethics} and \Cref{sec:appendix-privacy}. Access is granted to qualified researchers upon a documented application that includes (a) the institutional affiliation and ethics-committee approval of the requesting researcher, (b) the data-protection arrangements at the recipient institution, (c) the analytical purpose and (d) a signed data-sharing agreement. Access requests are evaluated by the principal investigator with notification to the CEIS-UCLM; in the event of disagreement between the principal investigator and the applicant, the request is escalated to a one-time review by the UCLM Data Protection Officer. The procedure is documented in the project repository's \texttt{ACCESS.md} file.
+
+\subsection*{Permanently excluded from release}
+
+Classroom video is not deposited under any access tier: raw video is deleted within 72 hours of feature extraction by protocol (\Cref{sec:appendix-privacy}), and only numeric body-pose features survive. Audio is never captured (the camera's audio channel is disabled at device-level configuration). Personal identifiers and the pseudonymisation correspondence table are kept by the principal investigator under encrypted storage and are not transferred under any circumstance.
+
+\subsection*{Citation of the data}
+
+When using the released artefacts, please cite both this protocol article and the data deposit:
+
+\begin{quote}\small\itshape
+Herrero Albiar, J.~E., García-Pérez, E., Martínez-López, J., Borja, A.~L., Sánchez-Reolid, R., Pastor Vicedo, J.~C. (2026). Multimodal passive sensing protocol and dataset for cognitive performance monitoring in Spanish compulsory secondary education classrooms (Version~1) [Data set]. Zenodo. DOI: \texttt{[REPOSITORY DOI --- PENDING]}.
+\end{quote}
