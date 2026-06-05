@@ -9,9 +9,9 @@
   See .claude/references/journal-profiles.md for venue profiles.
 -->
 
-**Project:** A Comparative Study of Emerging Architectures for EDA-based Arousal Classification
-**Institution:** Universidad de Castilla-La Mancha (UCLM) — I3A / TSI
-**Field:** Affective Computing / Biomedical Engineering / Time-Series Deep Learning
+**Project:** [YOUR-PROJECT-NAME]
+**Institution:** [YOUR-INSTITUTION]
+**Field:** [YOUR-FIELD]
 **Branch:** main
 
 ---
@@ -119,11 +119,8 @@ Output organization: by-script
 
 | Component | File | Status | Description |
 |-----------|------|--------|-------------|
-| Paper | `paper/main.tex` | accepted (IEEE TAC, 92/100) | 8 architectures, 5 paradigms, 5-round review |
-| Reference | `master_supporting_docs/supporting_papers/reference_paper.tex` | complete | Prior work: 5 architectures for EDA |
-| Bibliography | `paper/bibliography.bib` | populated | 70 references (EDA, transformers, SSM) |
-| Overleaf sync | `github.com/marchanero/BSPC-eda-efficient-transformers` | active | Paper-only repo synced with Overleaf via manual clone+push (no force) |
-| Data | `data/` | pending | EDA signals from 147 participants |
-| Scripts | `scripts/` | pending | Training/evaluation pipeline |
-| Figures | `paper/main.tex` (TikZ) | complete | Pipeline, architecture overview, results, Pareto frontier |
+| Paper | `paper/main.tex` | not started | [describe your paper] |
+| Bibliography | `paper/bibliography.bib` | empty | [describe references] |
+| Data | `data/` | empty | [describe your dataset] |
+| Scripts | `scripts/` | empty | [describe your pipeline] |
 | Agents | `.claude/agents/` | 24 agents | All adapted for CS/AI & Engineering |
