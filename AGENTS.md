@@ -1,18 +1,32 @@
-# AGENTS.MD -- CS/AI & Engineering Research Template
+# AGENTS.MD — Multi-Project Research Repository
 
-<!-- 
-  TEMPLATE: Replace bracketed placeholders with your project info.
-  Agents load this file every session — keep it under ~150 lines.
-  
-  ADAPTING: Change the "Field" line to calibrate all agents.
-  See .claude/references/domain-profile.md for field-specific defaults.
-  See .claude/references/journal-profiles.md for venue profiles.
--->
-
-**Project:** [YOUR-PROJECT-NAME]
-**Institution:** [YOUR-INSTITUTION]
-**Field:** [YOUR-FIELD]
+**Repository:** galgo-performance-protocol-maker
+**Institution:** Universidad de Castilla-La Mancha (UCLM) — I3A / TSI
 **Branch:** main
+
+---
+
+## Git Sync: Dual-Repo Architecture
+
+This repo hosts multiple projects. The `paper/` directory is synced independently to a paper-only Overleaf repo.
+
+| Remote | URL | Pushes |
+|--------|-----|--------|
+| `origin` | `https://github.com/marchanero/galgo-performance-protocol-maker.git` | Full repo (root + all projects) |
+| `paper` | `https://github.com/marchanero/JRP_Protocol_paper1.git` | `paper/` only (Overleaf sync) |
+
+```bash
+# Push full repo (agents, scripts, data, paper, everything)
+git push origin main
+
+# Push only paper/ to paper-only remote (Overleaf)
+git subtree push --prefix=paper paper main
+
+# Pull paper-only remote into paper/ (if Overleaf has newer changes)
+git subtree pull --prefix=paper paper main
+```
+
+> **⚠️ IMPORTANT:** Never force-push to the paper remote — it breaks Overleaf sync. If rebasing is needed, use manual clone + copy + normal push.
 
 ---
 
@@ -21,40 +35,31 @@
 - **Plan first** — enter plan mode before non-trivial tasks; save plans to `quality_reports/plans/`
 - **Verify after** — compile and confirm output at the end of every task
 - **Single source of truth** — Paper `main.tex` is authoritative; talks and supplements derive from it
-- **Quality gates** — weighted aggregate score; nothing ships below 80/100; see `quality.md`
+- **Quality gates** — weighted aggregate score; nothing ships below 80/100; see `.claude/rules/quality.md`
 - **Worker-critic pairs** — every creator has a paired critic; critics never edit files
 - **Auto-memory** — corrections and preferences saved via Claude Code's built-in memory system
-
----
-
-## Getting Started
-
-1. Fill in the bracketed placeholders at the top of this file
-2. Run `/discover interview [topic]` to build your research specification
-3. Or run `/new-project [topic]` for the full orchestrated pipeline
 
 ---
 
 ## Folder Structure
 
 ```
-[YOUR-PROJECT]/
+galgo-performance-protocol-maker/
 ├── AGENTS.MD                    # This file
 ├── .claude/                     # Agents, skills, rules, references
-│   ├── agents/                  # 20 agent definitions
+│   ├── agents/                  # 24 agent definitions
 │   ├── skills/                  # 11 workflow orchestrators
 │   ├── rules/                   # Quality, invariants, standards
 │   └── references/              # Domain, journals, coding standards
-├── paper/                       # LaTeX manuscript (source of truth)
+├── paper/                       # LaTeX manuscript → synced to paper remote
 │   ├── main.tex                 # Primary paper file
-│   ├── bibliography.bib         # Project bibliography
-│   ├── sections/ figures/
-│   ├── preambles/
-│   └── supplementary/
-│   # Removed but documented for future use:
-│   #   tables/ talks/ quarto/ replication/
+│   ├── Bibliography_base.bib    # Project bibliography
+│   ├── preamble-paper.tex       # LaTeX preamble
+│   ├── sections/                # Per-section .tex files
+│   ├── figuras/                 # Figures (PNG, PDF)
+│   └── latexmkrc                # XeLaTeX build config
 ├── data/                        # raw/ and cleaned/
-├── scripts/                     # Python (primary), R, Julia
+├── scripts/                     # Python (primary)
 ├── quality_reports/             # Plans, logs, reviews, scores
 ├── explorations/                # Research sandbox
 └── master_supporting_docs/      # Reference papers and data docs
@@ -109,18 +114,14 @@ cd paper && latexmk -c
 
 ---
 
-## Output Organization
-
-Output organization: by-script
-
----
-
-## Current Project State
+## Current Project: JRP Protocol Paper 1
 
 | Component | File | Status | Description |
 |-----------|------|--------|-------------|
-| Paper | `paper/main.tex` | not started | [describe your paper] |
-| Bibliography | `paper/bibliography.bib` | empty | [describe references] |
-| Data | `data/` | empty | [describe your dataset] |
-| Scripts | `scripts/` | empty | [describe your pipeline] |
-| Agents | `.claude/agents/` | 24 agents | All adapted for CS/AI & Engineering |
+| Paper | `paper/main.tex` | in progress | Multimodal passive sensing of cognitive performance in secondary education — observational longitudinal protocol |
+| Target Journal | — | JMIR Research Protocols | Pre-execution study protocol |
+| Authors | — | Herrero Albiar, García-Pérez, Martínez-López, Borja, Sánchez-Reolid, Pastor Vicedo | UCLM doctoral compendium (Paper 1) |
+| Keywords | — | multimodal learning analytics, cognitive performance, EEG, ambient sensing, body-pose estimation, PVT, GDPR minors | |
+| Data | `paper/sections/data_availability.tex` | PENDING URLs | Tiered access: open code + aggregated features / restricted raw signals |
+| Analysis | `scripts/` | not started | Feature extraction, sync validation, statistical analysis plan |
+| Agents | `.claude/agents/` | 24 agents | Calibrated via `.claude/references/domain-profile.md` |
