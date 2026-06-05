@@ -1,0 +1,7 @@
+# latexmkrc — Overleaf-flat layout for Paper 1 (Herrero Albiar, JMIR Research Protocols).
+# Forces XeLaTeX. Overleaf reads this file automatically; the user does NOT need to
+# touch Menu > Compiler manually if this file is present at the project root.
+
+$pdf_mode = 5;
+$postscript_mode = $dvi_mode = 0;
+$xelatex = 'xelatex -interaction=nonstopmode %O %S';
