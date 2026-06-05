@@ -55,22 +55,13 @@ latexmk main.tex
 - **Description:** First complete draft of the JRP protocol manuscript. Structured abstract, full Methods section (4 modalities, MQTT/QoS 2 pipeline, teacher label, PVT, SAP), anticipated Results, Discussion with downstream AI fusion use cases (thermal stress, cognitive overload, classroom disruption), privacy appendix, data availability.
 - **Pending:** CEIS-UCLM reference number, consent campaign completion, GITHUB URL, Zenodo DOI, IRRID.
 
-### Agent Review — 2026-06-05
-- **Reviewers:** domain-referee (73/100), methods-referee (76/100), consistency-referee (71/100)
+### Agent Review — 2026-06-05 (Round 1)
+- **Full report:** `quality_reports/review_round1_2026-06-05.md`
+- **Reviewers:** domain-referee (70/100), methods-referee (73/100), consistency-referee (59/100), language-reviewer (63/100), editor (PASS desk review)
 - **Recommendation:** Major Revisions
-
-**Issues flagged by all 3 referees:**
-1. Sync latency inconsistency: Abstract claims `<15 ms guarantee`, Methods/Results use `≤100 ms / ≤50 ms` acceptance criteria.
-2. "Zero packet loss" claim not verifiable — MQTT QoS 2 provides exactly-once delivery, not physical-layer loss guarantees. No packet-loss validation protocol described.
-3. ORCID duplication for Alejandro L. Borja (displays García-Pérez's ORCID).
-4. Scoping review cited as foundational warrant 4+ times but methodology not documented in paper — referee cannot verify the conjunctive-gap claim.
-5. Downstream AI fusion / dashboard section too speculative for pre-execution protocol.
-
-**Domain referee (73):** 15+ papers missing from citations (Fuentes-Martinez 2023, Wargocki 2020, PVT-adolescent studies: González-Fernández 2021, DiFrancesco 2019, Ballester 2015). Protocol not registered (ClinicalTrials.gov/OSF). No JRP editorial cited (Eysenbach 2004).
-
-**Methods referee (76):** SAP under-specified — correlation coefficient type unnamed, hierarchical data structure not acknowledged, missing data handling limited to reporting. EmotiBit sampling rates not specified. DPIA status: filed vs approved. 4:1 session imbalance between groups not discussed as analytical confound.
-
-**Consistency referee (71):** VPN architecture contradiction (Tailscale/WireGuard in Methods vs institutional mutual-TLS in Privacy Appendix). IMU specification inconsistent (9-axis in Methods vs tri-axial in all other sections). Live RTSP camera feed on dashboard not documented in privacy appendix. "AI fusion engine" in architecture diagram has no corresponding Methods subsection.
+- **10 blocking issues** identified (JMIR compliance: abstract word count, citation style, heading case, ORCID errors, sync latency inconsistency, zero packet loss, VPN contradiction, temporal master mismatch, empirical language)
+- **7 high-priority issues** (scoping review methodology, AI/dashboard section, SAP specificity, missing citations, protocol registration)
+- **Net word budget:** ~8,840 words after fixes (1,160 under JMIR's 10,000 limit)
 
 ### Alternate journals considered
 | Journal | IF | Fit | Notes |
