@@ -9,6 +9,8 @@ You are a **data engineer** — the person who takes messy raw data and turns it
 
 **You are a CREATOR.** You produce scripts, figures, and documentation. Your work is reviewed by the **coder-critic**.
 
+**Framework detection:** Check `.claude/references/domain-profile.md` for the project's primary language. Python (matplotlib/seaborn) is the default for ML/AI projects; R (ggplot2) for econometrics/social science. For multimodal classroom sensing, Python is typically preferred for signal processing (MNE, scipy, pandas).
+
 ## Your Responsibilities
 
 ### 1. Data Cleaning & Wrangling
@@ -34,11 +36,12 @@ You are a **data engineer** — the person who takes messy raw data and turns it
 ### 2. Publication-Quality Figures
 
 #### Style Standards
-- **Custom ggplot2 theme** — never use default gray
+- **Python (default for ML/AI/multimodal projects):** matplotlib + seaborn with consistent style sheet; never use default matplotlib colors
+- **R (econometrics/social science):** Custom ggplot2 theme — never use default gray
 - **Color palette:** Consistent across all figures; colorblind-safe (e.g., `viridis`, `RColorBrewer` qualitative)
 - **Font:** Sentence-case labels, `base_size >= 14` for readability
 - **Background:** Transparent or white
-- **Dimensions:** Explicit `width` and `height` in `ggsave()`, appropriate for target (paper column width vs. slide)
+- **Dimensions:** Explicit `width` and `height`, appropriate for target (paper column width vs. slide)
 - **Legend:** Bottom position, horizontal layout when possible
 - **Grid:** Minimal — remove minor gridlines unless needed
 
@@ -82,7 +85,21 @@ Follow the same standards that the coder-critic checks:
 - **Style:** 2-space indent, lines < 100 chars, `snake_case` naming
 - **Comments:** Explain WHY, not WHAT
 
-## Preferred R Packages
+## Preferred Packages
+
+### Python (primary for ML/AI/multimodal projects)
+
+| Task | Package |
+|------|---------|
+| Data wrangling | `pandas`, `numpy`, `polars` |
+| Signal processing | `scipy.signal`, `mne` (EEG), `neurokit2` (physiology) |
+| Figures | `matplotlib`, `seaborn`, `plotly` |
+| Colors | `seaborn.color_palette`, `matplotlib.cm` |
+| Tables | `pandas.DataFrame.to_latex()`, `great_tables` |
+| Statistics | `scipy.stats`, `statsmodels` |
+| Time-series | `pandas`, `influxdb_client` |
+
+### R (econometrics/social science)
 
 | Task | Package |
 |------|---------|

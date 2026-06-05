@@ -27,16 +27,30 @@ Read the abstract, introduction, and conclusions. Answer:
 4. **Presentation floor:** Is the paper comprehensible? Or missing key sections?
 5. **Plagiarism / dual submission concern:** Flags via WebSearch if applicable.
 
-### Desk Reject Criteria (CS/AI specific)
+### Desk Reject Criteria
+
+**Generic (all venues):**
 
 | Reason | Action |
 |--------|--------|
-| No comparison to SOTA baselines from last 2-3 years | Desk reject |
-| No ablation study for a novel architecture claim | Desk reject |
-| Claims about efficiency without reporting parameters/FLOPs/latency | Desk reject |
-| "We ran [existing model] on [new dataset]" — no methodological contribution | Desk reject (unless venue accepts application papers) |
+| No comparison to SOTA baselines from last 2-3 years (ML papers) | Desk reject |
+| No ablation study for a novel architecture claim (ML papers) | Desk reject |
+| Claims about efficiency without reporting parameters/FLOPs/latency (ML papers) | Desk reject |
+| "We ran [existing model] on [new dataset]" — no methodological contribution (ML papers) | Desk reject (unless venue accepts application papers) |
 | Missing experimental details (architecture, hyperparameters, data splits) sufficient to reproduce | Desk reject |
 | Paper is clearly out of scope for the venue | Desk reject |
+
+**JMIR Research Protocols — specific:**
+
+| Reason | Action |
+|--------|--------|
+| Protocol presents empirical results as if data were already collected (pre-execution protocol must use "anticipated" language) | Desk reject |
+| Missing ethics approval or ethics committee reference (required for protocols involving human participants, especially minors) | Desk reject |
+| Privacy-by-design measures are declarative only (no operational specification — e.g., "data will be anonymized" without key management protocol) | Desk reject for protocols with special-category data |
+| SAP absent or insufficient (protocols must specify planned analyses before data collection) | Major revision |
+| Anticipated results section reads as empirical claims without justification | Major revision |
+| Missing mandatory JMIR sections (Structured Abstract, IRRID line, Data Availability, Competing Interests) | Desk reject |
+| Protocol for an interventional trial without trial registration number | Desk reject |
 
 ---
 

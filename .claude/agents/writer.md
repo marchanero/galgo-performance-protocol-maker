@@ -62,12 +62,11 @@ Identify the type from the strategy memo before drafting:
 | **Comparative benchmark** | Systematic comparison of methods | Experimental Setup + Benchmark Design |
 | **Ablation study** | Isolating contribution of components | Ablation Design + Analysis |
 | **Application / deployment** | Domain adaptation or deployment | Domain Adaptation + Deployment Validation |
+| **Study protocol** | Pre-execution protocol (observational or interventional) | Study Design + Data Collection Plan + SAP + Ethics + Anticipated Results |
 
 ---
 
 ## CS/AI Section Organization Conventions
-
-**The Writer supports two section organization styles.** Choose based on the target venue and paper type. The strategy memo may specify which to use; otherwise default to the **integrated style** for conference papers and the **traditional style** for journal papers.
 
 ### Integrated Style (default for conferences: NeurIPS, ICML, ICLR)
 ```
@@ -103,8 +102,37 @@ Identify the type from the strategy memo before drafting:
 | IEEE TAC / TBME / JBHI | After Introduction | Combined |
 | TPAMI / JMLR | After Introduction | Optional split |
 | IEEE SPL / Conference short | Varies (venue-specific) | Combined |
+| JMIR Research Protocols / BMJ Open / Trials | No separate Related Work (integrated into Introduction) | Anticipated only (pre-execution protocols) |
 
 **When in doubt:** use integrated style for page-limited conferences, traditional style for journals. The writer-critic checks venue-appropriateness.
+
+### JMIR / Protocol Section Format (mandatory for protocol papers)
+
+For study protocols targeting JMIR Research Protocols, BMJ Open, or similar venues, follow this exact section ordering:
+
+```
+1. Structured Abstract  (Background / Objective / Methods / Results / Conclusions)
+2. Introduction         (includes literature positioning — no separate Related Work)
+3. Methods              (Study Design, Setting, Population, Procedures, Outcomes,
+                         Data Collection, Statistical Analysis Plan, Sample Size,
+                         Ethics & Data Governance, Patient and Public Involvement)
+4. Results              (anticipated / expected — no empirical data yet)
+5. Discussion           (Principal Anticipated Findings, Strengths, Limitations,
+                         Comparison with Prior Work, Conclusions)
+6. Acknowledgements & CRediT
+7. Conflicts of Interest
+8. Data Availability    (tiered access: open / restricted / permanently excluded)
+9. Multimedia Appendix  (privacy pipeline, checklists, consent forms)
+10. References
+```
+
+**Key protocol-writing rules:**
+- No separate "Related Work" section — literature is woven into the Introduction
+- "Results" section is titled "Results" but contains only anticipated/expected findings — never present empirical data that hasn't been collected
+- IRRID (International Registered Report Identifier) line follows the abstract
+- Methods must be detailed enough that another team could replicate the deployment
+- Ethics and data governance are not boilerplate — they must specify operational measures (configurations, scripts, logs), not just declare compliance
+- Strengths and Limitations are mandatory subsections in Discussion
 
 ---
 
@@ -143,6 +171,12 @@ Identify the type from the strategy memo before drafting:
 6. **Key result** — Deployment-relevant outcome (accuracy + efficiency + feasibility) (1–2 sentences)
 7. **Contributions** — Numbered list (domain adaptation, deployment validation, practical findings)
 8. **Literature positioning** — Domain problem and prior technical solutions
+
+**Study protocol:**
+5. **Gap statement** — The specific conjunctive gap the protocol fills (literature is fragmented into silos; no deployment meets all conditions simultaneously) (2–3 sentences)
+6. **Protocol preview** — Study design, modalities, setting, duration (2–3 sentences)
+7. **Anticipated contribution** — What the protocol commits to deliver (validated measurement platform, tiered dataset, SAP) — NOT empirical results (1–2 sentences)
+8. **Literature positioning** — Where individual modalities sit in the literature and why the conjunction is the novelty (3–4 sentences)
 
 **All types end with:**
 - **Roadmap** — Optional, one sentence maximum

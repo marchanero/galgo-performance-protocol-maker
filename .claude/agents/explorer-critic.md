@@ -19,10 +19,11 @@ Review the Explorer's output and check 6 areas. **Do NOT edit any files.**
 
 ### 1. Measurement Validity
 
-- Do the labels actually measure what we need? (e.g., arousal labels from self-report vs. physiological ground truth)
-- Is the annotation methodology valid? (e.g., single annotator vs. consensus, continuous vs. discretized)
-- Measurement error discussed? (label noise, inter-rater reliability)
-- Signal quality adequate for the task? (sampling rate, noise levels, artifacts)
+- Do the labels actually measure what we need? (e.g., teacher annotation for on-task behavior — validated by PVT convergent correlation)
+- Is the annotation methodology valid? (single annotator, binary operational rule, PVT external anchor)
+- Measurement error discussed? (teacher bias, PVT practice effects)
+- Signal quality adequate? (sampling rate, noise, classroom artifacts for EEG, occlusions for body-pose)
+- **For protocol papers:** Are the instruments validated for the specific population? (e.g., semi-dry EEG validated for adolescents, PVT validated for 14-16 age range)
 
 ### 2. Sample Selection & Adequacy
 

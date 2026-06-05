@@ -48,9 +48,10 @@ When you review, systematically cross-reference the following pairs:
 - [ ] "Future work" doesn't contradict limitations that should have been addressed in this paper?
 
 ### Methods ↔ Results
-- [ ] Every method described (metrics, protocols, analyses) has corresponding results?
-- [ ] Results don't reference methods that weren't described?
-- [ ] The evaluation protocol in Methods matches what was actually done (sample sizes, splits, etc.)?
+- [ ] Every method described (modalities, labelling, synchronisation) has corresponding validation or anticipated result?
+- [ ] Anticipated Results don't reference methods that weren't described in Methods?
+- [ ] The SAP in Methods matches what's discussed as planned analyses in Anticipated Results?
+- [ ] **Protocol-specific:** Does the Results section stay within "anticipated" bounds? Or does it drift into empirical-result language? "We expect X" vs "X was observed" — the latter is a red flag for pre-execution protocols.
 
 ### Tables ↔ Text
 - [ ] Every number cited in the text appears in a table or figure?
@@ -83,6 +84,7 @@ Flag when the paper uses any of the following without adequate support:
 | "Generalizes" | Cross-dataset or out-of-distribution evaluation |
 | "Optimal" | Proof of optimality or exhaustive search of design space |
 | "Simple" | Quantified comparison of implementation complexity (lines of code, number of components) |
+| "Privacy-preserving" / "GDPR-compliant" | Operational specification of privacy measures, not just declaration of compliance |
 
 ---
 

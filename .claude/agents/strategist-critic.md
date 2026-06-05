@@ -34,6 +34,7 @@ _Always runs. This is triage._
 - **Comparative benchmark** — systematic comparison of existing methods
 - **Ablation study** — isolating contributions of design choices
 - **Application / deployment** — applying ML to a novel domain or deployment scenario
+- **Study protocol** — pre-execution description of a planned observational or interventional study
 
 **Then** identify the specifics:
 
@@ -61,6 +62,13 @@ _Always runs. This is triage._
 2. **Method applied:** Which existing method?
 3. **Domain adaptation:** What changes were made for the domain?
 4. **Deployment constraints:** Real-time, memory, power, privacy?
+
+**Study protocol:**
+1. **Study design:** Observational or interventional? Longitudinal or cross-sectional?
+2. **Population:** Demographics, setting, recruitment strategy
+3. **Modalities:** What data streams, hardware, synchronisation?
+4. **Outcome:** Primary label/measure, external validation anchor
+5. **Ethics:** Committee approval, GDPR/special-category compliance, privacy-by-design measures
 
 If the paper combines types, identify the primary type. Review against that type's checklist first.
 
@@ -139,6 +147,39 @@ If any of the above is missing, this is at minimum a MAJOR concern. If tuning is
 - [ ] Real-world data or realistic test conditions?
 - [ ] Comparison against current domain practice (not just against other ML methods)?
 
+#### Study Protocol
+
+**Study design validity:**
+- [ ] Study design appropriate for the objective? Observational vs. interventional clearly stated?
+- [ ] Duration and setting justified? (4-month longitudinal, single school)
+- [ ] Unit of analysis correctly specified? (5-min time window)
+- [ ] Groups defined (reference classroom, comparison group) with allocation rationale?
+
+**Data collection completeness:**
+- [ ] Per-modality hardware specs, sampling rates, configuration documented?
+- [ ] Synchronisation protocol specified with latency/jitter expectations?
+- [ ] Quality-control procedures with acceptance criteria per modality?
+- [ ] Backup/fallback procedures for sensor failure documented?
+
+**Outcome measure validity:**
+- [ ] Primary label construct defined operationally? ("predominantly on-task for the majority of the 5-min window")
+- [ ] Single-annotator limitation acknowledged with mitigation (PVT convergent validation)?
+- [ ] External validation anchor appropriate and independently validated? (PVT as practice-resistant vigilance measure)
+
+**Ethics and governance:**
+- [ ] Ethics committee approval stated (committee, reference number)?
+- [ ] GDPR Article 9 compliance for special-category data of minors documented operationally (not just declared)?
+- [ ] Privacy-by-design measures verifiable? (audio-disable directive, 72h deletion governance log, pseudonymisation key management)
+- [ ] Tiered data access model justified? (open aggregated / restricted raw / permanently excluded)
+- [ ] Withdrawal and deletion procedures specified?
+
+**SAP completeness:**
+- [ ] Statistical analysis plan pre-specified before data collection?
+- [ ] Descriptive characterisation distinguished from inferential analysis?
+- [ ] Missing data strategy defined (sensor dropouts, incomplete sessions)?
+- [ ] Construct validity test pre-specified (PVT-teacher label correlation)?
+- [ ] Multiple comparisons addressed if testing multiple modality pairs?
+
 ### Step 2B: Sanity Check (MANDATORY)
 
 **Before proceeding, verify that results or planned evaluation make sense:**
@@ -164,7 +205,14 @@ If any of the above is missing, this is at minimum a MAJOR concern. If tuning is
 **Application:**
 - [ ] Deployment metrics real or estimated? Measured on target hardware or simulated?
 
-**Early stop logic:** If Phase 2 finds CRITICAL issues (unfair comparison, data leakage indicators, implausible results), the report should **focus on these**. Still run Phases 3-4 but note: "These issues should be resolved before the following feedback becomes relevant."
+**Study protocol:**
+- [ ] **Anticipated results bounded:** Do anticipated results stay within what a pre-execution protocol should claim? (no empirical language: avoid "was found," "demonstrated," "confirmed")
+- [ ] **Privacy claims operational:** If claiming "audio disabled," is configuration directive cited? If "72h video deletion," is the governance log described?
+- [ ] **SAP completeness:** Are both descriptive characterisation and measurement validation planned? Or is SAP a placeholder?
+- [ ] **Single-site acknowledged:** Is single-school, single-annotator deployment explicitly discussed as limitation?
+- [ ] **IRRID placeholder:** Is the IRRID line present (even if number is pending)?
+
+**Early stop logic:** If Phase 2 finds CRITICAL issues, the report should **focus on these**. Still run Phases 3-4 but note: "These issues should be resolved before the following feedback becomes relevant."
 
 ---
 

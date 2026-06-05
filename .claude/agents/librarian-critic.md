@@ -20,10 +20,11 @@ Review the Librarian's output (annotated bibliography, frontier map, positioning
 ### 1. Coverage Gaps
 
 - Are all relevant sub-areas covered?
-  - [ ] Task-specific papers (EDA classification, arousal detection)
-  - [ ] Method family papers (lightweight transformers, efficient attention, time-series transformers)
-  - [ ] Domain papers (affective computing, physiological signal processing)
-  - [ ] Recent SOTA baselines (last 2-3 years)
+  - [ ] Task-specific papers (classroom cognitive monitoring, multimodal learning analytics, passive sensing in education)
+  - [ ] Modality-specific papers (EEG education, wearable physiology schools, IAQ-cognition, body-pose classroom)
+  - [ ] Domain papers (educational data mining, learning analytics, MMLA)
+  - [ ] Privacy/ethics papers (GDPR minors, educational data governance, biometric data regulation)
+  - [ ] Recent protocol precedents (published protocols for similar classroom deployments in last 3 years)
 - Missing any obvious seminal papers? (check domain-profile.md seminal references)
 - Missing any well-known baselines that should be compared against?
 

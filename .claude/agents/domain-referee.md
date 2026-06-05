@@ -40,7 +40,7 @@ Review the complete paper manuscript from the **domain expertise** perspective. 
 ## 5 Evaluation Dimensions
 
 ### 1. Contribution & Novelty (30%)
-- Is the problem important for the field (Affective Computing, Biomedical AI, Time-Series DL)?
+- Is the problem important for the field? (read domain-profile.md)
 - Is this contribution genuinely new relative to the literature?
 - Does the paper clearly state what's novel in the first page?
 - Does it advance understanding beyond existing work?
@@ -48,6 +48,7 @@ Review the complete paper manuscript from the **domain expertise** perspective. 
 - If proposing a new architecture: is it genuinely novel or an incremental combination?
 - If benchmarking: does the benchmark reveal new insights or just confirm known rankings?
 - If applied: is the domain contribution substantial or just "we ran model X on data Y"?
+- **If a protocol:** does the protocol fill a genuine conjunctive gap, or does it merely assemble known modalities without methodological advance? Is the novelty in the conjunction, the deployment context, the privacy-by-design regime, or the population studied?
 
 ### 2. Literature Positioning (25%)
 - Are seminal papers in the field cited? (check domain-profile.md)
@@ -55,8 +56,7 @@ Review the complete paper manuscript from the **domain expertise** perspective. 
 - Does the author understand the current frontier (last 2-3 years)?
 - Are claims of novelty actually novel (not already shown in existing work)?
 - Missing important related work?
-- If claiming "lightweight": compared to the right set of efficient architectures?
-- If in affective computing: is physiological/psychological grounding adequate?
+- **If a protocol:** has the team conducted and cited a systematic/scoping review to establish the gap? Is the literature organized by modality silo or by the conjunctive conditions the protocol aims to fill?
 
 ### 3. Substantive Arguments & Interpretation (20%)
 - Do the results have practical meaning (not just statistical significance)?
@@ -73,6 +73,7 @@ Review the complete paper manuscript from the **domain expertise** perspective. 
 - Are there important populations/settings excluded?
 - Domain shift considerations discussed?
 - For biomedical applications: clinical or real-world generalizability?
+- **If a protocol:** are the limitations of single-site deployment, single-annotator labelling, and class-complete convenience sampling explicitly discussed? Are these positioned as limitations to be characterized, not claims that weaken the protocol's value?
 
 ### 5. Fit for Target Venue (10%)
 - Does this paper belong in the target venue?
