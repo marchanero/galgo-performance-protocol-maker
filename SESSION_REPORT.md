@@ -83,6 +83,42 @@
 **Commits:**
 - `4e30722` Save Round 1 agent review report
 
+
+---
+
+## 2026-06-16 09:00 — Round 2 Review + Blocking Fixes + Restructuring
+
+**Operations:**
+- Dispatched 5 agents for exhaustive review (domain, methods, consistency, editor, language)
+- Fixed 6 high-priority issues (H1-H6, H9-H11): sync latency, VPN, temporal master, comparison group, IMU terminology, TVOC/SPL, AI vocabulary, teacher fatigue, Hawthorne
+- Removed PRISMA-ScR completely from paper and bibliography
+- Rewrote Introduction: "conjunctive conditions" → "conjunctive properties", removed scoping review meta-language
+- Restructured abstract to JMIR protocol convention (Results = pure status/timeline)
+- Unified ethics approval language across 5 files ("submitted" not "approved")
+- Resolved all 8 desk-reject risks: abstract 363w, AMA numeric citations, sentence case headings, ORCID fix, title footnote, ethics language, unpublished refs
+- Added Methods section: Planned Multimodal Fusion and Predictive Modelling
+- Merged SAP + Fusion + Sample Size into unified "Data Analysis Plan" (4-stage structure)
+- Added 4 pre-specified hypotheses (H1 acquisition, H2 multimodal prediction, H3 fusion gain, H4 ground-truth quality)
+- Ran skeptic agent 2 rounds (57→68/100), addressed F1-F4
+- Ran humanizer agent: removed 5 AI patterns
+- Added 6 verified references (Wargocki 2020, Barel 2022a/b, González-Fernández 2023, Prinsloo 2023, Hernández-Mustieles 2024)
+
+**Decisions:**
+- Removed PRISMA-ScR entirely — protocol papers don't document review methodology in intro
+- Dashboard section de-promoted (300→90 words, no product pitch, no AI agency)
+- Data Analysis Plan leads with signal processing, not traditional statistics — reflects the paper's real contribution
+- Changed "no predictive modelling" to explicit ML architecture (XGBoost + 1DCNN + TCN → LR meta-learner)
+- Comparison group: no wearables, no EEG, no video, no environmental mote — only teacher labels + PVT
+
+**Results:**
+- Paper: 43 pages, ~8,700 words body, 363 abstract
+- Compiles clean on Overleaf via XeLaTeX
+- All cross-references, citations, figures resolve
+- JMIR format: numeric citations, sentence case headings, structured abstract, IRRD placeholder
+
+**Commits:**
+- 12 commits from `bc45ea2` to `cd4ff39`
+
 **Status:**
-- Done: Full agent adaptation, literature search, 5 journal profiles, Round 1 review with 5 agents
-- Pending: Apply 10 blocking fixes + 7 high-priority fixes (user will indicate order)
+- Done: All DR fixes, all H fixes, abstract rewrite, Data Analysis Plan, hypotheses, skeptic 2 rounds, humanizer
+- Pending: CEIS-UCLM reference number (external), ORCID Herrero Albiar (external), protocol registration on OSF
