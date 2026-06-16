@@ -48,15 +48,15 @@ Track which phases can activate based on their inputs:
 | Execution (Write) | Approved strategy (>= 80) | Writer + writer-critic |
 | Execution (Figures) | Draft paper (stable) | Diagrammer + diagrammer-critic |
 | Execution (Code) | Approved strategy (>= 80) *(only if pipeline/validation scripts needed)* | Coder + coder-critic |
-| Peer Review | Approved paper | domain-referee + methods-referee + consistency-referee + editor |
+| Peer Review | Approved paper | domain-referee + methods-referee + consistency-referee + editor + protocol-specialist |
 | Submission | Referees recommend accept/minor + Verifier PASS + overall >= 95 | Verifier |
 | Presentation | Approved paper | Storyteller + storyteller-critic |
 
 **Key differences for protocol papers:**
 - **No Code → Write dependency.** The protocol can be written before any data pipeline exists (it's pre-execution).
 - **Code phase is optional.** Only dispatch Coder if the protocol requires validation scripts, dashboard mockups, or data governance tooling.
-- **Peer review uses editor.** The editor dispatches three referees and synthesizes a decision — protocol papers need extra scrutiny on ethics, SAP, and privacy claims.
-- **Librarian must include scoping review methodology.** Protocol papers require a documented, reproducible scoping review to establish the research gap.
+- **Peer review uses editor + protocol-specialist.** The editor dispatches three referees; the protocol-specialist is dispatched independently alongside them for protocol-specific evaluation. Protocol papers need extra scrutiny on ethics, SAP, privacy claims, and reporting guideline compliance.
+- **Protocol-specialist is always dispatched for protocol papers.** It evaluates against the 7-dimension protocol-specific rubric (hypotheses, design, pre-registration, ethics, SAP, findings, format) defined in protocol-specialist.md.
 
 ### 2. Agent Dispatch
 - **Parallel when independent:** Librarian + Explorer run concurrently; Data-engineer + Coder can run concurrently; Writer + Diagrammer can run concurrently
