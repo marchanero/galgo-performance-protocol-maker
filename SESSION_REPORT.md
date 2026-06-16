@@ -122,3 +122,43 @@
 **Status:**
 - Done: All DR fixes, all H fixes, abstract rewrite, Data Analysis Plan, hypotheses, skeptic 2 rounds, humanizer
 - Pending: CEIS-UCLM reference number (external), ORCID Herrero Albiar (external), protocol registration on OSF
+
+---
+
+## 2026-06-16 12:00 — BOSS Integration + JMIR Compliance
+
+**Operations:**
+- Researched BOSS (Behavioral Observation of Students in Schools) system — Shapiro 2011, Alperin 2023, Volpe 2023
+- Replaced binary teacher label with BOSS 5-code system: AET, PET, OFT-P, OFT-M, OFT-V
+- Integrated transformer-like encoder on pose sequences for video event detection
+- Changed annotation workflow: teacher annotates via ad-hoc app when model detects dynamic changes
+- Updated hypotheses H4 for BOSS inter-rater reliability
+- Updated Data Analysis Plan: 5-class classification, macro-AUPRC
+- Added autonomous system vision: BOSS labels train the model → eventual teacher-free monitoring
+- Created new agent: protocol-specialist (7-dimension rubric for protocol papers)
+- Dispatched protocol-specialist, skeptic (2 rounds), all-critics (2 rounds), humanizer
+- Completed JMIR submission checklist: Funding section, AI disclosure, Abbreviations (23 terms)
+- Inserted CEIS reference (CEIS-738323-C7M2), replaced GitHub URLs with placeholders
+
+**Decisions:**
+- BOSS is validated for elementary; acknowledged age gap for secondary (14-16) application
+- Teacher annotates in-session via app (not educational professional post-hoc) — addresses single-annotator concern
+- Event-driven annotation (not fixed 5-min interval) reduces teacher burden
+- Long-term vision: autonomous system, teacher-free once validated
+- JMIR requires Funding, Abbreviations, and AI disclosure as separate sections
+
+**Results:**
+- Paper: 47 pages, ~9,000 words, 4 hypotheses, 23 abbreviations, 2 figures
+- Compiles clean on Overleaf via XeLaTeX
+- All 11 critics dispatched (74.63/100 aggregate)
+- Protocol-specialist: 79.65/100 (BOSS integration boosted score)
+- Skeptic round 2: 57→68 (+11 pts)
+- New agent added to orchestrator pipeline
+- CEIS reference inserted: CEIS-738323-C7M2
+
+**Commits:**
+- 20 commits from `587564c` to `a849cad`
+
+**Status:**
+- Done: BOSS integration, JMIR compliance, all critics, CEIS reference, URLs placeholder
+- Pending: ORCID Herrero Albiar (0000-0000-0000-0000), protocol registration on OSF
