@@ -33,7 +33,7 @@ Each participant is assigned a 16-byte opaque identifier generated at the start 
 
 \subsection*{D. Institutional server access and transport encryption}
 
-The institutional UCLM server hosting the raw EEG, EmotiBit and ambient traces is inside the UCLM administrative network and is reachable from instrumented edge nodes only through the institutional VPN with mutual-TLS authentication. Access from outside the UCLM network requires VPN credentials and multi-factor authentication. Per-user access events are logged centrally by the UCLM IT services for at least the duration of the project plus the legally mandated retention period. Application-level access to the raw-traces directory is restricted to the research team's institutional accounts; the operating-system permissions are documented in the companion repository.
+The institutional UCLM server hosting the raw EEG, EmotiBit and ambient traces is inside the UCLM administrative network. Live data streaming from instrumented edge nodes in the classroom reaches the server through the WireGuard-based Tailscale mesh network described in \Cref{subsec:pipeline}. Remote access from outside the UCLM network requires the institutional VPN with mutual-TLS authentication and multi-factor authentication. Per-user access events are logged centrally by the UCLM IT services for at least the duration of the project plus the legally mandated retention period. Application-level access to the raw-traces directory is restricted to the research team's institutional accounts; the operating-system permissions are documented in the companion repository.
 
 \subsection*{E. Withdrawal-driven deletion}
 
