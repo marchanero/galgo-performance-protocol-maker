@@ -21,7 +21,7 @@ The acquisition platform integrates four passive data streams in synchrony. Each
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figuras/arquitectura_galgo.png}
-    \caption{\textcolor{blue}{High-level architecture of the synchronised multimodal IoT platform. All sensing nodes are disciplined by a local Stratum-1 NTP server for sub-100~ms inter-modality alignment. Environmental, wearable and vision subsystems publish timestamped data to the MQTT broker; the AI fusion engine and teacher dashboard close the feedback loop.}}
+    \caption{\textcolor{blue}{High-level architecture of the synchronised multimodal IoT platform. All sensing nodes are disciplined by a local Stratum-1 NTP server for sub-100~ms inter-modality alignment. Environmental, wearable and vision subsystems publish timestamped data to the MQTT broker; the on-server pipeline persists aggregated features for downstream analysis.}}
     \label{fig:architecture}
 \end{figure}
 
